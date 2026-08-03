@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aminyx | Разработка продуктов: бэкенд, Android, веб, безопасность</title>
   <meta name="description" content="Собираю продукты целиком: Go, Rust, Kotlin, веб и инфраструктура. Всё в проде, с реальным трафиком и платежами. Заказная разработка и собственные продукты.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0c0f">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f8fa">
   <link rel="canonical" href="https://aminyx.top/">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -15,24 +19,7 @@
   <meta property="og:image" content="https://aminyx.top/assets/img/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@itsaminyx">
-  <script>
-    (function () {
-      document.documentElement.classList.add('js');
-      var t = null, l = null;
-      try {
-        t = localStorage.getItem('theme');
-        l = localStorage.getItem('lang');
-      } catch (e) {}
-      if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.dataset.theme = t;
-      if (!l) {
-        var langs = (navigator.languages || [navigator.language || 'ru']).join(',').toLowerCase();
-        l = langs.indexOf('tg') !== -1 ? 'tg' : (langs.indexOf('ru') !== -1 ? 'ru' : 'en');
-      }
-      document.documentElement.dataset.lang = l;
-      if (l !== 'ru') document.documentElement.lang = l;
-    })();
-  </script>
+  <script src="/js/boot.js"></script>
   <link rel="preload" href="/assets/fonts/Onest-800-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/Onest-800-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/Onest-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
@@ -41,7 +28,6 @@
   <link rel="preload" href="/assets/fonts/Onest-400-cyrillic-ext.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
-  <noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -116,9 +102,9 @@
     <div class="container">
       <ul class="stats-row">
         <li class="reveal"><span class="stat-n" data-i18n="stats.n1">2,5</span><span class="stat-l" data-i18n="stats.s1">месяца от пустого репозитория до монетизации</span></li>
-        <li class="reveal" style="--d:80ms"><span class="stat-n">731</span><span class="stat-l" data-i18n="stats.s2">автотест в Rust-платформе</span></li>
-        <li class="reveal" style="--d:160ms"><span class="stat-n">270</span><span class="stat-l" data-i18n="stats.s3">дней в открытом курсе кибербезопасности</span></li>
-        <li class="reveal" style="--d:240ms"><span class="stat-n">8</span><span class="stat-l" data-i18n="stats.s4">сервисов в одной продуктовой экосистеме</span></li>
+        <li class="reveal d1"><span class="stat-n">731</span><span class="stat-l" data-i18n="stats.s2">автотест в Rust-платформе</span></li>
+        <li class="reveal d2"><span class="stat-n">270</span><span class="stat-l" data-i18n="stats.s3">дней в открытом курсе кибербезопасности</span></li>
+        <li class="reveal d3"><span class="stat-n">8</span><span class="stat-l" data-i18n="stats.s4">сервисов в одной продуктовой экосистеме</span></li>
       </ul>
     </div>
   </section>
@@ -156,11 +142,11 @@
         </div>
         <ul class="spec-grid">
           <li class="reveal"><h4 data-i18n="work.link.s1t">Постквантовая криптография</h4><p data-i18n="work.link.s1p">Гибридный обмен ключами X25519 + ML-KEM-768, AEAD-шифры, ротация ключей.</p></li>
-          <li class="reveal" style="--d:60ms"><h4 data-i18n="work.link.s2t">Multipath</h4><p data-i18n="work.link.s2p">Оценка путей, балансировка, автоматический failover и агрегация полосы.</p></li>
-          <li class="reveal" style="--d:120ms"><h4 data-i18n="work.link.s3t">Живая миграция сессий</h4><p data-i18n="work.link.s3p">Смена IP или сети без потери данных и без разрыва соединения.</p></li>
-          <li class="reveal" style="--d:180ms"><h4 data-i18n="work.link.s4t">FEC</h4><p data-i18n="work.link.s4p">Reed-Solomon и XOR с адаптивной избыточностью на каждом пути данных.</p></li>
-          <li class="reveal" style="--d:240ms"><h4 data-i18n="work.link.s5t">Congestion control</h4><p data-i18n="work.link.s5p">Reno, CUBIC, BBR и авторежим с подстройкой из живых метрик.</p></li>
-          <li class="reveal" style="--d:300ms"><h4 data-i18n="work.link.s6t">731 автотест</h4><p data-i18n="work.link.s6p">RFC-first процесс: ADR, фаззинг и бенчмарки Criterion в CI.</p></li>
+          <li class="reveal d1"><h4 data-i18n="work.link.s2t">Multipath</h4><p data-i18n="work.link.s2p">Оценка путей, балансировка, автоматический failover и агрегация полосы.</p></li>
+          <li class="reveal d2"><h4 data-i18n="work.link.s3t">Живая миграция сессий</h4><p data-i18n="work.link.s3p">Смена IP или сети без потери данных и без разрыва соединения.</p></li>
+          <li class="reveal d3"><h4 data-i18n="work.link.s4t">FEC</h4><p data-i18n="work.link.s4p">Reed-Solomon и XOR с адаптивной избыточностью на каждом пути данных.</p></li>
+          <li class="reveal d4"><h4 data-i18n="work.link.s5t">Congestion control</h4><p data-i18n="work.link.s5p">Reno, CUBIC, BBR и авторежим с подстройкой из живых метрик.</p></li>
+          <li class="reveal d5"><h4 data-i18n="work.link.s6t">731 автотест</h4><p data-i18n="work.link.s6p">RFC-first процесс: ADR, фаззинг и бенчмарки Criterion в CI.</p></li>
         </ul>
       </article>
 
@@ -195,7 +181,7 @@
             <li>Python</li><li>Telethon</li><li>FastAPI</li><li>React</li><li>Docker</li>
           </ul>
         </article>
-        <article class="card reveal" style="--d:100ms">
+        <article class="card reveal d1">
           <p class="tag" data-i18n="work.maryam.tag">Заказная работа</p>
           <h3 class="h3-s">maryam.best</h3>
           <p data-i18n="work.maryam.p1">Сайт-портфолио для студентки-медика на трёх языках: Next.js 16, React 19, 3D-сцена ДНК с ленивой загрузкой, конвейер обработки фото на sharp и полный SEO-пакет с hreflang и структурированными данными.</p>
@@ -218,19 +204,19 @@
           <h3 data-i18n="services.b1t">Бэкенд и API</h3>
           <p data-i18n="services.b1p">Go, Rust и Python. PostgreSQL и Redis, платёжные интеграции, подписки и сверка транзакций между независимыми провайдерами, чтобы ни одна покупка не потерялась и не посчиталась дважды.</p>
         </article>
-        <article class="bento-cell reveal" style="--d:70ms">
+        <article class="bento-cell reveal d1">
           <h3 data-i18n="services.b2t">Android-приложения</h3>
           <p data-i18n="services.b2p">Kotlin и Jetpack Compose. Сетевые клиенты с kill switch, устойчивость к смене сети, релизы, совместимые с политиками Play.</p>
         </article>
-        <article class="bento-cell reveal" style="--d:140ms">
+        <article class="bento-cell reveal d2">
           <h3 data-i18n="services.b3t">Сайты и веб-приложения</h3>
           <p data-i18n="services.b3p">Next.js и TypeScript, когда нужен фреймворк. Чистый HTML и JS, когда фреймворк только добавит вес.</p>
         </article>
-        <article class="bento-cell reveal" style="--d:210ms">
+        <article class="bento-cell reveal d3">
           <h3 data-i18n="services.b4t">Telegram-боты</h3>
           <p data-i18n="services.b4p">Продажи, поддержка, приём платежей и интеграция с бэкендом. Боты, которые уже обслуживают живой продукт.</p>
         </article>
-        <article class="bento-cell bento-tint reveal" style="--d:280ms">
+        <article class="bento-cell bento-tint reveal d4">
           <h3 data-i18n="services.b5t">Безопасность и инфраструктура</h3>
           <p data-i18n="services.b5p">Linux, Docker, CI с тестами и фаззингом. Харденинг серверов, ротация ключей, аудит ваших систем, всегда с вашего разрешения. Тот же принцип зашит и в мой курс.</p>
         </article>
@@ -244,9 +230,9 @@
       <h2 class="h2 reveal" data-i18n="process.h2">Как идёт работа</h2>
       <ol class="steps">
         <li class="reveal"><h3 data-i18n="process.s1t">Обсуждение</h3><p data-i18n="process.s1p">Пишете в Telegram, разбираем задачу. Бесплатно и без обязательств.</p></li>
-        <li class="reveal" style="--d:80ms"><h3 data-i18n="process.s2t">План и цена</h3><p data-i18n="process.s2p">Фиксируем объём, сроки и стоимость по этапам. Без сюрпризов в конце.</p></li>
-        <li class="reveal" style="--d:160ms"><h3 data-i18n="process.s3t">Разработка</h3><p data-i18n="process.s3p">Показываю прогресс на демо и промежуточных сборках, а не в отчётах.</p></li>
-        <li class="reveal" style="--d:240ms"><h3 data-i18n="process.s4t">Запуск</h3><p data-i18n="process.s4p">Деплой, передача кода и поддержка после релиза.</p></li>
+        <li class="reveal d1"><h3 data-i18n="process.s2t">План и цена</h3><p data-i18n="process.s2p">Фиксируем объём, сроки и стоимость по этапам. Без сюрпризов в конце.</p></li>
+        <li class="reveal d2"><h3 data-i18n="process.s3t">Разработка</h3><p data-i18n="process.s3p">Показываю прогресс на демо и промежуточных сборках, а не в отчётах.</p></li>
+        <li class="reveal d3"><h3 data-i18n="process.s4t">Запуск</h3><p data-i18n="process.s4p">Деплой, передача кода и поддержка после релиза.</p></li>
       </ol>
     </div>
   </section>

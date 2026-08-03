@@ -52,6 +52,7 @@
     var next = docEl.dataset.theme === 'dark' ? 'light' : 'dark';
     docEl.dataset.theme = next;
     store('theme', next);
+    if (window.__setThemeColor) window.__setThemeColor(next);
     refreshCanvasColors();
   });
 

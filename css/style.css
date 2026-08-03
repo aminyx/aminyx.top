@@ -638,6 +638,13 @@ html.js .reveal.in {
   transform: none;
 }
 
+/* ступени каскадной задержки (вместо инлайн-стилей: строгая CSP) */
+.d1 { --d: 70ms; }
+.d2 { --d: 140ms; }
+.d3 { --d: 210ms; }
+.d4 { --d: 280ms; }
+.d5 { --d: 350ms; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   html.js .reveal {

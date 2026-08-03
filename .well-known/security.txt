@@ -1,0 +1,5 @@
+Contact: mailto:itsaminyx@gmail.com
+Contact: https://t.me/itsaminyx
+Expires: 2027-08-03T00:00:00.000Z
+Preferred-Languages: ru, tg, en
+Canonical: https://aminyx.top/.well-known/security.txt
