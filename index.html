@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aminyx | Разработка продуктов: бэкенд, Android, веб, безопасность</title>
+  <meta name="description" content="Собираю продукты целиком: Go, Rust, Kotlin, веб и инфраструктура. Всё в проде, с реальным трафиком и платежами. Заказная разработка и собственные продукты.">
+  <link rel="canonical" href="https://aminyx.top/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aminyx.top/">
+  <meta property="og:title" content="Aminyx | Full-stack разработка и безопасность">
+  <meta property="og:description" content="Бэкенд на Go и Rust, Android на Kotlin, веб и инфраструктура. В проде, с реальным трафиком и платежами.">
+  <meta property="og:image" content="https://aminyx.top/assets/img/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@itsaminyx">
+  <script>
+    (function () {
+      document.documentElement.classList.add('js');
+      var t = null, l = null;
+      try {
+        t = localStorage.getItem('theme');
+        l = localStorage.getItem('lang');
+      } catch (e) {}
+      if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = t;
+      if (!l) {
+        var langs = (navigator.languages || [navigator.language || 'ru']).join(',').toLowerCase();
+        l = langs.indexOf('tg') !== -1 ? 'tg' : (langs.indexOf('ru') !== -1 ? 'ru' : 'en');
+      }
+      document.documentElement.dataset.lang = l;
+      if (l !== 'ru') document.documentElement.lang = l;
+    })();
+  </script>
+  <link rel="preload" href="/assets/fonts/Onest-800-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/Onest-800-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/Onest-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/Onest-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/Onest-800-cyrillic-ext.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/Onest-400-cyrillic-ext.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/fonts/fonts.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Aminjon Azizov",
+    "alternateName": "Aminyx",
+    "url": "https://aminyx.top/",
+    "email": "mailto:itsaminyx@gmail.com",
+    "jobTitle": "Full-stack developer and security engineer",
+    "sameAs": [
+      "https://github.com/aminyx",
+      "https://t.me/itsaminyx",
+      "https://x.com/itsaminyx"
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="a11y.skip">К содержанию</a>
+
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="wordmark" href="#top" aria-label="aminyx">aminyx<span class="wordmark-dot">.</span></a>
+    <nav class="nav-links" id="nav-links" aria-label="Основная навигация" data-i18n-aria="a11y.nav">
+      <a href="#work" data-i18n="nav.work">Работы</a>
+      <a href="#services" data-i18n="nav.services">Услуги</a>
+      <a href="#course" data-i18n="nav.course">Курс</a>
+      <a href="#contact" data-i18n="nav.contact">Контакты</a>
+    </nav>
+    <div class="nav-tools">
+      <div class="lang-switch" role="group" aria-label="Язык" data-i18n-aria="a11y.lang">
+        <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+        <button type="button" data-lang="tg" aria-pressed="false">TJ</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Переключить тему" data-i18n-aria="a11y.theme">
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+          <circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M10 2.5 A7.5 7.5 0 0 1 10 17.5 Z" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="burger" id="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="nav-links" data-i18n-aria="a11y.menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="hero-name" data-i18n="hero.name">Азизов Аминджон · Aminyx</p>
+        <h1 class="h1" data-i18n="hero.h1">Собираю продукты целиком.</h1>
+        <p class="hero-sub" data-i18n="hero.sub">Бэкенд, Android, веб, инфраструктура: Go, Rust, Kotlin и Python в проде, с реальным трафиком и платежами. Безопасность встроена с первого коммита.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="https://t.me/itsaminyx" target="_blank" rel="noopener" data-i18n="cta.discuss">Обсудить проект</a>
+          <a class="btn btn-ghost" href="#work" data-i18n="cta.work">Смотреть работы</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <canvas id="net-canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats">
+    <div class="container">
+      <ul class="stats-row">
+        <li class="reveal"><span class="stat-n" data-i18n="stats.n1">2,5</span><span class="stat-l" data-i18n="stats.s1">месяца от пустого репозитория до монетизации</span></li>
+        <li class="reveal" style="--d:80ms"><span class="stat-n">731</span><span class="stat-l" data-i18n="stats.s2">автотест в Rust-платформе</span></li>
+        <li class="reveal" style="--d:160ms"><span class="stat-n">270</span><span class="stat-l" data-i18n="stats.s3">дней в открытом курсе кибербезопасности</span></li>
+        <li class="reveal" style="--d:240ms"><span class="stat-n">8</span><span class="stat-l" data-i18n="stats.s4">сервисов в одной продуктовой экосистеме</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ WORK ============ -->
+  <section class="work" id="work">
+    <div class="container">
+      <h2 class="h2 reveal" data-i18n="work.h2">Избранные работы</h2>
+
+      <!-- SomonVPN: split feature, text left / image right -->
+      <article class="feature reveal">
+        <div class="feature-copy">
+          <p class="tag" data-i18n="work.somon.tag">Продукт в продакшене</p>
+          <h3 class="h3">SomonVPN</h3>
+          <p data-i18n="work.somon.p1">Коммерческий VPN для рынков, где обычные протоколы блокирует DPI. Android-клиент на Kotlin, бэкенд на Go, панель управления, десктоп и Telegram-боты в одном монорепо.</p>
+          <p data-i18n="work.somon.p2">Smart Connect помнит последнюю рабочую конфигурацию и сам переключает трафик с WireGuard на VLESS Reality, когда основной протокол блокируют. От пустого репозитория до монетизированного запуска прошло два с половиной месяца.</p>
+          <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
+            <li>Kotlin</li><li>Go</li><li>TypeScript</li><li>PostgreSQL</li><li>Xray</li><li>WireGuard</li>
+          </ul>
+          <a class="link-out" href="https://somonvpn.tech" target="_blank" rel="noopener"><span data-i18n="work.somon.link">Открыть somonvpn.tech</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
+        </div>
+        <div class="feature-media">
+          <img src="/assets/img/somonvpn.webp" width="1200" height="750" loading="lazy" alt="Главная страница somonvpn.tech" data-i18n-alt="work.somon.alt">
+        </div>
+      </article>
+
+      <!-- Aminyx Link: full-width spec panel -->
+      <article class="panel reveal">
+        <div class="panel-head">
+          <div>
+            <p class="tag" data-i18n="work.link.tag">Платформа в разработке</p>
+            <h3 class="h3">Aminyx Link</h3>
+          </div>
+          <p class="panel-lede" data-i18n="work.link.p1">Сетевая платформа на Rust: транспортно-независимый сеансовый уровень, который одинаково работает поверх TCP, QUIC, HTTP/3 и собственного UDP-пути. Разработка идёт в закрытом репозитории.</p>
+        </div>
+        <ul class="spec-grid">
+          <li class="reveal"><h4 data-i18n="work.link.s1t">Постквантовая криптография</h4><p data-i18n="work.link.s1p">Гибридный обмен ключами X25519 + ML-KEM-768, AEAD-шифры, ротация ключей.</p></li>
+          <li class="reveal" style="--d:60ms"><h4 data-i18n="work.link.s2t">Multipath</h4><p data-i18n="work.link.s2p">Оценка путей, балансировка, автоматический failover и агрегация полосы.</p></li>
+          <li class="reveal" style="--d:120ms"><h4 data-i18n="work.link.s3t">Живая миграция сессий</h4><p data-i18n="work.link.s3p">Смена IP или сети без потери данных и без разрыва соединения.</p></li>
+          <li class="reveal" style="--d:180ms"><h4 data-i18n="work.link.s4t">FEC</h4><p data-i18n="work.link.s4p">Reed-Solomon и XOR с адаптивной избыточностью на каждом пути данных.</p></li>
+          <li class="reveal" style="--d:240ms"><h4 data-i18n="work.link.s5t">Congestion control</h4><p data-i18n="work.link.s5p">Reno, CUBIC, BBR и авторежим с подстройкой из живых метрик.</p></li>
+          <li class="reveal" style="--d:300ms"><h4 data-i18n="work.link.s6t">731 автотест</h4><p data-i18n="work.link.s6p">RFC-first процесс: ADR, фаззинг и бенчмарки Criterion в CI.</p></li>
+        </ul>
+      </article>
+
+      <!-- Cybersec: split feature, image left / text right -->
+      <article class="feature feature-flip reveal" id="course">
+        <div class="feature-copy">
+          <p class="tag" data-i18n="work.cyber.tag">Open source, GPL-3.0</p>
+          <h3 class="h3">Cybersec</h3>
+          <p data-i18n="work.cyber.p1">Бесплатный курс кибербезопасности на русском и таджикском: 270 дней от нуля до Junior, 6 экзаменов, 10 портфолио-проектов и CTF с офлайн-проверкой флагов по SHA-256.</p>
+          <p data-i18n="work.cyber.p2">Сайт собирается из Markdown скриптами на чистом Python и работает без фреймворка, без сборки и без бэкенда. Прогресс студента хранится в localStorage.</p>
+          <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
+            <li>Python</li><li>Vanilla JS</li><li>Markdown</li><li>GitHub Actions</li>
+          </ul>
+          <div class="link-row">
+            <a class="link-out" href="https://aminyx.github.io/Cybersec/" target="_blank" rel="noopener"><span data-i18n="work.cyber.link1">Открыть курс</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
+            <a class="link-out" href="https://github.com/aminyx/Cybersec" target="_blank" rel="noopener">GitHub <span class="arr" aria-hidden="true">&#8599;</span></a>
+          </div>
+        </div>
+        <div class="feature-media">
+          <img src="/assets/img/cybersec.webp" width="1200" height="750" loading="lazy" alt="Главная страница курса Cybersec" data-i18n-alt="work.cyber.alt">
+        </div>
+      </article>
+
+      <!-- Pair: Username Hunter + maryam.best -->
+      <div class="pair">
+        <article class="card reveal">
+          <p class="tag" data-i18n="work.hunter.tag">Инструмент</p>
+          <h3 class="h3-s">Username Hunter</h3>
+          <p data-i18n="work.hunter.p1">Проверка доступности Telegram-юзернеймов строго через официальный MTProto API: без регистрации имён и без скрейпинга. Генератор выдаёт около 13 тысяч кандидатов в секунду на дев-машине, офлайн-скоринг пропускает на сетевую проверку только лучший 1% кандидатов.</p>
+          <p data-i18n="work.hunter.p2">Три интерфейса поверх одной шины событий: CLI-дашборд на Rich, REST и WebSocket на FastAPI, React-панель. 140 тестов.</p>
+          <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
+            <li>Python</li><li>Telethon</li><li>FastAPI</li><li>React</li><li>Docker</li>
+          </ul>
+        </article>
+        <article class="card reveal" style="--d:100ms">
+          <p class="tag" data-i18n="work.maryam.tag">Заказная работа</p>
+          <h3 class="h3-s">maryam.best</h3>
+          <p data-i18n="work.maryam.p1">Сайт-портфолио для студентки-медика на трёх языках: Next.js 16, React 19, 3D-сцена ДНК с ленивой загрузкой, конвейер обработки фото на sharp и полный SEO-пакет с hreflang и структурированными данными.</p>
+          <p data-i18n="work.maryam.p2">Контент отделён от кода: тексты и фото лежат в отдельных файлах, поэтому CMS подключается без переписывания компонентов.</p>
+          <div class="card-media">
+            <img src="/assets/img/maryam.webp" width="1200" height="684" loading="lazy" alt="Секция таймлайна на maryam.best" data-i18n-alt="work.maryam.alt">
+          </div>
+          <a class="link-out" href="https://maryam.best" target="_blank" rel="noopener"><span data-i18n="work.maryam.link">Открыть maryam.best</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES ============ -->
+  <section class="services" id="services">
+    <div class="container">
+      <h2 class="h2 reveal" data-i18n="services.h2">Что я делаю на заказ</h2>
+      <div class="bento">
+        <article class="bento-cell bento-wide bento-tint reveal">
+          <h3 data-i18n="services.b1t">Бэкенд и API</h3>
+          <p data-i18n="services.b1p">Go, Rust и Python. PostgreSQL и Redis, платёжные интеграции, подписки и сверка транзакций между независимыми провайдерами, чтобы ни одна покупка не потерялась и не посчиталась дважды.</p>
+        </article>
+        <article class="bento-cell reveal" style="--d:70ms">
+          <h3 data-i18n="services.b2t">Android-приложения</h3>
+          <p data-i18n="services.b2p">Kotlin и Jetpack Compose. Сетевые клиенты с kill switch, устойчивость к смене сети, релизы, совместимые с политиками Play.</p>
+        </article>
+        <article class="bento-cell reveal" style="--d:140ms">
+          <h3 data-i18n="services.b3t">Сайты и веб-приложения</h3>
+          <p data-i18n="services.b3p">Next.js и TypeScript, когда нужен фреймворк. Чистый HTML и JS, когда фреймворк только добавит вес.</p>
+        </article>
+        <article class="bento-cell reveal" style="--d:210ms">
+          <h3 data-i18n="services.b4t">Telegram-боты</h3>
+          <p data-i18n="services.b4p">Продажи, поддержка, приём платежей и интеграция с бэкендом. Боты, которые уже обслуживают живой продукт.</p>
+        </article>
+        <article class="bento-cell bento-tint reveal" style="--d:280ms">
+          <h3 data-i18n="services.b5t">Безопасность и инфраструктура</h3>
+          <p data-i18n="services.b5p">Linux, Docker, CI с тестами и фаззингом. Харденинг серверов, ротация ключей, аудит ваших систем, всегда с вашего разрешения. Тот же принцип зашит и в мой курс.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROCESS ============ -->
+  <section class="process">
+    <div class="container">
+      <h2 class="h2 reveal" data-i18n="process.h2">Как идёт работа</h2>
+      <ol class="steps">
+        <li class="reveal"><h3 data-i18n="process.s1t">Обсуждение</h3><p data-i18n="process.s1p">Пишете в Telegram, разбираем задачу. Бесплатно и без обязательств.</p></li>
+        <li class="reveal" style="--d:80ms"><h3 data-i18n="process.s2t">План и цена</h3><p data-i18n="process.s2p">Фиксируем объём, сроки и стоимость по этапам. Без сюрпризов в конце.</p></li>
+        <li class="reveal" style="--d:160ms"><h3 data-i18n="process.s3t">Разработка</h3><p data-i18n="process.s3p">Показываю прогресс на демо и промежуточных сборках, а не в отчётах.</p></li>
+        <li class="reveal" style="--d:240ms"><h3 data-i18n="process.s4t">Запуск</h3><p data-i18n="process.s4p">Деплой, передача кода и поддержка после релиза.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <h2 class="contact-h reveal" data-i18n="contact.h2">Есть задача? Расскажите.</h2>
+      <p class="contact-sub reveal" data-i18n="contact.sub">Быстрее всего отвечаю в Telegram. Почта тоже работает.</p>
+      <div class="contact-cta reveal">
+        <a class="btn btn-primary" href="https://t.me/itsaminyx" target="_blank" rel="noopener" data-i18n="cta.discuss">Обсудить проект</a>
+        <a class="btn btn-ghost" href="mailto:itsaminyx@gmail.com">itsaminyx@gmail.com</a>
+      </div>
+      <ul class="social reveal">
+        <li><a href="https://github.com/aminyx" target="_blank" rel="noopener">GitHub <span class="arr" aria-hidden="true">&#8599;</span></a></li>
+        <li><a href="https://x.com/itsaminyx" target="_blank" rel="noopener">X <span class="arr" aria-hidden="true">&#8599;</span></a></li>
+        <li><a href="https://t.me/isaminyx" target="_blank" rel="noopener"><span data-i18n="contact.channel">Канал в Telegram</span> <span class="arr" aria-hidden="true">&#8599;</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <a class="wordmark wordmark-s" href="#top">aminyx<span class="wordmark-dot">.</span></a>
+    <p class="footer-note"><span data-i18n="footer.copy">© 2026 Азизов Аминджон</span></p>
+    <p class="footer-langs">Тоҷикӣ · Русский · English</p>
+  </div>
+</footer>
+
+<script src="/js/i18n.js" defer></script>
+<script src="/js/main.js" defer></script>
+</body>
+</html>
