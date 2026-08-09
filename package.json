@@ -1,0 +1,30 @@
+{
+  "name": "aminyx-top",
+  "version": "1.0.0",
+  "description": "Личный сайт: разработка продуктов под заказ и собственные проекты.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aminyx/aminyx.top.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aminyx/aminyx.top/issues"
+  },
+  "homepage": "https://github.com/aminyx/aminyx.top#readme",
+  "private": "true",
+  "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@react-three/postprocessing": "^3.0.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1"
+  }
+}
