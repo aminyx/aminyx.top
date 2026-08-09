@@ -21,7 +21,7 @@
   if (l !== 'ru') d.lang = l;
 
   window.__setThemeColor = function (theme) {
-    var color = theme === 'light' ? '#f7f8fa' : '#0b0c0f';
+    var color = theme === 'light' ? '#f4f5f7' : '#0a0b0e';
     var metas = document.querySelectorAll('meta[name="theme-color"]');
     for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', color);
   };

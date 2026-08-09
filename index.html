@@ -7,8 +7,8 @@
   <meta name="description" content="Собираю продукты целиком: Go, Rust, Kotlin, веб и инфраструктура. Всё в проде, с реальным трафиком и платежами. Заказная разработка и собственные продукты.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0c0f">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f8fa">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0b0e">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f5f7">
   <link rel="canonical" href="https://aminyx.top/">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -17,6 +17,11 @@
   <meta property="og:title" content="Aminyx | Full-stack разработка и безопасность">
   <meta property="og:description" content="Бэкенд на Go и Rust, Android на Kotlin, веб и инфраструктура. В проде, с реальным трафиком и платежами.">
   <meta property="og:image" content="https://aminyx.top/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:locale:alternate" content="tg_TJ">
+  <meta property="og:locale:alternate" content="en_US">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@itsaminyx">
   <script src="/js/boot.js"></script>
@@ -24,8 +29,8 @@
   <link rel="preload" href="/assets/fonts/Onest-800-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/Onest-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/Onest-400-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/fonts/Onest-800-cyrillic-ext.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/fonts/Onest-400-cyrillic-ext.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/JetBrainsMono-500-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/JetBrainsMono-500-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="stylesheet" href="/css/style.css">
   <script type="application/ld+json">
@@ -49,6 +54,8 @@
 
 <a class="skip-link" href="#main" data-i18n="a11y.skip">К содержанию</a>
 
+<div class="grain" aria-hidden="true"></div>
+
 <header class="nav" id="nav">
   <div class="container nav-inner">
     <a class="wordmark" href="#top" aria-label="aminyx">aminyx<span class="wordmark-dot">.</span></a>
@@ -57,6 +64,7 @@
       <a href="#services" data-i18n="nav.services">Услуги</a>
       <a href="#course" data-i18n="nav.course">Курс</a>
       <a href="#contact" data-i18n="nav.contact">Контакты</a>
+      <a class="btn btn-primary btn-compact nav-cta-m" href="https://t.me/itsaminyx" target="_blank" rel="noopener" data-i18n="cta.discuss">Обсудить проект</a>
     </nav>
     <div class="nav-tools">
       <div class="lang-switch" role="group" aria-label="Язык" data-i18n-aria="a11y.lang">
@@ -70,6 +78,7 @@
           <path d="M10 2.5 A7.5 7.5 0 0 1 10 17.5 Z" fill="currentColor"/>
         </svg>
       </button>
+      <a class="btn btn-primary btn-compact nav-cta" href="https://t.me/itsaminyx" target="_blank" rel="noopener" data-i18n="cta.discuss">Обсудить проект</a>
       <button class="burger" id="burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="nav-links" data-i18n-aria="a11y.menu">
         <span></span><span></span>
       </button>
@@ -83,7 +92,7 @@
   <section class="hero" id="top">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <p class="hero-name" data-i18n="hero.name">Азизов Аминджон · Aminyx</p>
+        <p class="hero-status"><span class="status-dot" aria-hidden="true"></span><span data-i18n="hero.status">Открыт к новым проектам</span></p>
         <h1 class="h1" data-i18n="hero.h1">Собираю продукты целиком.</h1>
         <p class="hero-sub" data-i18n="hero.sub">Бэкенд, Android, веб, инфраструктура: Go, Rust, Kotlin и Python в проде, с реальным трафиком и платежами. Безопасность встроена с первого коммита.</p>
         <div class="hero-cta">
@@ -101,7 +110,7 @@
   <div class="stats">
     <div class="container">
       <ul class="stats-row">
-        <li class="reveal"><span class="stat-n" data-i18n="stats.n1">2,5</span><span class="stat-l" data-i18n="stats.s1">месяца от пустого репозитория до монетизации</span></li>
+        <li class="reveal"><span class="stat-n"><span data-i18n="stats.n1">2,5</span></span><span class="stat-l" data-i18n="stats.s1">месяца от пустого репозитория до монетизации</span></li>
         <li class="reveal d1"><span class="stat-n">731</span><span class="stat-l" data-i18n="stats.s2">автотест в Rust-платформе</span></li>
         <li class="reveal d2"><span class="stat-n">270</span><span class="stat-l" data-i18n="stats.s3">дней в открытом курсе кибербезопасности</span></li>
         <li class="reveal d3"><span class="stat-n">8</span><span class="stat-l" data-i18n="stats.s4">сервисов в одной продуктовой экосистеме</span></li>
@@ -114,7 +123,7 @@
     <div class="container">
       <h2 class="h2 reveal" data-i18n="work.h2">Избранные работы</h2>
 
-      <!-- SomonVPN: split feature, text left / image right -->
+      <!-- SomonVPN -->
       <article class="feature reveal">
         <div class="feature-copy">
           <p class="tag" data-i18n="work.somon.tag">Продукт в продакшене</p>
@@ -131,7 +140,7 @@
         </div>
       </article>
 
-      <!-- Aminyx Link: full-width spec panel -->
+      <!-- Aminyx Link -->
       <article class="panel reveal">
         <div class="panel-head">
           <div>
@@ -150,7 +159,7 @@
         </ul>
       </article>
 
-      <!-- Cybersec: split feature, image left / text right -->
+      <!-- Cybersec -->
       <article class="feature feature-flip reveal" id="course">
         <div class="feature-copy">
           <p class="tag" data-i18n="work.cyber.tag">Open source, GPL-3.0</p>
@@ -170,7 +179,7 @@
         </div>
       </article>
 
-      <!-- Pair: Username Hunter + maryam.best -->
+      <!-- Pair -->
       <div class="pair">
         <article class="card reveal">
           <p class="tag" data-i18n="work.hunter.tag">Инструмент</p>
@@ -186,6 +195,9 @@
           <h3 class="h3-s">maryam.best</h3>
           <p data-i18n="work.maryam.p1">Сайт-портфолио для студентки-медика на трёх языках: Next.js 16, React 19, 3D-сцена ДНК с ленивой загрузкой, конвейер обработки фото на sharp и полный SEO-пакет с hreflang и структурированными данными.</p>
           <p data-i18n="work.maryam.p2">Контент отделён от кода: тексты и фото лежат в отдельных файлах, поэтому CMS подключается без переписывания компонентов.</p>
+          <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
+            <li>Next.js</li><li>React</li><li>sharp</li>
+          </ul>
           <div class="card-media">
             <img src="/assets/img/maryam.webp" width="1200" height="684" loading="lazy" alt="Секция таймлайна на maryam.best" data-i18n-alt="work.maryam.alt">
           </div>
@@ -200,7 +212,7 @@
     <div class="container">
       <h2 class="h2 reveal" data-i18n="services.h2">Что я делаю на заказ</h2>
       <div class="bento">
-        <article class="bento-cell bento-wide bento-tint reveal">
+        <article class="bento-cell bento-lead reveal">
           <h3 data-i18n="services.b1t">Бэкенд и API</h3>
           <p data-i18n="services.b1p">Go, Rust и Python. PostgreSQL и Redis, платёжные интеграции, подписки и сверка транзакций между независимыми провайдерами, чтобы ни одна покупка не потерялась и не посчиталась дважды.</p>
         </article>
@@ -216,7 +228,7 @@
           <h3 data-i18n="services.b4t">Telegram-боты</h3>
           <p data-i18n="services.b4p">Продажи, поддержка, приём платежей и интеграция с бэкендом. Боты, которые уже обслуживают живой продукт.</p>
         </article>
-        <article class="bento-cell bento-tint reveal d4">
+        <article class="bento-cell bento-sec reveal d4">
           <h3 data-i18n="services.b5t">Безопасность и инфраструктура</h3>
           <p data-i18n="services.b5p">Linux, Docker, CI с тестами и фаззингом. Харденинг серверов, ротация ключей, аудит ваших систем, всегда с вашего разрешения. Тот же принцип зашит и в мой курс.</p>
         </article>
@@ -229,10 +241,10 @@
     <div class="container">
       <h2 class="h2 reveal" data-i18n="process.h2">Как идёт работа</h2>
       <ol class="steps">
-        <li class="reveal"><h3 data-i18n="process.s1t">Обсуждение</h3><p data-i18n="process.s1p">Пишете в Telegram, разбираем задачу. Бесплатно и без обязательств.</p></li>
-        <li class="reveal d1"><h3 data-i18n="process.s2t">План и цена</h3><p data-i18n="process.s2p">Фиксируем объём, сроки и стоимость по этапам. Без сюрпризов в конце.</p></li>
-        <li class="reveal d2"><h3 data-i18n="process.s3t">Разработка</h3><p data-i18n="process.s3p">Показываю прогресс на демо и промежуточных сборках, а не в отчётах.</p></li>
-        <li class="reveal d3"><h3 data-i18n="process.s4t">Запуск</h3><p data-i18n="process.s4p">Деплой, передача кода и поддержка после релиза.</p></li>
+        <li class="reveal"><span class="step-n" aria-hidden="true">01</span><h3 data-i18n="process.s1t">Обсуждение</h3><p data-i18n="process.s1p">Пишете в Telegram, разбираем задачу. Бесплатно и без обязательств.</p></li>
+        <li class="reveal d1"><span class="step-n" aria-hidden="true">02</span><h3 data-i18n="process.s2t">План и цена</h3><p data-i18n="process.s2p">Фиксируем объём, сроки и стоимость по этапам. Без сюрпризов в конце.</p></li>
+        <li class="reveal d2"><span class="step-n" aria-hidden="true">03</span><h3 data-i18n="process.s3t">Разработка</h3><p data-i18n="process.s3p">Показываю прогресс на демо и промежуточных сборках, а не в отчётах.</p></li>
+        <li class="reveal d3"><span class="step-n" aria-hidden="true">04</span><h3 data-i18n="process.s4t">Запуск</h3><p data-i18n="process.s4p">Деплой, передача кода и поддержка после релиза.</p></li>
       </ol>
     </div>
   </section>

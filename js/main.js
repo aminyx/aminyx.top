@@ -1,4 +1,4 @@
-/* aminyx.top: язык, тема, навигация, reveal-анимации, canvas в hero. */
+/* aminyx.top: язык, тема, навигация, scroll-spy, reveal, canvas в hero. */
 (function () {
   'use strict';
 
@@ -56,7 +56,7 @@
     refreshCanvasColors();
   });
 
-  /* ---------- Навигация ---------- */
+  /* ---------- Навигация: фон при скролле ---------- */
 
   var nav = document.getElementById('nav');
   var sentinel = document.createElement('div');
@@ -67,15 +67,30 @@
     nav.classList.toggle('scrolled', !last.isIntersecting);
   }).observe(sentinel);
 
+  /* ---------- Мобильное меню ---------- */
+
   var burger = document.getElementById('burger');
   var navLinks = document.getElementById('nav-links');
+  /* при открытом оверлее фон не должен получать фокус */
+  function setInert(on) {
+    ['main', 'footer'].forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (!el) return;
+      if (on) el.setAttribute('inert', '');
+      else el.removeAttribute('inert');
+    });
+  }
   function closeMenu() {
     navLinks.classList.remove('open');
     burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    setInert(false);
   }
   burger.addEventListener('click', function () {
     var open = navLinks.classList.toggle('open');
     burger.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    setInert(open);
   });
   navLinks.querySelectorAll('a').forEach(function (a) {
     a.addEventListener('click', closeMenu);
@@ -87,9 +102,45 @@
     }
   });
 
-  /* ---------- Reveal ---------- */
+  /* ---------- Scroll-spy: активный якорь ---------- */
+
+  var spyLinks = {};
+  navLinks.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    spyLinks[a.getAttribute('href').slice(1)] = a;
+  });
+  var spyEls = Object.keys(spyLinks)
+    .map(function (id) { return document.getElementById(id); })
+    .filter(Boolean);
+  if ('IntersectionObserver' in window && spyEls.length) {
+    /* активен последний раздел, чья верхняя граница выше середины экрана;
+       пересчёт по фактической геометрии на каждое событие observer */
+    var updateSpy = function () {
+      var mid = window.innerHeight * 0.5;
+      var activeId = null;
+      var best = -Infinity;
+      spyEls.forEach(function (el) {
+        var top = el.getBoundingClientRect().top;
+        if (top <= mid && top > best) { best = top; activeId = el.id; }
+      });
+      spyEls.forEach(function (el) {
+        spyLinks[el.id].classList.toggle('active', el.id === activeId);
+      });
+    };
+    var spy = new IntersectionObserver(updateSpy, {
+      rootMargin: '-50% 0px -50% 0px'
+    });
+    spyEls.forEach(function (el) { spy.observe(el); });
+    updateSpy();
+  }
+
+  /* ---------- Reveal (отказоустойчивый) ---------- */
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealEls = document.querySelectorAll('.reveal');
+
+  function revealAll() {
+    revealEls.forEach(function (el) { el.classList.add('in'); });
+  }
 
   if (!reduceMotion && 'IntersectionObserver' in window) {
     var ro = new IntersectionObserver(function (entries) {
@@ -99,16 +150,25 @@
           ro.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(function (el) { ro.observe(el); });
+    }, { threshold: 0.1, rootMargin: '0px 0px 80px 0px' });
+    revealEls.forEach(function (el) { ro.observe(el); });
+    /* страховка: что бы ни случилось с observer, контент становится видимым */
+    setTimeout(function () {
+      revealEls.forEach(function (el) {
+        if (!el.classList.contains('in')) {
+          var r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('in');
+        }
+      });
+    }, 1200);
   } else {
-    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    revealAll();
   }
 
   /* ---------- Canvas: multipath-визуализация ----------
-     Три пути между двумя узлами. Пакеты идут по живым путям;
-     периодически один путь «падает», и трафик перетекает на остальные.
-     Это отсылка к multipath-failover из Aminyx Link. */
+     Четыре пути между двумя узлами. Пакеты с хвостами идут по живым путям;
+     периодически один путь «падает», трафик перетекает на остальные.
+     Отсылка к multipath-failover из Aminyx Link. */
 
   var canvas = document.getElementById('net-canvas');
   var ctx = canvas.getContext('2d');
@@ -121,8 +181,7 @@
   function refreshCanvasColors() {
     var cs = getComputedStyle(docEl);
     colors.accent = cs.getPropertyValue('--accent').trim();
-    colors.text3 = cs.getPropertyValue('--text-3').trim();
-    colors.line = cs.getPropertyValue('--line-strong').trim();
+    colors.dim = cs.getPropertyValue('--text-3').trim();
     if (reduceMotion) drawStatic();
   }
 
@@ -137,12 +196,13 @@
   }
 
   function pathPoints() {
-    var ax = W * 0.12, ay = H * 0.5;
-    var bx = W * 0.88, by = H * 0.5;
+    var ax = W * 0.07, ay = H * 0.52;
+    var bx = W * 0.93, by = H * 0.48;
     return [
-      { a: [ax, ay], c1: [W * 0.32, H * 0.14], c2: [W * 0.66, H * 0.12], b: [bx, by] },
-      { a: [ax, ay], c1: [W * 0.38, H * 0.52], c2: [W * 0.62, H * 0.48], b: [bx, by] },
-      { a: [ax, ay], c1: [W * 0.32, H * 0.88], c2: [W * 0.66, H * 0.86], b: [bx, by] }
+      { a: [ax, ay], c1: [W * 0.28, H * 0.06], c2: [W * 0.68, H * 0.04], b: [bx, by] },
+      { a: [ax, ay], c1: [W * 0.34, H * 0.34], c2: [W * 0.62, H * 0.26], b: [bx, by] },
+      { a: [ax, ay], c1: [W * 0.36, H * 0.70], c2: [W * 0.60, H * 0.76], b: [bx, by] },
+      { a: [ax, ay], c1: [W * 0.28, H * 0.98], c2: [W * 0.68, H * 0.96], b: [bx, by] }
     ];
   }
 
@@ -154,7 +214,7 @@
   }
 
   /* health: 1 = живой, 0 = упал (плавно затухает) */
-  var paths = [{ health: 1 }, { health: 1 }, { health: 1 }];
+  var paths = [{ health: 1 }, { health: 1 }, { health: 1 }, { health: 1 }];
   var packets = [];
   var lastFail = 0;
   var failIdx = -1;
@@ -172,7 +232,7 @@
     var alive = alivePaths();
     if (!alive.length) return;
     var idx = alive[Math.floor(Math.random() * alive.length)];
-    packets.push({ path: idx, t: 0, speed: 0.28 + Math.random() * 0.18 });
+    packets.push({ path: idx, t: 0, speed: 0.26 + Math.random() * 0.2 });
     lastSpawn = now;
   }
 
@@ -183,9 +243,11 @@
     ctx.fill();
     ctx.beginPath();
     ctx.arc(x, y, 11 + pulse * 4, 0, Math.PI * 2);
-    ctx.strokeStyle = colors.line;
+    ctx.strokeStyle = colors.dim;
+    ctx.globalAlpha = 0.5;
     ctx.lineWidth = 1;
     ctx.stroke();
+    ctx.globalAlpha = 1;
   }
 
   function drawFrame(now) {
@@ -208,36 +270,47 @@
       paths[i].health += (target - paths[i].health) * Math.min(dt * 4, 1);
     }
 
-    /* линии путей: базовая нейтральная + янтарная поверх живых */
+    /* линии путей: нейтральная база + янтарь поверх живых */
     for (i = 0; i < pts.length; i++) {
       var h = paths[i].health;
       ctx.beginPath();
       ctx.moveTo(pts[i].a[0], pts[i].a[1]);
       ctx.bezierCurveTo(pts[i].c1[0], pts[i].c1[1], pts[i].c2[0], pts[i].c2[1], pts[i].b[0], pts[i].b[1]);
-      ctx.strokeStyle = colors.text3;
-      ctx.globalAlpha = 0.3 + h * 0.4;
+      ctx.strokeStyle = colors.dim;
+      ctx.globalAlpha = 0.22 + h * 0.3;
       ctx.lineWidth = 1.2;
       ctx.stroke();
       if (h > 0.3) {
         ctx.strokeStyle = colors.accent;
-        ctx.globalAlpha = h * 0.45;
+        ctx.globalAlpha = h * 0.4;
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
     }
 
-    /* пакеты */
-    if (now - lastSpawn > 340 && packets.length < 18) spawn(now);
+    /* пакеты с хвостами */
+    if (now - lastSpawn > 300 && packets.length < 22) spawn(now);
     for (i = packets.length - 1; i >= 0; i--) {
       var pk = packets[i];
       pk.t += pk.speed * dt;
       if (pk.t >= 1) { packets.splice(i, 1); continue; }
-      /* пакет на упавшем пути гаснет и «переотправляется» */
       var alpha = paths[pk.path].health;
       if (alpha < 0.15) { packets.splice(i, 1); continue; }
-      var pos = bezier(pts[pk.path], pk.t);
+      var p = pts[pk.path];
+      /* хвост: 5 затухающих сегментов позади пакета */
+      for (var s = 5; s >= 1; s--) {
+        var tt = pk.t - s * 0.018;
+        if (tt <= 0) continue;
+        var tp = bezier(p, tt);
+        ctx.beginPath();
+        ctx.arc(tp[0], tp[1], 2.4 - s * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = colors.accent;
+        ctx.globalAlpha = alpha * (0.4 - s * 0.065);
+        ctx.fill();
+      }
+      var pos = bezier(p, pk.t);
       ctx.beginPath();
-      ctx.arc(pos[0], pos[1], 3, 0, Math.PI * 2);
+      ctx.arc(pos[0], pos[1], 2.8, 0, Math.PI * 2);
       ctx.fillStyle = colors.accent;
       ctx.globalAlpha = alpha;
       ctx.fill();
@@ -245,8 +318,8 @@
     }
 
     var pulse = (Math.sin(now / 600) + 1) / 2;
-    drawNode(W * 0.12, H * 0.5, pulse);
-    drawNode(W * 0.88, H * 0.5, 1 - pulse);
+    drawNode(W * 0.07, H * 0.52, pulse);
+    drawNode(W * 0.93, H * 0.48, 1 - pulse);
 
     if (running) rafId = requestAnimationFrame(drawFrame);
   }
@@ -258,8 +331,8 @@
       ctx.beginPath();
       ctx.moveTo(pts[i].a[0], pts[i].a[1]);
       ctx.bezierCurveTo(pts[i].c1[0], pts[i].c1[1], pts[i].c2[0], pts[i].c2[1], pts[i].b[0], pts[i].b[1]);
-      ctx.strokeStyle = colors.text3;
-      ctx.globalAlpha = 0.55;
+      ctx.strokeStyle = colors.dim;
+      ctx.globalAlpha = 0.45;
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.globalAlpha = 1;
@@ -271,8 +344,8 @@
         ctx.fill();
       }
     }
-    drawNode(W * 0.12, H * 0.5, 0.5);
-    drawNode(W * 0.88, H * 0.5, 0.5);
+    drawNode(W * 0.07, H * 0.52, 0.5);
+    drawNode(W * 0.93, H * 0.48, 0.5);
   }
 
   function setRunning(on) {

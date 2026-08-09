@@ -11,7 +11,7 @@
 - `js/i18n.js` — словари трёх языков: русский, тоҷикӣ, English
 - `js/main.js` — переключение языка и темы, reveal-анимации, canvas в hero
 - `assets/fonts/` — Onest и JetBrains Mono, самохостинг (woff2, latin + cyrillic-ext)
-- `assets/img/` — скриншоты проектов (WebP)
+- `assets/img/` — скриншоты проектов (WebP), зерно `noise.svg`, OG-картинка
 
 ## Хостинг
 
