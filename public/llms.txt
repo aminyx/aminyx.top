@@ -1,0 +1,16 @@
+# Aminyx — Aminjon Azizov, full-stack developer & security engineer
+
+> Персональный сайт-портфолио: заказная разработка продуктов целиком — бэкенд (Go, Rust, Python), Android (Kotlin), веб, Telegram-боты, безопасность и инфраструктура. Всё в проде, с реальным трафиком и платежами. Языки сайта: русский, тоҷикӣ, English.
+
+## Проекты
+
+- [SomonVPN](https://somonvpn.tech): коммерческий VPN против DPI-блокировок; Android-клиент на Kotlin, бэкенд на Go, монорепо с панелью, десктопом и ботами; 2,5 месяца от пустого репозитория до монетизации
+- [Cybersec](https://aminyx.github.io/Cybersec/): бесплатный открытый курс кибербезопасности (GPL-3.0) на русском и таджикском — 270 дней от нуля до Junior, 6 экзаменов, 10 портфолио-проектов
+- [Aminyx Link](https://aminyx.top/#work): сетевая платформа на Rust — multipath, failover, постквантовая криптография (X25519 + ML-KEM-768), 731 автотест; закрытая разработка
+- [GitHub](https://github.com/aminyx): открытый код
+
+## Контакты
+
+- [Telegram](https://t.me/itsaminyx): основной канал связи
+- [Email](mailto:itsaminyx@gmail.com)
+- [X](https://x.com/itsaminyx)

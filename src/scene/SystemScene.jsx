@@ -44,6 +44,20 @@ const LINE_FRAG = /* glsl */`
 
 const MAT_FLAGS = { transparent: true, depthTest: false, depthWrite: false };
 
+/* Bloom, дышащий вместе с системой: во время failover-каскада свечение
+   янтарных маршрутов плавно нарастает — отказ пути видно, как требует
+   DIRECTION («событие, которое видно»), без глоу на UI-элементах */
+function BreathingBloom({ sim }) {
+  const ref = useRef();
+  useFrame((_, delta) => {
+    const b = ref.current;
+    if (!b) return;
+    const target = sim.fail.active ? 0.8 : 0.4;
+    b.intensity += (target - b.intensity) * Math.min(delta * 2.2, 1);
+  });
+  return <Bloom ref={ref} mipmapBlur intensity={0.4} luminanceThreshold={0.55} luminanceSmoothing={0.25} />;
+}
+
 function SystemLayer({ sim }) {
   const advance = useThree((s) => s.advance);
   const linesRef = useRef();
@@ -59,13 +73,12 @@ function SystemLayer({ sim }) {
     };
   }, [sim]);
 
-  /* reduced-motion: прогреваем систему и рисуем один статичный кадр;
-     то же по смене темы (attachInput дёргает redraw) */
+  /* reduced-motion: прогреваем систему (кадры рисует StaticFrame ниже);
+     смена темы дёргает redraw */
   useEffect(() => {
     const redraw = sim.reduceMotion ? () => advance(performance.now()) : null;
     if (sim.reduceMotion) {
       for (let w = 0; w < 40; w++) sim.step(33);
-      redraw();
     }
     return attachInput(sim, redraw);
   }, [sim, advance]);
@@ -171,9 +184,38 @@ function SystemLayer({ sim }) {
   );
 }
 
+/* reduced-motion: статичный кадр. Монтируется ПОСЛЕДНИМ в Canvas — advance
+   должен уйти после того, как EffectComposer перехватил рендер-цикл, иначе
+   аллокация его буферов стирает единственный нарисованный кадр. Повторные
+   пинки закрывают гонки первичной раскладки и загрузки шрифтов. */
+function StaticFrame({ sim }) {
+  const advance = useThree((s) => s.advance);
+  const gl = useThree((s) => s.gl);
+  useEffect(() => {
+    if (!sim.reduceMotion) return;
+    const kick = () => advance(performance.now());
+    kick();
+    const t1 = setTimeout(kick, 80);
+    const t2 = setTimeout(kick, 350);
+    /* после восстановления WebGL-контекста под frameloop='never' никто
+       не перерисует кадр сам */
+    gl.domElement.addEventListener('webglcontextrestored', kick);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      gl.domElement.removeEventListener('webglcontextrestored', kick);
+    };
+  }, [sim, advance, gl]);
+  return null;
+}
+
 export default function SystemApp({ sim }) {
-  /* слабый GPU: PerformanceMonitor роняет DPR до 1 и выключает постобработку —
-     деградация из §4 (сцена остаётся, исчезает только «кино») */
+  /* слабый GPU: PerformanceMonitor (Drei) роняет DPR до 1 и выключает
+     постобработку — деградация из §4; на восстановившемся GPU качество
+     возвращается. Управление через factor (0..1, растёт при стабильном fps),
+     а НЕ через flipflops/onFallback: их счётчик инкрементируется каждым
+     incline/decline, из-за чего на 90/120/144 Гц дисплеях fallback
+     срабатывал бы гарантированно и навсегда */
   const [degraded, setDegraded] = useState(false);
   return (
     <Canvas
@@ -184,13 +226,16 @@ export default function SystemApp({ sim }) {
       gl={{ alpha: true, antialias: true, premultipliedAlpha: false, powerPreference: 'high-performance' }}
       style={{ pointerEvents: 'none' }}
     >
-      <PerformanceMonitor onDecline={() => setDegraded(true)} />
+      {!sim.reduceMotion && (
+        <PerformanceMonitor onChange={({ factor }) => setDegraded(factor < 0.5)} />
+      )}
       <SystemLayer sim={sim} />
       {!degraded && (
-        <EffectComposer multisampling={sim.isMobile ? 0 : 4}>
-          <Bloom mipmapBlur intensity={0.4} luminanceThreshold={0.55} luminanceSmoothing={0.25} />
+        <EffectComposer multisampling={sim.isMobile ? 2 : 4}>
+          <BreathingBloom sim={sim} />
         </EffectComposer>
       )}
+      <StaticFrame sim={sim} />
     </Canvas>
   );
 }

@@ -90,7 +90,7 @@ window.I18N = {
     'process.s4t': 'Запуск',
     'process.s4p': 'Деплой, передача кода и поддержка после релиза.',
     'contact.h2': 'Есть задача? Расскажите.',
-    'contact.sub': 'Быстрее всего отвечаю в Telegram. Почта тоже работает.',
+    'contact.sub': 'Первое обсуждение — бесплатно и без обязательств. Быстрее всего отвечаю в Telegram, почта тоже работает.',
     'contact.channel': 'Канал в Telegram',
     'footer.copy': '© 2026 Азизов Аминджон'
   },
@@ -185,7 +185,7 @@ window.I18N = {
     'process.s4t': 'Оғоз',
     'process.s4p': 'Деплой, супоридани код ва дастгирӣ пас аз релиз.',
     'contact.h2': 'Вазифа ҳаст? Нақл кунед.',
-    'contact.sub': 'Аз ҳама тезтар дар Telegram ҷавоб медиҳам. Почта ҳам кор мекунад.',
+    'contact.sub': 'Муҳокимаи аввал ройгон ва бе уҳдадорӣ аст. Аз ҳама тезтар дар Telegram ҷавоб медиҳам, почта ҳам кор мекунад.',
     'contact.channel': 'Канал дар Telegram',
     'footer.copy': '© 2026 Азизов Аминҷон'
   },
@@ -280,7 +280,7 @@ window.I18N = {
     'process.s4t': 'Launch',
     'process.s4p': 'Deployment, code handover and support after release.',
     'contact.h2': 'Have a project in mind? Tell me.',
-    'contact.sub': 'Telegram gets the fastest reply. Email works too.',
+    'contact.sub': 'The first conversation is free, no strings attached. Telegram gets the fastest reply, email works too.',
     'contact.channel': 'Telegram channel',
     'footer.copy': '© 2026 Aminjon Azizov'
   }

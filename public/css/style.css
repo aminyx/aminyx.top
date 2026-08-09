@@ -92,7 +92,6 @@ body {
   background: transparent;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  transition: color var(--t-med) var(--ease-out);
 }
 
 img { display: block; max-width: 100%; height: auto; }
@@ -166,13 +165,11 @@ html.js .h1 .w {
   display: inline-block;
   opacity: 0;
   transform: translateY(0.35em);
-  filter: blur(6px);
-  transition: opacity 650ms var(--ease-out), transform 650ms var(--ease-out), filter 650ms var(--ease-out);
+  transition: opacity 650ms var(--ease-out), transform 650ms var(--ease-out);
 }
 html.js .h1.staged .w {
   opacity: 1;
   transform: none;
-  filter: none;
 }
 
 .h2 {
@@ -235,11 +232,37 @@ html.js .h1.staged .w {
 .btn:active { transform: scale(0.97); }
 
 .btn-primary {
+  position: relative;
   background: var(--accent);
   color: var(--accent-ink);
 }
-.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-.btn-primary:hover:active { transform: scale(0.97); }
+.btn-primary:hover { background: var(--accent-hover); }
+
+/* CTA как продукт: при hover точка-пакет уходит от текста к краю кнопки —
+   метафора отправленного сообщения (DIRECTION v2); подъём и пакет — только
+   для настоящих курсоров, на таче hover-состояние залипает */
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-primary:hover:active { transform: scale(0.97); }
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0.65rem;
+    width: 5px;
+    height: 5px;
+    margin-top: -2.5px;
+    border-radius: 50%;
+    background: var(--accent-ink);
+    opacity: 0;
+    transform: translateX(-0.55rem);
+    transition: transform 300ms var(--ease-out), opacity 300ms var(--ease-out);
+  }
+  .btn-primary:hover::after {
+    opacity: 0.85;
+    transform: translateX(0);
+  }
+}
 
 .btn-ghost {
   border: 1px solid var(--line-strong);
@@ -313,7 +336,7 @@ html.js .h1.staged .w {
 .nav-links > a:not(.btn):hover { color: var(--text-1); }
 .nav-links > a.active {
   color: var(--text-1);
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--accent-text);
 }
 
 .nav-tools {
@@ -359,6 +382,7 @@ html.js .h1.staged .w {
 .theme-toggle:hover { color: var(--text-1); background: var(--surface-2); }
 
 .nav-cta-m { display: none; }
+.lang-switch-m { display: none; }
 
 .burger {
   display: none;
@@ -374,12 +398,12 @@ html.js .h1.staged .w {
   height: 2px;
   border-radius: 2px;
   background: var(--text-1);
-  transition: transform var(--t-med) var(--ease-out), top var(--t-med) var(--ease-out);
+  transition: transform var(--t-med) var(--ease-out);
 }
 .burger span:nth-child(1) { top: 14px; }
 .burger span:nth-child(2) { top: 22px; }
-.burger[aria-expanded="true"] span:nth-child(1) { top: 18px; transform: rotate(45deg); }
-.burger[aria-expanded="true"] span:nth-child(2) { top: 18px; transform: rotate(-45deg); }
+.burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(4px) rotate(45deg); }
+.burger[aria-expanded="true"] span:nth-child(2) { transform: translateY(-4px) rotate(-45deg); }
 
 /* ---------- 01 Hero: событие ---------- */
 
@@ -888,9 +912,12 @@ html.js .reveal.d5 { transition-delay: 300ms; }
     font-weight: 700;
     color: var(--text-1);
   }
-  .nav-links > a.active { border-bottom-color: var(--accent); }
+  .nav-links > a.active { border-bottom-color: var(--accent-text); }
   .nav-cta-m { display: inline-flex; margin-top: 1rem; padding: 0.85rem 1.6rem; font-size: 1rem; }
-  .nav-cta { display: none; }
+  /* CTA остаётся в баре (конверсия ≤1 клика из любой точки);
+     язык переезжает в оверлей — в баре ему не хватает места */
+  .nav-tools .lang-switch { display: none; }
+  .lang-switch-m { display: flex; margin-top: 0.4rem; }
   .burger { display: block; }
 
   .hero { padding-top: calc(var(--nav-h) + 2.5rem); }
@@ -932,6 +959,9 @@ html.js .reveal.d5 { transition-delay: 300ms; }
 @media (max-width: 560px) {
   .hero-cta .btn { flex: 1 1 100%; }
   .contact-cta { flex-direction: column; align-items: stretch; }
+  .nav-inner { gap: 0.9rem; }
+  .nav-tools { gap: 0.55rem; }
+  .nav-cta { padding: 0.5rem 0.85rem; }
 }
 
 /* ---------- Reduced motion ---------- */
