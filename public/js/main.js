@@ -69,10 +69,15 @@
   /* ---------- Тема ---------- */
 
   var themeBtn = document.getElementById('theme-toggle');
+  function syncThemeBtn() {
+    themeBtn.setAttribute('aria-pressed', String(docEl.dataset.theme === 'light'));
+  }
+  syncThemeBtn();
   themeBtn.addEventListener('click', function () {
     var next = docEl.dataset.theme === 'dark' ? 'light' : 'dark';
     docEl.dataset.theme = next;
     store('theme', next);
+    syncThemeBtn();
     if (window.__setThemeColor) window.__setThemeColor(next);
     if (window.__sceneRefreshTheme) window.__sceneRefreshTheme();
     drawMatrix(matrixProgress);
@@ -122,6 +127,16 @@
       burger.focus();
     }
   });
+  /* оверлей живёт только ≤900px: при выходе за брейкпоинт (поворот планшета)
+     иначе остаются scroll-lock и inert без видимого меню */
+  var menuMq = window.matchMedia('(max-width: 900px)');
+  menuMq.addEventListener('change', function (e) {
+    if (!e.matches && navLinks.classList.contains('open')) closeMenu();
+  });
+  /* wordmark ведёт на #top поверх открытого оверлея — без закрытия кажется,
+     что клик «не сработал» */
+  var wm = document.querySelector('.nav .wordmark');
+  if (wm) wm.addEventListener('click', closeMenu);
 
   /* ---------- Scroll-spy ---------- */
 
