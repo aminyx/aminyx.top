@@ -54,6 +54,7 @@
 
 <a class="skip-link" href="#main" data-i18n="a11y.skip">К содержанию</a>
 
+<canvas id="system-canvas" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 
 <header class="nav" id="nav">
@@ -88,67 +89,101 @@
 
 <main id="main">
 
-  <!-- ============ HERO ============ -->
+  <!-- ======== 01 HERO: событие ======== -->
   <section class="hero" id="top">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <p class="hero-status"><span class="status-dot" aria-hidden="true"></span><span data-i18n="hero.status">Открыт к новым проектам</span></p>
-        <h1 class="h1" data-i18n="hero.h1">Собираю продукты целиком.</h1>
-        <p class="hero-sub" data-i18n="hero.sub">Бэкенд, Android, веб, инфраструктура: Go, Rust, Kotlin и Python в проде, с реальным трафиком и платежами. Безопасность встроена с первого коммита.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="https://t.me/itsaminyx" target="_blank" rel="noopener" data-i18n="cta.discuss">Обсудить проект</a>
-          <a class="btn btn-ghost" href="#work" data-i18n="cta.work">Смотреть работы</a>
-        </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <canvas id="net-canvas"></canvas>
+    <div class="container">
+      <p class="hero-status"><span class="status-dot" aria-hidden="true"></span><span data-i18n="hero.status">Открыт к новым проектам</span></p>
+      <h1 class="h1" id="hero-h1" data-i18n="hero.h1">Собираю продукты целиком.</h1>
+      <p class="hero-sub" data-i18n="hero.sub">Бэкенд, Android, веб, инфраструктура: Go, Rust, Kotlin и Python в проде, с реальным трафиком и платежами. Безопасность встроена с первого коммита.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://t.me/itsaminyx" target="_blank" rel="noopener" data-i18n="cta.discuss">Обсудить проект</a>
+        <a class="btn btn-ghost" href="#work" data-i18n="cta.work">Смотреть работы</a>
       </div>
     </div>
   </section>
 
-  <!-- ============ STATS ============ -->
-  <div class="stats">
+  <!-- ======== 02 PROOF: визуальные доказательства ======== -->
+  <div class="proof veil">
     <div class="container">
-      <ul class="stats-row">
-        <li class="reveal"><span class="stat-n"><span data-i18n="stats.n1">2,5</span></span><span class="stat-l" data-i18n="stats.s1">месяца от пустого репозитория до монетизации</span></li>
-        <li class="reveal d1"><span class="stat-n">731</span><span class="stat-l" data-i18n="stats.s2">автотест в Rust-платформе</span></li>
-        <li class="reveal d2"><span class="stat-n">270</span><span class="stat-l" data-i18n="stats.s3">дней в открытом курсе кибербезопасности</span></li>
-        <li class="reveal d3"><span class="stat-n">8</span><span class="stat-l" data-i18n="stats.s4">сервисов в одной продуктовой экосистеме</span></li>
-      </ul>
+      <div class="proof-grid">
+        <div class="proof-matrix reveal">
+          <span class="data-n"><span class="count" data-count="731">731</span></span>
+          <span class="proof-l" data-i18n="stats.s2">автотест в Rust-платформе</span>
+          <canvas id="test-matrix" width="10" height="10" aria-hidden="true"></canvas>
+          <span class="proof-cap" data-i18n="proof.cap">Каждая клетка — один автотест платформы Aminyx Link</span>
+        </div>
+        <ul class="proof-side">
+          <li class="reveal d1"><span class="data-n" data-i18n="stats.n1">2,5</span><span class="proof-l" data-i18n="stats.s1">месяца от пустого репозитория до монетизации</span></li>
+          <li class="reveal d2"><span class="data-n"><span class="count" data-count="270">270</span></span><span class="proof-l" data-i18n="stats.s3">дней в открытом курсе кибербезопасности</span></li>
+          <li class="reveal d3"><span class="data-n"><span class="count" data-count="8">8</span></span><span class="proof-l" data-i18n="stats.s4">сервисов в одной продуктовой экосистеме</span></li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <!-- ============ WORK ============ -->
+  <!-- ======== 03 CAPABILITIES ======== -->
+  <section class="services veil" id="services">
+    <div class="container">
+      <h2 class="h2 reveal" data-i18n="services.h2">Что я делаю на заказ</h2>
+      <ol class="cap-rows">
+        <li class="reveal"><span class="cap-idx" aria-hidden="true">01</span><h3 data-i18n="services.b1t">Бэкенд и API</h3><p data-i18n="services.b1p">Go, Rust и Python. PostgreSQL и Redis, платёжные интеграции, подписки и сверка транзакций между независимыми провайдерами, чтобы ни одна покупка не потерялась и не посчиталась дважды.</p></li>
+        <li class="reveal"><span class="cap-idx" aria-hidden="true">02</span><h3 data-i18n="services.b2t">Android-приложения</h3><p data-i18n="services.b2p">Kotlin и Jetpack Compose. Сетевые клиенты с kill switch, устойчивость к смене сети, релизы, совместимые с политиками Play.</p></li>
+        <li class="reveal"><span class="cap-idx" aria-hidden="true">03</span><h3 data-i18n="services.b3t">Сайты и веб-приложения</h3><p data-i18n="services.b3p">Next.js и TypeScript, когда нужен фреймворк. Чистый HTML и JS, когда фреймворк только добавит вес.</p></li>
+        <li class="reveal"><span class="cap-idx" aria-hidden="true">04</span><h3 data-i18n="services.b4t">Telegram-боты</h3><p data-i18n="services.b4p">Продажи, поддержка, приём платежей и интеграция с бэкендом. Боты, которые уже обслуживают живой продукт.</p></li>
+        <li class="reveal"><span class="cap-idx" aria-hidden="true">05</span><h3 data-i18n="services.b5t">Безопасность и инфраструктура</h3><p data-i18n="services.b5p">Linux, Docker, CI с тестами и фаззингом. Харденинг серверов, ротация ключей, аудит ваших систем, всегда с вашего разрешения. Тот же принцип зашит и в мой курс.</p></li>
+        <li class="reveal"><span class="cap-idx" aria-hidden="true">06</span><h3 data-i18n="services.b6t">ИИ в продуктах</h3><p data-i18n="services.b6p">Интеграция LLM в продукты: ассистенты, автоматизация поддержки, пайплайны обработки данных. Там, где ИИ даёт измеримую пользу.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ======== 04 MANIFESTO ======== -->
+  <div class="manifesto veil">
+    <div class="container manifesto-row">
+      <p class="reveal" data-i18n="phil.1">Безопасность встроена с первого коммита.</p>
+      <p class="reveal d1" data-i18n="phil.2">RFC-first: ADR, фаззинг и бенчмарки в CI.</p>
+      <p class="reveal d2" data-i18n="phil.3">Прогресс на демо, а не в отчётах.</p>
+    </div>
+  </div>
+
+  <!-- ======== 05 WORK: кейсы ======== -->
   <section class="work" id="work">
     <div class="container">
       <h2 class="h2 reveal" data-i18n="work.h2">Избранные работы</h2>
+    </div>
 
-      <!-- SomonVPN -->
-      <article class="feature reveal">
-        <div class="feature-copy">
+    <!-- SomonVPN -->
+    <article class="case veil">
+      <div class="container">
+        <header class="case-head reveal">
           <p class="tag" data-i18n="work.somon.tag">Продукт в продакшене</p>
-          <h3 class="h3">SomonVPN</h3>
-          <p data-i18n="work.somon.p1">Коммерческий VPN для рынков, где обычные протоколы блокирует DPI. Android-клиент на Kotlin, бэкенд на Go, панель управления, десктоп и Telegram-боты в одном монорепо.</p>
-          <p data-i18n="work.somon.p2">Smart Connect помнит последнюю рабочую конфигурацию и сам переключает трафик с WireGuard на VLESS Reality, когда основной протокол блокируют. От пустого репозитория до монетизированного запуска прошло два с половиной месяца.</p>
+          <h3 class="h3-case">SomonVPN</h3>
+        </header>
+        <div class="case-media reveal">
+          <img src="/assets/img/somonvpn.webp" width="1200" height="750" loading="lazy" alt="Главная страница somonvpn.tech" data-i18n-alt="work.somon.alt">
+        </div>
+        <dl class="case-fields">
+          <div class="reveal"><dt data-i18n="case.problem">Задача</dt><dd data-i18n="work.somon.f1">Коммерческий VPN для рынков, где обычные протоколы блокирует DPI.</dd></div>
+          <div class="reveal d1"><dt data-i18n="case.arch">Архитектура</dt><dd data-i18n="work.somon.f2">Android-клиент на Kotlin, бэкенд на Go, панель управления, десктоп и Telegram-боты в одном монорепо.</dd></div>
+          <div class="reveal d2"><dt data-i18n="case.eng">Инженерия</dt><dd data-i18n="work.somon.f3">Smart Connect помнит последнюю рабочую конфигурацию и сам переключает трафик с WireGuard на VLESS Reality, когда основной протокол блокируют.</dd></div>
+          <div class="reveal d3"><dt data-i18n="case.result">Результат</dt><dd data-i18n="work.somon.f4">От пустого репозитория до монетизированного запуска прошло два с половиной месяца.</dd></div>
+        </dl>
+        <div class="case-foot reveal">
           <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
             <li>Kotlin</li><li>Go</li><li>TypeScript</li><li>PostgreSQL</li><li>Xray</li><li>WireGuard</li>
           </ul>
           <a class="link-out" href="https://somonvpn.tech" target="_blank" rel="noopener"><span data-i18n="work.somon.link">Открыть somonvpn.tech</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
         </div>
-        <div class="feature-media">
-          <img src="/assets/img/somonvpn.webp" width="1200" height="750" loading="lazy" alt="Главная страница somonvpn.tech" data-i18n-alt="work.somon.alt">
-        </div>
-      </article>
+      </div>
+    </article>
 
-      <!-- Aminyx Link -->
-      <article class="panel reveal">
-        <div class="panel-head">
-          <div>
-            <p class="tag" data-i18n="work.link.tag">Платформа в разработке</p>
-            <h3 class="h3">Aminyx Link</h3>
-          </div>
-          <p class="panel-lede" data-i18n="work.link.p1">Сетевая платформа на Rust: транспортно-независимый сеансовый уровень, который одинаково работает поверх TCP, QUIC, HTTP/3 и собственного UDP-пути. Разработка идёт в закрытом репозитории.</p>
-        </div>
+    <!-- Aminyx Link -->
+    <article class="case case-link veil">
+      <div class="container">
+        <header class="case-head reveal">
+          <p class="tag" data-i18n="work.link.tag">Платформа в разработке</p>
+          <h3 class="h3-case">Aminyx Link</h3>
+          <p class="case-lede" data-i18n="work.link.p1">Сетевая платформа на Rust: транспортно-независимый сеансовый уровень, который одинаково работает поверх TCP, QUIC, HTTP/3 и собственного UDP-пути. Разработка идёт в закрытом репозитории.</p>
+        </header>
         <ul class="spec-grid">
           <li class="reveal"><h4 data-i18n="work.link.s1t">Постквантовая криптография</h4><p data-i18n="work.link.s1p">Гибридный обмен ключами X25519 + ML-KEM-768, AEAD-шифры, ротация ключей.</p></li>
           <li class="reveal d1"><h4 data-i18n="work.link.s2t">Multipath</h4><p data-i18n="work.link.s2p">Оценка путей, балансировка, автоматический failover и агрегация полосы.</p></li>
@@ -157,29 +192,41 @@
           <li class="reveal d4"><h4 data-i18n="work.link.s5t">Congestion control</h4><p data-i18n="work.link.s5p">Reno, CUBIC, BBR и авторежим с подстройкой из живых метрик.</p></li>
           <li class="reveal d5"><h4 data-i18n="work.link.s6t">731 автотест</h4><p data-i18n="work.link.s6p">RFC-first процесс: ADR, фаззинг и бенчмарки Criterion в CI.</p></li>
         </ul>
-      </article>
+      </div>
+    </article>
 
-      <!-- Cybersec -->
-      <article class="feature feature-flip reveal" id="course">
-        <div class="feature-copy">
-          <p class="tag" data-i18n="work.cyber.tag">Open source, GPL-3.0</p>
-          <h3 class="h3">Cybersec</h3>
-          <p data-i18n="work.cyber.p1">Бесплатный курс кибербезопасности на русском и таджикском: 270 дней от нуля до Junior, 6 экзаменов, 10 портфолио-проектов и CTF с офлайн-проверкой флагов по SHA-256.</p>
-          <p data-i18n="work.cyber.p2">Сайт собирается из Markdown скриптами на чистом Python и работает без фреймворка, без сборки и без бэкенда. Прогресс студента хранится в localStorage.</p>
-          <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
-            <li>Python</li><li>Vanilla JS</li><li>Markdown</li><li>GitHub Actions</li>
-          </ul>
-          <div class="link-row">
-            <a class="link-out" href="https://aminyx.github.io/Cybersec/" target="_blank" rel="noopener"><span data-i18n="work.cyber.link1">Открыть курс</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
-            <a class="link-out" href="https://github.com/aminyx/Cybersec" target="_blank" rel="noopener">GitHub <span class="arr" aria-hidden="true">&#8599;</span></a>
+    <!-- Cybersec -->
+    <article class="case case-flip veil" id="course">
+      <div class="container">
+        <div class="case-split">
+          <div class="case-copy">
+            <header class="case-head reveal">
+              <p class="tag" data-i18n="work.cyber.tag">Open source, GPL-3.0</p>
+              <h3 class="h3-case">Cybersec</h3>
+            </header>
+            <dl class="case-fields case-fields-col">
+              <div class="reveal"><dt data-i18n="case.product">Продукт</dt><dd data-i18n="work.cyber.p1">Бесплатный курс кибербезопасности на русском и таджикском: 270 дней от нуля до Junior, 6 экзаменов, 10 портфолио-проектов и CTF с офлайн-проверкой флагов по SHA-256.</dd></div>
+              <div class="reveal d1"><dt data-i18n="case.eng">Инженерия</dt><dd data-i18n="work.cyber.p2">Сайт собирается из Markdown скриптами на чистом Python и работает без фреймворка, без сборки и без бэкенда. Прогресс студента хранится в localStorage.</dd></div>
+            </dl>
+            <div class="case-foot reveal">
+              <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
+                <li>Python</li><li>Vanilla JS</li><li>Markdown</li><li>GitHub Actions</li>
+              </ul>
+              <div class="link-row">
+                <a class="link-out" href="https://aminyx.github.io/Cybersec/" target="_blank" rel="noopener"><span data-i18n="work.cyber.link1">Открыть курс</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
+                <a class="link-out" href="https://github.com/aminyx/Cybersec" target="_blank" rel="noopener">GitHub <span class="arr" aria-hidden="true">&#8599;</span></a>
+              </div>
+            </div>
+          </div>
+          <div class="case-media-s reveal">
+            <img src="/assets/img/cybersec.webp" width="1200" height="750" loading="lazy" alt="Главная страница курса Cybersec" data-i18n-alt="work.cyber.alt">
           </div>
         </div>
-        <div class="feature-media">
-          <img src="/assets/img/cybersec.webp" width="1200" height="750" loading="lazy" alt="Главная страница курса Cybersec" data-i18n-alt="work.cyber.alt">
-        </div>
-      </article>
+      </div>
+    </article>
 
-      <!-- Pair -->
+    <!-- Пара: Hunter + maryam -->
+    <div class="container">
       <div class="pair">
         <article class="card reveal">
           <p class="tag" data-i18n="work.hunter.tag">Инструмент</p>
@@ -207,37 +254,8 @@
     </div>
   </section>
 
-  <!-- ============ SERVICES ============ -->
-  <section class="services" id="services">
-    <div class="container">
-      <h2 class="h2 reveal" data-i18n="services.h2">Что я делаю на заказ</h2>
-      <div class="bento">
-        <article class="bento-cell bento-lead reveal">
-          <h3 data-i18n="services.b1t">Бэкенд и API</h3>
-          <p data-i18n="services.b1p">Go, Rust и Python. PostgreSQL и Redis, платёжные интеграции, подписки и сверка транзакций между независимыми провайдерами, чтобы ни одна покупка не потерялась и не посчиталась дважды.</p>
-        </article>
-        <article class="bento-cell reveal d1">
-          <h3 data-i18n="services.b2t">Android-приложения</h3>
-          <p data-i18n="services.b2p">Kotlin и Jetpack Compose. Сетевые клиенты с kill switch, устойчивость к смене сети, релизы, совместимые с политиками Play.</p>
-        </article>
-        <article class="bento-cell reveal d2">
-          <h3 data-i18n="services.b3t">Сайты и веб-приложения</h3>
-          <p data-i18n="services.b3p">Next.js и TypeScript, когда нужен фреймворк. Чистый HTML и JS, когда фреймворк только добавит вес.</p>
-        </article>
-        <article class="bento-cell reveal d3">
-          <h3 data-i18n="services.b4t">Telegram-боты</h3>
-          <p data-i18n="services.b4p">Продажи, поддержка, приём платежей и интеграция с бэкендом. Боты, которые уже обслуживают живой продукт.</p>
-        </article>
-        <article class="bento-cell bento-sec reveal d4">
-          <h3 data-i18n="services.b5t">Безопасность и инфраструктура</h3>
-          <p data-i18n="services.b5p">Linux, Docker, CI с тестами и фаззингом. Харденинг серверов, ротация ключей, аудит ваших систем, всегда с вашего разрешения. Тот же принцип зашит и в мой курс.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ PROCESS ============ -->
-  <section class="process">
+  <!-- ======== 06 PROCESS ======== -->
+  <section class="process veil">
     <div class="container">
       <h2 class="h2 reveal" data-i18n="process.h2">Как идёт работа</h2>
       <ol class="steps">
@@ -249,7 +267,7 @@
     </div>
   </section>
 
-  <!-- ============ CONTACT ============ -->
+  <!-- ======== 07 CONTACT: финал ======== -->
   <section class="contact" id="contact">
     <div class="container">
       <h2 class="contact-h reveal" data-i18n="contact.h2">Есть задача? Расскажите.</h2>
@@ -277,6 +295,7 @@
 </footer>
 
 <script src="/js/i18n.js" defer></script>
+<script src="/js/scene.js" defer></script>
 <script src="/js/main.js" defer></script>
 </body>
 </html>

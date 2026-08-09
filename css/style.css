@@ -1,7 +1,10 @@
 /* ============================================================
-   aminyx.top — precision engineering dark
-   Radius system: pill 999 (интерактив) / 16 (контейнеры) / 10 (вложенное)
-   Один акцент: янтарь. Глубина: glow-поля + ступени поверхностей + зерно.
+   aminyx.top v2 — «Живая система, свёрстанная как спецификация»
+   Субстрат: fixed WebGL-канвас (z0) под всем контентом (z1).
+   Секции-«вуали» проявляют фон для читаемости, сцена дышит в швах.
+   Радиусы: pill / 16 / 10. Один акцент: янтарь.
+   Типографика, 7 ролей: Display / Headline / Title / Body / Caption /
+   Technical (mono-мета) / Data (mono-числа).
    ============================================================ */
 
 :root {
@@ -15,17 +18,17 @@
   --r-card: 16px;
   --r-tile: 10px;
   --nav-h: 64px;
-  --section-pad: clamp(5rem, 9vw, 8rem);
-  --fs-display: clamp(2.9rem, 7vw, 5.9rem);
-  --fs-h2: clamp(2rem, 4vw, 3.3rem);
-  --fs-h3: 1.5rem;
-  --fs-h4: 1.125rem;
+  --fs-display: clamp(3.1rem, 8.2vw, 7.6rem);
+  --fs-headline: clamp(2rem, 4vw, 3.4rem);
+  --fs-case: clamp(1.9rem, 3.4vw, 3rem);
+  --fs-title: 1.35rem;
   --fs-lead: clamp(1.1rem, 1.4vw, 1.28rem);
   --fs-body: 1.0625rem;
-  --fs-small: 0.9375rem;
-  --fs-mono-meta: 0.8125rem;
-  --fs-stat: clamp(2.6rem, 4.6vw, 4.1rem);
-  --fs-contact: clamp(2.4rem, 5vw, 4.4rem);
+  --fs-caption: 0.9375rem;
+  --fs-tech: 0.8125rem;
+  --fs-data: clamp(3.2rem, 5.6vw, 5rem);
+  --fs-data-s: clamp(2.1rem, 3.2vw, 3rem);
+  --fs-contact: clamp(2.6rem, 6vw, 5.4rem);
 }
 
 :root[data-theme="dark"] {
@@ -46,6 +49,7 @@
   --accent-glow: rgba(232, 172, 63, 0.07);
   --shadow: 0 24px 70px rgba(3, 5, 10, 0.55);
   --grain-o: 0.05;
+  --veil: rgba(10, 11, 14, 0.84);
 }
 
 :root[data-theme="light"] {
@@ -66,9 +70,10 @@
   --accent-glow: rgba(223, 160, 50, 0.09);
   --shadow: 0 20px 50px rgba(31, 38, 52, 0.12);
   --grain-o: 0.035;
+  --veil: rgba(244, 245, 247, 0.86);
 }
 
-/* ---------- Reset ---------- */
+/* ---------- Reset и база ---------- */
 
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; }
@@ -76,6 +81,7 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 12px);
+  background: var(--bg);
 }
 
 body {
@@ -83,10 +89,10 @@ body {
   font-size: var(--fs-body);
   line-height: 1.65;
   color: var(--text-1);
-  background: var(--bg);
+  background: transparent;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  transition: background var(--t-med) var(--ease-out), color var(--t-med) var(--ease-out);
+  transition: color var(--t-med) var(--ease-out);
 }
 
 img { display: block; max-width: 100%; height: auto; }
@@ -102,7 +108,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border-radius: 4px;
 }
 
-/* Плёночное зерно: fixed, не участвует в скролл-перерисовке */
+/* субстрат: живая система за всем контентом */
+#system-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .grain {
   position: fixed;
   inset: 0;
@@ -111,6 +124,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   opacity: var(--grain-o);
   background-image: url("/assets/img/noise.svg");
 }
+
+main { position: relative; z-index: 1; }
+.footer { position: relative; z-index: 1; }
+
+/* вуаль: проявляет фон под контентом, оставляя сцену видимой */
+.veil { background: var(--veil); }
 
 .skip-link {
   position: absolute;
@@ -127,9 +146,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .skip-link:focus-visible { top: 1rem; }
 
 .container {
-  max-width: 1200px;
+  max-width: 1240px;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  padding-inline: clamp(1.25rem, 4vw, 2.75rem);
 }
 
 /* ---------- Типографика ---------- */
@@ -137,26 +156,39 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .h1 {
   font-size: var(--fs-display);
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   text-wrap: balance;
+  max-width: 11ch;
+}
+/* пословная материализация hero */
+html.js .h1 .w {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.35em);
+  filter: blur(6px);
+  transition: opacity 650ms var(--ease-out), transform 650ms var(--ease-out), filter 650ms var(--ease-out);
+}
+html.js .h1.staged .w {
+  opacity: 1;
+  transform: none;
+  filter: none;
 }
 
 .h2 {
-  font-size: var(--fs-h2);
+  font-size: var(--fs-headline);
   font-weight: 800;
   line-height: 1.06;
   letter-spacing: -0.025em;
-  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: clamp(2.2rem, 4.5vw, 3.6rem);
   text-wrap: balance;
 }
 
-.h3 {
-  font-size: var(--fs-h3);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  margin-bottom: 0.9rem;
+.h3-case {
+  font-size: var(--fs-case);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.022em;
 }
 
 .h3-s {
@@ -168,11 +200,20 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .tag {
   font-family: var(--font-mono);
-  font-size: var(--fs-mono-meta);
+  font-size: var(--fs-tech);
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--accent-text);
   margin-bottom: 0.55rem;
+}
+
+.data-n {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
 }
 
 /* ---------- Кнопки ---------- */
@@ -203,12 +244,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .btn-ghost {
   border: 1px solid var(--line-strong);
   color: var(--text-1);
+  background: var(--veil);
 }
 .btn-ghost:hover { background: var(--surface-2); border-color: var(--text-3); }
 
 .btn-compact {
   padding: 0.5rem 1.05rem;
-  font-size: var(--fs-small);
+  font-size: var(--fs-caption);
 }
 
 /* ---------- Навигация ---------- */
@@ -223,8 +265,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transition: border-color var(--t-med) var(--ease-out);
   border-bottom: 1px solid transparent;
 }
-/* фон и блюр на псевдоэлементе: backdrop-filter на самом .nav сделал бы его
-   containing block для fixed-оверлея мобильного меню */
 .nav::before {
   content: "";
   position: absolute;
@@ -261,7 +301,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   align-items: center;
   gap: 1.6rem;
   margin-left: auto;
-  font-size: var(--fs-small);
+  font-size: var(--fs-caption);
   font-weight: 500;
 }
 .nav-links > a:not(.btn) {
@@ -289,6 +329,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border: 1px solid var(--line);
   border-radius: var(--r-pill);
   padding: 2px;
+  background: var(--veil);
 }
 .lang-switch button {
   font-family: var(--font-mono);
@@ -340,7 +381,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .burger[aria-expanded="true"] span:nth-child(1) { top: 18px; transform: rotate(45deg); }
 .burger[aria-expanded="true"] span:nth-child(2) { top: 18px; transform: rotate(-45deg); }
 
-/* ---------- Hero ---------- */
+/* ---------- 01 Hero: событие ---------- */
 
 .hero {
   position: relative;
@@ -348,28 +389,25 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: flex;
   align-items: center;
   padding-top: calc(var(--nav-h) + 2rem);
-  padding-bottom: 3rem;
-  overflow: hidden;
+  padding-bottom: 4rem;
 }
-
-/* глубина: единственное янтарное поле + холодное основание */
+.hero .container { width: 100%; position: relative; }
+/* кинематографическая виньетка: якорит копирайт, сцена дышит справа */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 55% 45% at 74% 38%, var(--accent-glow), transparent 68%),
-    radial-gradient(ellipse 70% 55% at 20% 105%, color-mix(in srgb, var(--bg-deep) 65%, transparent), transparent 70%);
+  background: linear-gradient(100deg, var(--bg) 4%, color-mix(in srgb, var(--bg) 55%, transparent) 36%, transparent 62%);
 }
-
-.hero-grid {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  align-items: center;
-  gap: clamp(2rem, 5vw, 4.5rem);
-  width: 100%;
+/* мягкий шов к следующей секции */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 18vh;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, var(--veil));
 }
 
 .hero-status {
@@ -377,11 +415,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   align-items: center;
   gap: 0.55rem;
   font-family: var(--font-mono);
-  font-size: var(--fs-mono-meta);
+  font-size: var(--fs-tech);
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--text-3);
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.6rem;
 }
 .status-dot {
   width: 7px;
@@ -395,121 +433,188 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-size: var(--fs-lead);
   line-height: 1.6;
   color: var(--text-2);
-  max-width: 34rem;
-  margin-top: 1.5rem;
+  max-width: 37rem;
+  margin-top: 1.7rem;
 }
 
 .hero-cta {
   display: flex;
   flex-wrap: wrap;
   gap: 0.9rem;
-  margin-top: 2.4rem;
+  margin-top: 2.6rem;
 }
 
-.hero-visual {
-  position: relative;
-  height: min(560px, 66vh);
-  min-height: 320px;
+/* ---------- 02 Proof ---------- */
+
+.proof {
+  border-block: 1px solid var(--line);
+  padding-block: clamp(3rem, 6vw, 5rem);
 }
-/* координатная сетка, огранивающая сцену; затухает к краям */
-.hero-visual::before {
-  content: "";
-  position: absolute;
-  inset: -6%;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 52px 52px;
-  -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 55%, transparent 100%);
-  mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 55%, transparent 100%);
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(2.5rem, 5vw, 5rem);
+  align-items: start;
 }
-#net-canvas {
-  position: absolute;
-  inset: 0;
+
+.proof-matrix { display: flex; flex-direction: column; }
+.proof-matrix .data-n { font-size: var(--fs-data); }
+#test-matrix {
   width: 100%;
-  height: 100%;
+  height: clamp(120px, 14vw, 172px);
+  margin-top: 1.2rem;
 }
-
-/* ---------- Статистика ---------- */
-
-.stats {
-  border-top: 1px solid var(--line);
-  padding-block: clamp(2.6rem, 5vw, 4rem);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-1) 40%, transparent), transparent);
+.proof-l {
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+  margin-top: 0.5rem;
+  max-width: 24rem;
 }
-
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-.stats-row li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  padding-inline: clamp(1.2rem, 2.5vw, 2.2rem);
-}
-.stats-row li + li { border-left: 1px solid var(--line); }
-.stats-row li:first-child { padding-left: 0; }
-
-.stat-n {
+.proof-cap {
   font-family: var(--font-mono);
-  font-size: var(--fs-stat);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--text-1);
-}
-.stat-l {
-  font-size: var(--fs-small);
-  line-height: 1.5;
-  color: var(--text-2);
-  max-width: 15rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  margin-top: 0.7rem;
 }
 
-/* ---------- Секции ---------- */
-
-.work, .services, .process { padding-block: var(--section-pad); }
-
-/* ---------- Работы ---------- */
-
-.feature {
+.proof-side { display: flex; flex-direction: column; }
+.proof-side li {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: center;
+  grid-template-columns: minmax(7rem, auto) 1fr;
+  gap: 1.4rem;
+  align-items: baseline;
+  padding-block: 1.15rem;
+  border-top: 1px solid var(--line);
 }
-.feature + .panel, .panel + .feature, .feature + .pair { margin-top: clamp(4rem, 7vw, 6.5rem); }
+.proof-side li:first-child { border-top: 0; padding-top: 0; }
+.proof-side .data-n { font-size: var(--fs-data-s); }
+.proof-side .proof-l { margin-top: 0; }
 
-.feature-flip .feature-copy { order: 2; }
-.feature-flip .feature-media { order: 1; }
+/* ---------- 03 Capabilities ---------- */
 
-.feature-copy p:not(.tag) {
+.services { padding-block: clamp(4.5rem, 8vw, 7rem); }
+
+.cap-rows { counter-reset: cap; }
+.cap-rows li {
+  display: grid;
+  grid-template-columns: 3.5rem 0.8fr 1.2fr;
+  gap: clamp(1.2rem, 3vw, 2.5rem);
+  align-items: baseline;
+  padding-block: 1.55rem;
+  border-top: 1px solid var(--line);
+}
+.cap-rows li:last-child { border-bottom: 1px solid var(--line); }
+.cap-idx {
+  font-family: var(--font-mono);
+  font-size: var(--fs-tech);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent-text);
+}
+.cap-rows h3 {
+  font-size: var(--fs-title);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.cap-rows p {
+  font-size: var(--fs-caption);
   color: var(--text-2);
-  max-width: 62ch;
+  line-height: 1.6;
 }
-.feature-copy p:not(.tag) + p { margin-top: 0.9rem; }
 
-.feature-media {
+/* ---------- 04 Manifesto ---------- */
+
+.manifesto {
+  border-block: 1px solid var(--line);
+  padding-block: clamp(2.6rem, 5vw, 4rem);
+}
+.manifesto-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+}
+.manifesto-row p {
+  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* ---------- 05 Work: кейсы ---------- */
+
+.work { padding-top: clamp(4.5rem, 8vw, 7rem); }
+.work > .container:first-child { padding-bottom: 0; }
+.work .h2 { margin-bottom: clamp(1.6rem, 3vw, 2.5rem); }
+
+.case {
+  border-top: 1px solid var(--line);
+  padding-block: clamp(3.5rem, 6.5vw, 6rem);
+}
+.case-head { margin-bottom: clamp(1.8rem, 3.5vw, 2.6rem); }
+.case-lede {
+  color: var(--text-2);
+  max-width: 56rem;
+  margin-top: 1rem;
+}
+
+.case-media {
   border-radius: var(--r-card);
   overflow: hidden;
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
   background: var(--surface-1);
 }
-.feature-media img { width: 100%; }
+.case-media img { width: 100%; }
+
+.case-fields {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1.4rem, 3vw, 2.6rem);
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+.case-fields dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-tech);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--accent-text);
+  margin-bottom: 0.5rem;
+}
+.case-fields dd {
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.case-fields-col {
+  grid-template-columns: 1fr;
+  margin-top: 0;
+}
+
+.case-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: clamp(2rem, 4vw, 2.8rem);
+}
+.case-foot .link-out { margin-top: 0; }
 
 .stack {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 1.3rem;
 }
 .stack li {
   font-family: var(--font-mono);
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-3);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--r-pill);
   padding: 0.28rem 0.7rem;
 }
@@ -520,7 +625,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   gap: 0.4rem;
   margin-top: 1.4rem;
   font-weight: 600;
-  font-size: var(--fs-small);
+  font-size: var(--fs-caption);
   color: var(--accent-text);
   border-bottom: 1px solid transparent;
   transition: border-color var(--t-fast) var(--ease-out);
@@ -530,62 +635,68 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .link-out:hover .arr { transform: translate(2px, -2px); }
 .link-row { display: flex; gap: 1.6rem; flex-wrap: wrap; }
 
-/* Aminyx Link: спец-панель */
-.panel {
-  border: 1px solid var(--line);
-  border-radius: var(--r-card);
-  background: linear-gradient(160deg, var(--surface-1), color-mix(in srgb, var(--surface-2) 70%, var(--surface-1)));
-  padding: clamp(1.8rem, 4vw, 3rem);
-}
-.panel-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
-  gap: clamp(1.5rem, 3vw, 3rem);
-  align-items: end;
-  margin-bottom: clamp(1.8rem, 3.5vw, 2.6rem);
-  padding-bottom: 1.6rem;
-  border-bottom: 1px solid var(--line);
-}
-.panel-head .h3 { margin-bottom: 0; }
-.panel-lede { color: var(--text-2); font-size: var(--fs-small); }
+/* Aminyx Link: плотная инженерная плита */
+.case-link { background: color-mix(in srgb, var(--surface-1) 55%, var(--veil)); }
 
 .spec-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(1.4rem, 3vw, 2.4rem);
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: clamp(1.6rem, 3vw, 2.2rem);
+  border-top: 1px solid var(--line);
 }
 .spec-grid h4 {
   font-family: var(--font-mono);
-  font-size: var(--fs-mono-meta);
+  font-size: var(--fs-tech);
   font-weight: 500;
   letter-spacing: 0.05em;
   color: var(--accent-text);
   margin-bottom: 0.45rem;
 }
 .spec-grid p {
-  font-size: var(--fs-small);
+  font-size: var(--fs-caption);
   color: var(--text-2);
   line-height: 1.55;
 }
+
+/* Cybersec: сплит */
+.case-split {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+.case-media-s {
+  border-radius: var(--r-card);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--surface-1);
+}
+.case-media-s img { width: 100%; }
+.case-split .case-fields-col > div + div { margin-top: 1.4rem; }
 
 /* Пара карточек */
 .pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(1.2rem, 2.5vw, 2rem);
+  padding-block: clamp(2.5rem, 5vw, 4rem) clamp(3.5rem, 6vw, 5.5rem);
 }
 .card {
   border: 1px solid var(--line);
   border-radius: var(--r-card);
-  background: var(--surface-1);
+  background: color-mix(in srgb, var(--surface-1) 92%, transparent);
   padding: clamp(1.5rem, 3vw, 2.2rem);
   transition: transform var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out);
 }
 .card p:not(.tag) {
   color: var(--text-2);
-  font-size: var(--fs-small);
+  font-size: var(--fs-caption);
 }
 .card p:not(.tag) + p { margin-top: 0.8rem; }
+.card .stack { margin-top: 1.2rem; }
 .card-media {
   margin-top: 1.2rem;
   border-radius: var(--r-tile);
@@ -594,59 +705,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 @media (hover: hover) and (pointer: fine) {
-  /* подъём только у карточек, внутри которых есть ссылка: нет ложной кликабельности */
+  /* подъём только у карточек со ссылкой: нет ложной кликабельности */
   .card:has(.link-out):hover { transform: translateY(-2px); border-color: var(--line-strong); }
 }
 
-/* ---------- Услуги: бенто ---------- */
+/* ---------- 06 Process ---------- */
 
-.bento {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: clamp(1rem, 2vw, 1.4rem);
-}
-.bento-cell {
-  grid-column: span 2;
-  border: 1px solid var(--line);
-  border-radius: var(--r-card);
-  background: var(--surface-1);
-  padding: clamp(1.4rem, 2.6vw, 2rem);
-  transition: border-color var(--t-med) var(--ease-out);
-}
-.bento-cell:hover { border-color: var(--line-strong); }
-.bento-cell h3 {
-  font-size: var(--fs-h4);
-  font-weight: 700;
-  margin-bottom: 0.6rem;
-}
-.bento-cell p {
-  font-size: var(--fs-small);
-  color: var(--text-2);
-  line-height: 1.6;
-}
-
-.bento-lead {
-  grid-column: span 4;
-  background:
-    radial-gradient(ellipse 70% 90% at 8% 0%, var(--accent-glow), transparent 60%),
-    radial-gradient(ellipse 45% 60% at 30% 10%, var(--accent-glow), transparent 70%),
-    var(--surface-1);
-}
-.bento-sec {
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 26px 26px;
-  background-position: right -1px top -1px;
-}
-
-/* ---------- Процесс ---------- */
+.process { padding-block: clamp(4.5rem, 8vw, 7rem); }
 
 .steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: clamp(1.5rem, 3vw, 2.5rem);
-  counter-reset: step;
   position: relative;
 }
 .steps::before {
@@ -680,36 +750,35 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   color: var(--accent-text);
 }
 .steps h3 {
-  font-size: var(--fs-h4);
+  font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 .steps p {
-  font-size: var(--fs-small);
+  font-size: var(--fs-caption);
   color: var(--text-2);
 }
 
-/* ---------- Контакт ---------- */
+/* ---------- 07 Contact: финал над сходящейся системой ---------- */
 
 .contact {
   position: relative;
   text-align: center;
-  padding-block: var(--section-pad) calc(var(--section-pad) * 0.9);
-  overflow: hidden;
+  padding-block: clamp(6rem, 12vw, 10rem);
 }
 .contact::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 50% 55% at 50% 100%, var(--accent-glow), transparent 70%);
+  background: radial-gradient(ellipse 55% 60% at 50% 62%, var(--accent-glow), transparent 70%);
 }
 .contact-h {
   position: relative;
   font-size: var(--fs-contact);
   font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.028em;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 .contact-sub {
@@ -724,7 +793,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.9rem;
-  margin-top: 2.2rem;
+  margin-top: 2.4rem;
 }
 .social {
   position: relative;
@@ -732,9 +801,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   justify-content: center;
   flex-wrap: wrap;
   gap: 1.8rem;
-  margin-top: 2.6rem;
+  margin-top: 2.8rem;
   font-family: var(--font-mono);
-  font-size: var(--fs-mono-meta);
+  font-size: var(--fs-tech);
   font-weight: 500;
 }
 .social a {
@@ -762,7 +831,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .wordmark-s { font-size: 1.05rem; }
 .footer-note {
   margin-left: auto;
-  font-size: var(--fs-small);
+  font-size: var(--fs-caption);
   color: var(--text-3);
 }
 .footer-langs {
@@ -771,7 +840,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   color: var(--text-3);
 }
 
-/* ---------- Reveal (только при html.js; без JS всё видно) ---------- */
+/* ---------- Reveal ---------- */
 
 html.js .reveal {
   opacity: 0;
@@ -788,7 +857,10 @@ html.js .reveal.d5 { transition-delay: 300ms; }
 /* ---------- Адаптив ---------- */
 
 @media (max-width: 1024px) {
-  .hero-grid { grid-template-columns: 1fr 0.85fr; }
+  .case-fields { grid-template-columns: repeat(2, 1fr); }
+  .spec-grid { grid-template-columns: repeat(2, 1fr); }
+  .cap-rows li { grid-template-columns: 3rem 1fr; }
+  .cap-rows p { grid-column: 2; margin-top: 0.4rem; }
 }
 
 @media (max-width: 900px) {
@@ -812,7 +884,7 @@ html.js .reveal.d5 { transition-delay: 300ms; }
     transition-delay: 0s;
   }
   .nav-links > a:not(.btn) {
-    font-size: var(--fs-h3);
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-1);
   }
@@ -821,20 +893,13 @@ html.js .reveal.d5 { transition-delay: 300ms; }
   .nav-cta { display: none; }
   .burger { display: block; }
 
-  .hero { padding-top: calc(var(--nav-h) + 3rem); min-height: auto; }
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero-visual { height: clamp(240px, 46vw, 360px); min-height: 0; order: 2; }
-  .hero-copy { order: 1; }
+  .hero { padding-top: calc(var(--nav-h) + 2.5rem); }
 
-  .feature, .feature-flip { grid-template-columns: 1fr; gap: 1.8rem; }
-  .feature-flip .feature-copy { order: 1; }
-  .feature-flip .feature-media { order: 2; }
+  .proof-grid { grid-template-columns: 1fr; }
+  .manifesto-row { grid-template-columns: 1fr; gap: 1.2rem; }
 
-  .panel-head { grid-template-columns: 1fr; align-items: start; }
-  .spec-grid { grid-template-columns: repeat(2, 1fr); }
-
-  .bento { grid-template-columns: 1fr; }
-  .bento-cell, .bento-lead { grid-column: auto; }
+  .case-split { grid-template-columns: 1fr; }
+  .case-split .case-media-s { order: 2; margin-top: 1.8rem; }
 
   .steps { grid-template-columns: 1fr; gap: 0; }
   .steps::before {
@@ -852,16 +917,16 @@ html.js .reveal.d5 { transition-delay: 300ms; }
 }
 
 @media (max-width: 768px) {
-  .stats-row { grid-template-columns: 1fr 1fr; row-gap: 2rem; }
-  .stats-row li { padding-inline: 0 1rem; }
-  .stats-row li + li { border-left: 0; }
-  .stats-row li:nth-child(even) { border-left: 1px solid var(--line); padding-left: 1.2rem; }
-
   .pair { grid-template-columns: 1fr; }
-  .spec-grid { grid-template-columns: 1fr; }
-
   .footer-inner { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
   .footer-note { margin-left: 0; }
+}
+
+@media (max-width: 640px) {
+  .case-fields { grid-template-columns: 1fr; }
+  .spec-grid { grid-template-columns: 1fr; }
+  .case-foot { flex-direction: column; align-items: flex-start; }
+  .proof-side li { grid-template-columns: minmax(5.5rem, auto) 1fr; gap: 1rem; }
 }
 
 @media (max-width: 560px) {
@@ -880,6 +945,12 @@ html.js .reveal.d5 { transition-delay: 300ms; }
   html.js .reveal {
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+  html.js .h1 .w {
+    opacity: 1;
+    transform: none;
+    filter: none;
     transition: none;
   }
 }
