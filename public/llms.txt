@@ -1,16 +1,20 @@
 # Aminyx — Aminjon Azizov, full-stack developer & security engineer
 
-> Персональный сайт-портфолио: заказная разработка продуктов целиком — бэкенд (Go, Rust, Python), Android (Kotlin), веб, Telegram-боты, безопасность и инфраструктура. Всё в проде, с реальным трафиком и платежами. Языки сайта: русский, тоҷикӣ, English.
+> Personal portfolio site: end-to-end product development — backend (Go, Rust, Python), Android (Kotlin), web, Telegram bots, security and infrastructure, LLM integrations. Everything in production with real traffic and payments. Site languages: Russian (/), English (/en/), Tajik (/tg/). Primary contact: Telegram.
 
-## Проекты
+## Projects
 
-- [SomonVPN](https://somonvpn.tech): коммерческий VPN против DPI-блокировок; Android-клиент на Kotlin, бэкенд на Go, монорепо с панелью, десктопом и ботами; 2,5 месяца от пустого репозитория до монетизации
-- [Cybersec](https://aminyx.github.io/Cybersec/): бесплатный открытый курс кибербезопасности (GPL-3.0) на русском и таджикском — 270 дней от нуля до Junior, 6 экзаменов, 10 портфолио-проектов
-- [Aminyx Link](https://aminyx.top/#work): сетевая платформа на Rust — multipath, failover, постквантовая криптография (X25519 + ML-KEM-768), 731 автотест; закрытая разработка
-- [GitHub](https://github.com/aminyx): открытый код
+- [SomonVPN](https://somonvpn.tech): commercial VPN resistant to DPI blocking; Kotlin Android client, Go backend, monorepo with dashboard, desktop and bots; 2.5 months from empty repository to monetization
+- [Cybersec](https://aminyx.github.io/Cybersec/): free open-source cybersecurity course (GPL-3.0) in Russian and Tajik — 270 days from zero to Junior, 6 exams, 10 portfolio projects
+- [Aminyx Link](https://aminyx.top/#work): Rust network platform — multipath, failover, post-quantum cryptography (X25519 + ML-KEM-768), 731 automated tests; private development
+- [GitHub](https://github.com/aminyx): open source
 
-## Контакты
+## Contact
 
-- [Telegram](https://t.me/itsaminyx): основной канал связи
+- [Telegram](https://t.me/itsaminyx): primary channel
 - [Email](mailto:itsaminyx@gmail.com)
 - [X](https://x.com/itsaminyx)
+
+## По-русски
+
+Собираю продукты целиком: бэкенд (Go, Rust, Python), Android (Kotlin), веб, Telegram-боты, безопасность и инфраструктура, интеграция LLM. Всё в проде, с реальным трафиком и платежами. Заказная разработка и собственные продукты. Быстрее всего отвечаю в Telegram: https://t.me/itsaminyx

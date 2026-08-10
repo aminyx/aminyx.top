@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender-i18n.mjs",
     "preview": "vite preview"
   },
   "repository": {
@@ -31,6 +31,8 @@
     "three": "^0.185.1"
   },
   "devDependencies": {
+    "cheerio": "^1.2.0",
+    "playwright": "^1.62.1",
     "vite": "^8.2.1"
   }
 }

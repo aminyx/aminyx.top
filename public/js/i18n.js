@@ -92,6 +92,7 @@ window.I18N = {
     'contact.h2': 'Есть задача? Расскажите.',
     'contact.sub': 'Первое обсуждение — бесплатно и без обязательств. Быстрее всего отвечаю в Telegram, почта тоже работает.',
     'contact.channel': 'Канал в Telegram',
+    'footer.privacy': 'Конфиденциальность',
     'footer.copy': '© 2026 Азизов Аминджон'
   },
 
@@ -187,6 +188,7 @@ window.I18N = {
     'contact.h2': 'Вазифа ҳаст? Нақл кунед.',
     'contact.sub': 'Муҳокимаи аввал ройгон ва бе уҳдадорӣ аст. Аз ҳама тезтар дар Telegram ҷавоб медиҳам, почта ҳам кор мекунад.',
     'contact.channel': 'Канал дар Telegram',
+    'footer.privacy': 'Махфият',
     'footer.copy': '© 2026 Азизов Аминҷон'
   },
 
@@ -282,6 +284,7 @@ window.I18N = {
     'contact.h2': 'Have a project in mind? Tell me.',
     'contact.sub': 'The first conversation is free, no strings attached. Telegram gets the fastest reply, email works too.',
     'contact.channel': 'Telegram channel',
+    'footer.privacy': 'Privacy',
     'footer.copy': '© 2026 Aminjon Azizov'
   }
 };

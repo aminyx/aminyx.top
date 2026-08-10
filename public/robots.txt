@@ -1,4 +1,26 @@
+# Личный сайт-портфолио: индексация и цитирование приветствуются,
+# в том числе AI-ассистентами (см. /llms.txt).
+
 User-agent: *
+Allow: /
+
+# AI retrieval/search-боты — явно разрешены
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://aminyx.top/sitemap.xml

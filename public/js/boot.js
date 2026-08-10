@@ -14,6 +14,13 @@
   d.dataset.theme = t;
 
   if (!l) {
+    /* префикс пути (/en/, /tg/ — прегенерированные hreflang-версии)
+       главнее автодетекта: URL — явное намерение */
+    var path = location.pathname;
+    if (path.indexOf('/en/') === 0) l = 'en';
+    else if (path.indexOf('/tg/') === 0) l = 'tg';
+  }
+  if (!l) {
     /* сравниваем первичные субтеги, не подстроки: иначе регион Того
        (fr-TG) ложно включал таджикский */
     var tags = (navigator.languages || [navigator.language || 'ru']).map(function (s) {

@@ -1,7 +1,32 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://aminyx.top/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aminyx.top/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aminyx.top/en/"/>
+    <xhtml:link rel="alternate" hreflang="tg" href="https://aminyx.top/tg/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aminyx.top/"/>
+  </url>
+  <url>
+    <loc>https://aminyx.top/en/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aminyx.top/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aminyx.top/en/"/>
+    <xhtml:link rel="alternate" hreflang="tg" href="https://aminyx.top/tg/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aminyx.top/"/>
+  </url>
+  <url>
+    <loc>https://aminyx.top/tg/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aminyx.top/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aminyx.top/en/"/>
+    <xhtml:link rel="alternate" hreflang="tg" href="https://aminyx.top/tg/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aminyx.top/"/>
+  </url>
+  <url>
+    <loc>https://aminyx.top/privacy/</loc>
     <lastmod>2026-08-10</lastmod>
   </url>
 </urlset>

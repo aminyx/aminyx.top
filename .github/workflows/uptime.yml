@@ -1,0 +1,36 @@
+name: Uptime
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe aminyx.top
+        id: probe
+        continue-on-error: true
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://aminyx.top/) && [ "$code" = "200" ] && exit 0
+            sleep 30
+          done
+          echo "last_code=$code" >> "$GITHUB_OUTPUT"
+          exit 1
+      - name: Open issue on failure
+        if: steps.probe.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create uptime --repo "$GITHUB_REPOSITORY" --color D93F0B 2>/dev/null || true
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label uptime --state open --json number --jq 'length')
+          if [ "$open" = "0" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --label uptime \
+              --title "aminyx.top недоступен (HTTP ${{ steps.probe.outputs.last_code }})" \
+              --body "Три попытки с интервалом 30 секунд вернули не-200. Проверить GitHub Pages, DNS и срок домена."
+          fi
