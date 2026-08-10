@@ -2,23 +2,32 @@
 
 Всё остальное уже сделано и в проде. Здесь каждое действие доведено до состояния
 «скопировать и вставить». Проверено 2026-08-10: регистратор — **Spaceship, Inc.**,
-DNS — launch1/launch2.spaceship.net, домен оплачен до **2027-08-03**,
-записей SPF / DMARC / MX / CAA **нет вообще**.
+домен оплачен до **2027-08-03**.
 
-## 1. DNS: анти-спуфинг почты + контроль сертификатов (15 минут, бесплатно)
+**DNS переехал на Cloudflare (10.08.2026).** NS теперь `annalise.ns.cloudflare.com` +
+`zod.ns.cloudflare.com`. Зона проксируется через Cloudflare; сайт живёт по HTTPS с
+HTTP/3, http→https принудительно. Настоящие security-заголовки (HSTS с preload,
+X-Content-Type-Options, X-Frame-Options, Permissions-Policy) отдаются Transform Rule —
+проверено `curl`. **DNSSEC включён и валидируется** (DS `2371 / 13 ECDSAP256SHA256 / 2`
+опубликован в реестре .top, резолверы отдают `AD: true`, SERVFAIL нет). Null MX
+(RFC 7505) добавлен. Осталось из DNS — только SPF/DMARC (п.1) как контентные записи.
 
-Spaceship → Domain → aminyx.top → Advanced DNS. Добавить четыре записи:
+## 1. DNS: анти-спуфинг почты (5 минут, бесплатно) — теперь в Cloudflare
+
+Cloudflare → aminyx.top → DNS → Records. Добавить две TXT-записи (null MX уже стоит):
 
 | Тип | Host | Значение | Зачем |
 |---|---|---|---|
 | TXT | `@` | `v=spf1 -all` | домен не шлёт почту — запретить всем |
 | TXT | `_dmarc` | `v=DMARC1; p=reject; adkim=s; aspf=s` | письма «от aminyx.top» — в отказ |
-| MX | `@` | приоритет `0`, значение `.` | null MX (RFC 7505): почты нет |
-| CAA | `@` | `0 issue "letsencrypt.org"` | сертификаты только Let's Encrypt (их использует GitHub Pages) |
 
 Проверка после: https://mxtoolbox.com/SuperTool.aspx → SPF/DMARC lookup.
-Если позже переедешь на Cloudflare-проксирование — в CAA добавить их CA
-(pki.goog, digicert.com) по их актуальной документации.
+
+**CAA намеренно не добавляли.** Зона проксируется Cloudflare, сертификат
+выдаёт и продлевает сам Cloudflare (Universal SSL, CA — Google Trust / Let's
+Encrypt / SSL.com, набор меняется). Жёсткий CAA на проксированной зоне рискует
+заблокировать автопродление при смене CA у Cloudflare. Если захочешь CAA —
+бери актуальный список CA из их документации, не фиксируй один центр.
 
 ## 2. Аналитика KPI: GoatCounter (10 минут, бесплатно для личных сайтов)
 
@@ -41,14 +50,28 @@ Spaceship → Domain → aminyx.top → Advanced DNS. Добавить четы�
 - **Bing Webmaster Tools** → импорт из GSC одной кнопкой (или отдельная верификация). IndexNow уже настроен и пингуется.
 - **Яндекс Вебмастер** (важен для RU/TJ-аудитории) → тоже DNS-верификация → sitemap.
 
-## 4. Cloudflare Free перед Pages (полчаса, опционально, но даёт настоящие заголовки)
+## 4. Cloudflare Free перед Pages — ✅ СДЕЛАНО (10.08.2026)
 
-1. Cloudflare → Add site → aminyx.top → Free.
-2. Сменить NS у Spaceship на выданные Cloudflare.
-3. DNS-записи: CNAME `@` → `aminyx.github.io` (proxied), CNAME `www` → `aminyx.github.io` (proxied).
-4. SSL/TLS → **Full (strict)**; в GitHub Pages оставить Enforce HTTPS.
-5. Rules → Transform Rules → Response Header: добавить `Content-Security-Policy` (текущее значение из index.html + `frame-ancestors 'none'`), `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`, `X-Content-Type-Options: nosniff`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
-6. Бонусом: HTTP/3, brotli, Cloudflare Web Analytics (без cookies) — альтернатива п.2.
+Оставлено как запись о том, что именно настроено:
+
+1. ✅ Зона `aminyx.top` создана на Cloudflare Free, NS переключены у Spaceship.
+2. ✅ Проксирование включено; сайт отдаётся через Cloudflare с HTTP/3.
+3. ✅ Always Use HTTPS (http→https), HSTS с `preload`.
+4. ⚠️ SSL/TLS выбран **Full**, не Full (strict) — сознательно: origin —
+   GitHub Pages за прокси, Full (strict) создаёт дедлок при ACME-продлении
+   сертификата Pages. Full закрывает канал «клиент↔Cloudflare» полноценным TLS.
+5. ✅ Transform Rule «Security headers» (Active): HSTS `max-age=31536000; includeSubDomains; preload`,
+   `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+   `Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()`.
+   CSP оставлен в `<meta>` страниц (там ему удобнее правиться вместе с разметкой).
+6. ✅ DNSSEC включён на Cloudflare, DS опубликован в реестре .top — валидируется.
+7. Бонус на будущее: Cloudflare Web Analytics (без cookies) как альтернатива п.2 —
+   включается в дашборде одним тумблером, если захочешь.
+
+Ещё три домена переехали на Cloudflare тем же заходом: **maryam.best**,
+**yosaminvpn.online** (Spaceship) и **virexpro.me** (Namecheap). У доменов с VPS-сайтами
+записи стоят DNS-only, чтобы не ломать прямой доступ. DNSSEC на них не включали —
+делали флагман aminyx.top; при желании повторить те же шаги.
 
 ## 5. Зеркало на Codeberg (bus-factor, 10 минут)
 
