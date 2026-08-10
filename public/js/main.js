@@ -127,6 +127,147 @@
     });
   }
 
+  /* ---------- Системный терминал (клавиша `) ---------- */
+
+  var term = null, termLog = null, termInput = null;
+
+  function termPrint(text, ok) {
+    var line = document.createElement('div');
+    if (ok) line.className = 'ok';
+    line.textContent = text;
+    termLog.appendChild(line);
+    while (termLog.childElementCount > 40) termLog.removeChild(termLog.firstChild);
+    termLog.scrollTop = termLog.scrollHeight;
+  }
+
+  function sys() { return window.__system || null; }
+
+  function runCommand(raw) {
+    var parts = raw.trim().split(/\s+/);
+    var cmd = (parts[0] || '').toLowerCase(), arg = (parts[1] || '').toLowerCase();
+    if (!cmd) return;
+    termPrint('❯ ' + raw);
+    switch (cmd) {
+      case 'help':
+        termPrint('commands: status · kill [n] · heal · storm · chaos on|off · sfx on|off · theme dark|light · lang ru|tg|en · clear · exit');
+        break;
+      case 'status': {
+        var s = sys();
+        if (!s) { termPrint('system: warming up…'); break; }
+        var st = s.stats();
+        termPrint('nodes ' + st.alive + '/' + st.nodes + ' alive · edges ' + st.edges + ' · packets in flight ' + st.packets, true);
+        termPrint('manual kills ' + st.kills + ' · chaos ' + (st.chaos ? 'ON' : 'off') + ' · intensity ' + st.intensity + ' · sfx ' + (s.sfxOn() ? 'on' : 'off'));
+        break;
+      }
+      case 'kill': {
+        var s2 = sys();
+        if (!s2) { termPrint('system: warming up…'); break; }
+        var n = Math.min(parseInt(arg, 10) || 1, 8);
+        termPrint('killed ' + s2.kill(n) + ' node(s) — watch the failover', true);
+        break;
+      }
+      case 'heal':
+        if (sys()) { sys().heal(); termPrint('all nodes healing', true); } else termPrint('system: warming up…');
+        break;
+      case 'storm':
+        if (sys()) { sys().storm(); termPrint('storm injected — system will survive', true); } else termPrint('system: warming up…');
+        break;
+      case 'chaos':
+        if (!sys()) { termPrint('system: warming up…'); break; }
+        setChaosMode(arg !== 'off');
+        termPrint('chaos mode ' + (arg !== 'off' ? 'ENGAGED' : 'off'), true);
+        break;
+      case 'sfx':
+        if (sys()) { sys().sfx(arg === 'on'); termPrint('sfx ' + (arg === 'on' ? 'on' : 'off'), true); } else termPrint('system: warming up…');
+        break;
+      case 'theme':
+        if (arg === 'dark' || arg === 'light') {
+          if (docEl.dataset.theme !== arg) themeBtn.click();
+          termPrint('theme: ' + arg, true);
+        } else termPrint('usage: theme dark|light');
+        break;
+      case 'lang':
+        if (window.I18N && window.I18N[arg]) { applyLang(arg); termPrint('lang: ' + arg, true); }
+        else termPrint('usage: lang ru|tg|en');
+        break;
+      case 'clear':
+        termLog.textContent = '';
+        break;
+      case 'exit':
+        toggleTerm(false);
+        break;
+      default:
+        termPrint('unknown command: ' + cmd + ' — try help');
+    }
+  }
+
+  function buildTerm() {
+    term = document.createElement('div');
+    term.className = 'sys-terminal';
+    term.setAttribute('role', 'dialog');
+    term.setAttribute('aria-label', 'System terminal');
+    termLog = document.createElement('div');
+    termLog.className = 'sys-log';
+    var line = document.createElement('form');
+    line.className = 'sys-line';
+    termInput = document.createElement('input');
+    termInput.type = 'text';
+    termInput.setAttribute('aria-label', 'terminal command');
+    termInput.setAttribute('autocomplete', 'off');
+    termInput.setAttribute('spellcheck', 'false');
+    line.appendChild(termInput);
+    term.appendChild(termLog);
+    term.appendChild(line);
+    document.body.appendChild(term);
+    line.addEventListener('submit', function (e) {
+      e.preventDefault();
+      runCommand(termInput.value);
+      termInput.value = '';
+    });
+    termPrint('aminyx system terminal — this console drives the real simulation behind the page');
+    termPrint('type help to list commands');
+  }
+
+  var termOpen = false;
+  function toggleTerm(open) {
+    if (open && !term) buildTerm();
+    if (!term) return;
+    termOpen = open;
+    term.hidden = !open;
+    if (open) termInput.focus();
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    var typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
+    if (e.key === '`' && !e.ctrlKey && !e.metaKey && !e.altKey && (!typing || t === termInput)) {
+      e.preventDefault();
+      toggleTerm(!termOpen);
+    } else if (e.key === 'Escape' && termOpen) {
+      toggleTerm(false);
+    }
+  });
+
+  /* ---------- Konami → CHAOS MODE ---------- */
+
+  var chaosHud = document.getElementById('chaos-hud');
+  var chaosOn = false;
+  function setChaosMode(on) {
+    chaosOn = on;
+    if (sys()) sys().chaos(on);
+    if (chaosHud) chaosHud.hidden = !on;
+  }
+
+  var KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  var kPos = 0;
+  document.addEventListener('keydown', function (e) {
+    kPos = (e.key === KONAMI[kPos] || e.key.toLowerCase() === KONAMI[kPos]) ? kPos + 1 : 0;
+    if (kPos === KONAMI.length) {
+      kPos = 0;
+      setChaosMode(!chaosOn);
+    }
+  });
+
   /* ---------- Навигация: фон при скролле ---------- */
 
   var nav = document.getElementById('nav');
@@ -319,6 +460,16 @@
     }
     requestAnimationFrame(tick);
   }
+
+  /* ---------- для тех, кто открыл DevTools ---------- */
+
+  try {
+    console.log(
+      '%caminyx.%c\n\nСцена за этой страницей — настоящая симуляция multipath-failover.\nНажми ` — там терминал. Или сразу: https://t.me/itsaminyx',
+      'font: 700 28px Onest, sans-serif; color: #e8ac3f;',
+      'font: 12px JetBrains Mono, monospace; color: #8a93a1;'
+    );
+  } catch (e) {}
 
   if (matrix) {
     if (reduceMotion || !('IntersectionObserver' in window)) {

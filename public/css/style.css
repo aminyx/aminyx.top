@@ -1015,6 +1015,83 @@ html.js .reveal.d5 { transition-delay: 300ms; }
   .nav-cta { padding: 0.5rem 0.85rem; }
 }
 
+/* ---------- Интерактив сцены: зонд, подсказка, терминал, CHAOS ---------- */
+
+html.sys-probe { cursor: crosshair; }
+
+#scene-hint {
+  position: fixed;
+  left: clamp(1.25rem, 4vw, 2.75rem);
+  bottom: 1.1rem;
+  z-index: 5;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+}
+#scene-hint.on { opacity: 1; transform: none; }
+#scene-hint span::before { content: "▸ "; color: var(--accent-text); }
+
+#chaos-hud {
+  position: fixed;
+  top: calc(var(--nav-h) + 10px);
+  right: clamp(1.25rem, 4vw, 2.75rem);
+  z-index: 110;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent-text);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  padding: 0.35rem 0.8rem;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  animation: chaos-pulse 1.6s ease-in-out infinite;
+}
+@keyframes chaos-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.sys-terminal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 130;
+  border-top: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  padding: 0.9rem clamp(1.25rem, 4vw, 2.75rem) 1rem;
+}
+.sys-terminal[hidden] { display: none; }
+.sys-log {
+  max-height: 11rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  color: var(--text-2);
+  margin-bottom: 0.5rem;
+}
+.sys-log .ok { color: var(--accent-text); }
+.sys-line { display: flex; gap: 0.5rem; align-items: baseline; }
+.sys-line::before { content: "❯"; color: var(--accent-text); }
+.sys-line input {
+  flex: 1;
+  font: inherit;
+  color: var(--text-1);
+  background: none;
+  border: 0;
+  outline: none;
+}
+
 /* ---------- Ниже сгиба: браузер не рендерит скрытые секции ----------
    content-visibility: auto (Baseline 2024) снимает layout/paint пяти секций
    с бюджета кадра — важно рядом с постоянным WebGL-субстратом. Старые

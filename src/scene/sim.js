@@ -1,6 +1,7 @@
 /* aminyx.top — симуляция «живой системы»: распределённая сеть с multipath-
    трафиком и failover-каскадами. Механика Aminyx Link, а не орнамент.
    Модуль не знает о рендерере: его читают и WebGL-слой (R3F), и canvas2d-фолбэк. */
+import { setSfx, sfxEnabled, sfxKill, sfxHeal, sfxStorm } from './sfx.js';
 
 export function createSim() {
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -22,6 +23,15 @@ export function createSim() {
     adj: [],     /* смежность: adj[i] = [edgeIdx...] */
     packets: [], /* {e, t, dir, speed} */
     fail: { active: false, cx: 0, cy: 0, r: 0.5, until: 0, next: 4000 },
+    /* интерактив: посетитель — chaos-инженер */
+    killed: null,          /* Float64Array: время, до которого узел убит вручную */
+    hoverIdx: -1,          /* узел под зондом курсора (подсветка) */
+    probe: { x: 0, y: 0, active: false },
+    manualPulse: 0,        /* 0..1: вспышка Bloom после ручного отказа, затухает */
+    chaos: false,          /* Konami: непрерывные случайные отказы */
+    chaosNext: 0,
+    storm: { until: 0, nextKill: 0 },
+    stats: { kills: 0, recoveries: 0 },
     time: 0,
     aspect: 1,
     intensity: 1,          /* от скролла: hero 1 → середина 0.42 → контакт 0.85 */
@@ -35,6 +45,12 @@ export function createSim() {
     onScrollState: onScrollState,
     refreshTheme: refreshTheme,
     refreshScrollBounds: refreshScrollBounds,
+    nearestNode: nearestNode,
+    killAt: killAt,
+    killRandom: killRandom,
+    heal: heal,
+    stormNow: stormNow,
+    setChaos: setChaos,
     theme: {
       line: [1, 1, 1], node: [1, 1, 1], packet: [1, .7, .25],
       lineA: .1, nodeA: .5,
@@ -84,6 +100,65 @@ export function createSim() {
       }
     }
     sim.heat = new Float32Array(sim.edges.length);
+    sim.killed = new Float64Array(N);
+  }
+
+  /* ---------- интерактив: посетитель испытывает систему ---------- */
+
+  /* ближайший живой узел к точке в clip-координатах экрана */
+  function nearestNode(cx, cy, maxDist) {
+    var out = [0, 0, 0];
+    var best = -1, bestD = (maxDist || 0.14) * (maxDist || 0.14);
+    for (var i = 0; i < N; i++) {
+      nodePos(sim.nodes[i], out);
+      var dx = out[0] - cx, dy = out[1] - cy;
+      var d = dx * dx + dy * dy;
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  function killNode(i, ms) {
+    if (i < 0 || i >= N) return false;
+    sim.killed[i] = sim.time + (ms || 2600);
+    sim.stats.kills++;
+    sim.manualPulse = 1;
+    return true;
+  }
+
+  function killAt(cx, cy) {
+    var i = nearestNode(cx, cy, 0.16);
+    if (i < 0 || sim.nodes[i].health < 0.5) return -1;
+    return killNode(i) ? i : -1;
+  }
+
+  function killRandom(n) {
+    var count = 0;
+    for (var t = 0; t < (n || 1) * 6 && count < (n || 1); t++) {
+      var i = (Math.random() * N) | 0;
+      if (sim.nodes[i].health > 0.5) { killNode(i, 1600 + Math.random() * 1200); count++; }
+    }
+    return count;
+  }
+
+  function heal() {
+    if (sim.killed) sim.killed.fill(0);
+    sim.fail.active = false;
+    sim.fail.next = sim.time + 5000;
+    sim.storm.until = 0;
+    sim.stats.recoveries++;
+  }
+
+  function stormNow() {
+    sim.storm.until = sim.time + 2800;
+    sim.storm.nextKill = 0;
+    sim.manualPulse = 1;
+  }
+
+  function setChaos(on) {
+    sim.chaos = !!on;
+    sim.chaosNext = sim.time;
+    if (!on) heal();
   }
 
   /* позиция узла с дрейфом и параллаксом (в clip-координатах) */
@@ -106,6 +181,16 @@ export function createSim() {
        широкие: не даём сцене сжаться в центральную треть */
     out[0] = px / (sim.aspect < 1 ? sim.aspect : Math.min(sim.aspect, 1.25));
     out[1] = py;
+    /* зонд: узлы мягко расступаются вокруг курсора */
+    if (sim.probe.active) {
+      var rdx = out[0] - sim.probe.x, rdy = out[1] - sim.probe.y;
+      var rd = Math.sqrt(rdx * rdx + rdy * rdy);
+      if (rd < 0.16 && rd > 0.0001) {
+        var push = (0.16 - rd) * 0.22;
+        out[0] += (rdx / rd) * push;
+        out[1] += (rdy / rd) * push;
+      }
+    }
     out[2] = n.z;
   };
 
@@ -136,11 +221,22 @@ export function createSim() {
       fail.active = false;
       fail.next = sim.time + 4200 + Math.random() * 3800;
     }
+    /* шторм от долгого нажатия: серия быстрых отказов */
+    if (sim.storm.until > sim.time && sim.time > sim.storm.nextKill) {
+      killRandom(1);
+      sim.storm.nextKill = sim.time + 160 + Math.random() * 220;
+    }
+    /* CHAOS MODE (Konami): система живёт под непрерывным обстрелом */
+    if (sim.chaos && sim.time > sim.chaosNext) {
+      killRandom(1 + (Math.random() < 0.4 ? 1 : 0));
+      sim.chaosNext = sim.time + 1600 + Math.random() * 1400;
+    }
+    sim.manualPulse *= Math.pow(0.5, dt / 700);
     var i;
     for (i = 0; i < N; i++) {
       var n = sim.nodes[i];
-      var dead = false;
-      if (fail.active) {
+      var dead = sim.killed[i] > sim.time;
+      if (!dead && fail.active) {
         var dx = n.x - fail.cx, dy = n.y - fail.cy;
         dead = dx * dx + dy * dy < fail.r * fail.r;
       }
@@ -230,21 +326,103 @@ export function createSim() {
   return sim;
 }
 
-/* Общая обвязка ввода: указатель, resize, тема. Возвращает detach. */
+/* Общая обвязка ввода: указатель, resize, тема, интерактив chaos-инженера.
+   Возвращает detach. */
 export function attachInput(sim, onThemeChange) {
   function onResize() {
     sim.refreshScrollBounds();
     if (onThemeChange) onThemeChange();
   }
   window.addEventListener('resize', onResize);
+
+  var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var onMove = null;
-  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  if (finePointer) {
     onMove = function (ev) {
       sim.pointer.x = (ev.clientX / window.innerWidth) * 2 - 1;
       sim.pointer.y = 1 - (ev.clientY / window.innerHeight) * 2;
+      sim.probe.x = sim.pointer.x;
+      sim.probe.y = sim.pointer.y;
+      sim.probe.active = true;
     };
     window.addEventListener('pointermove', onMove, { passive: true });
   }
+
+  /* ---------- посетитель как chaos-инженер ---------- */
+
+  var hint = document.getElementById('scene-hint');
+  var hinted = false;
+  try { hinted = localStorage.getItem('hinted') === '1'; } catch (e) {}
+  var hintTimer = 0;
+  if (hint && !hinted && !sim.reduceMotion) {
+    hintTimer = setTimeout(function () { hint.classList.add('on'); }, 2600);
+  }
+  function dismissHint() {
+    if (!hint) return;
+    hint.classList.remove('on');
+    try { localStorage.setItem('hinted', '1'); } catch (e) {}
+  }
+
+  function isInteractive(el) {
+    return el && el.closest && el.closest('a, button, input, textarea, select, summary, label, .sys-terminal');
+  }
+  function toClip(ev) {
+    return {
+      x: (ev.clientX / window.innerWidth) * 2 - 1,
+      y: 1 - (ev.clientY / window.innerHeight) * 2,
+    };
+  }
+
+  var downAt = 0, downX = 0, downY = 0, stormFired = false, holdTimer = 0;
+
+  function onDown(ev) {
+    if (sim.reduceMotion || isInteractive(ev.target)) return;
+    downAt = performance.now();
+    downX = ev.clientX; downY = ev.clientY;
+    stormFired = false;
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(function () {
+      stormFired = true;
+      sim.stormNow();
+      sfxStorm();
+      dismissHint();
+    }, 600);
+  }
+  function onUp(ev) {
+    clearTimeout(holdTimer);
+    if (sim.reduceMotion || stormFired || isInteractive(ev.target)) return;
+    if (performance.now() - downAt > 500) return;
+    if (Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 14) return;
+    if (String(window.getSelection && window.getSelection())) return;
+    var p = toClip(ev);
+    if (sim.killAt(p.x, p.y) >= 0) {
+      sfxKill();
+      dismissHint();
+    }
+  }
+  document.addEventListener('pointerdown', onDown, { passive: true });
+  document.addEventListener('pointerup', onUp, { passive: true });
+  document.addEventListener('pointercancel', function () { clearTimeout(holdTimer); }, { passive: true });
+
+  /* пульт для терминала и Konami (main.js) */
+  window.__system = {
+    kill: function (n) { var c = sim.killRandom(n || 1); sfxKill(); return c; },
+    heal: function () { sim.heal(); sfxHeal(); },
+    storm: function () { sim.stormNow(); sfxStorm(); },
+    chaos: function (on) { sim.setChaos(on); if (on) sfxStorm(); else sfxHeal(); },
+    sfx: function (on) { setSfx(on); },
+    sfxOn: sfxEnabled,
+    stats: function () {
+      var alive = 0;
+      for (var i = 0; i < sim.N; i++) if (sim.nodes[i].health > 0.5) alive++;
+      return {
+        nodes: sim.N, alive: alive, edges: sim.edges.length,
+        packets: sim.packets.length, kills: sim.stats.kills,
+        chaos: sim.chaos, intensity: Math.round(sim.intensity * 100) / 100,
+      };
+    },
+  };
+
   /* тема меняется из main.js */
   window.__sceneRefreshTheme = function () {
     sim.refreshTheme();
@@ -253,6 +431,11 @@ export function attachInput(sim, onThemeChange) {
   return function detach() {
     window.removeEventListener('resize', onResize);
     if (onMove) window.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerdown', onDown);
+    document.removeEventListener('pointerup', onUp);
+    clearTimeout(hintTimer);
+    clearTimeout(holdTimer);
     if (window.__sceneRefreshTheme) delete window.__sceneRefreshTheme;
+    if (window.__system) delete window.__system;
   };
 }
