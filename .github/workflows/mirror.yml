@@ -1,0 +1,32 @@
+name: Mirror
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codeberg:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check token
+        id: has
+        run: |
+          if [ -n "${{ secrets.CODEBERG_TOKEN }}" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::CODEBERG_TOKEN не задан — зеркалирование пропущено"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.has.outputs.ok == 'true'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Push to Codeberg
+        if: steps.has.outputs.ok == 'true'
+        run: |
+          git push --force "https://aminyx:${{ secrets.CODEBERG_TOKEN }}@codeberg.org/aminyx/aminyx.top.git" HEAD:main
