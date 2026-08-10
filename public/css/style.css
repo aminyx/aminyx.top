@@ -420,13 +420,14 @@ html.js .h1.staged .w {
   padding-bottom: 4rem;
 }
 .hero .container { width: 100%; position: relative; }
-/* кинематографическая виньетка: якорит копирайт, сцена дышит справа */
+/* кинематографическая виньетка: якорит копирайт, сцена дышит справа;
+   непрозрачность доведена до ширины реального текстового блока (~640px) */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(100deg, var(--bg) 4%, color-mix(in srgb, var(--bg) 55%, transparent) 36%, transparent 62%);
+  background: linear-gradient(100deg, var(--bg) 4%, color-mix(in srgb, var(--bg) 70%, transparent) 40%, transparent 74%);
 }
 /* мягкий шов к следующей секции */
 .hero::after {
@@ -799,7 +800,11 @@ html.js .h1.staged .w {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 55% 60% at 50% 62%, var(--accent-glow), transparent 70%);
+  /* вуаль под текстом финала: в светлой теме штрихи сцены темнее фона
+     и без неё режут заголовок и mono-ссылки */
+  background:
+    radial-gradient(ellipse 60% 70% at 50% 50%, var(--bg) 25%, color-mix(in srgb, var(--bg) 55%, transparent) 60%, transparent 80%),
+    radial-gradient(ellipse 55% 60% at 50% 62%, var(--accent-glow), transparent 70%);
 }
 .contact-h {
   position: relative;
@@ -939,7 +944,25 @@ html.js .reveal.d5 { transition-delay: 300ms; }
      язык переезжает в оверлей — в баре ему не хватает места */
   .nav-tools .lang-switch { display: none; }
   .lang-switch-m { display: flex; margin-top: 0.4rem; }
+  /* цели касания ≥44px: язык — первоклассное действие трёхъязычного сайта */
+  .lang-switch-m button { padding: 0.7rem 1.1rem; font-size: 0.8rem; }
   .burger { display: block; }
+  /* при открытом оверлее его крупная CTA заменяет барную — два одинаковых
+     янтарных акцента на одном экране спорят друг с другом */
+  .nav-links.open ~ .nav-tools .nav-cta { visibility: hidden; }
+  /* mono-индексы пунктов: спецификационный слой бренда и в меню */
+  .nav-links { counter-reset: mnav; }
+  .nav-links > a:not(.btn)::before {
+    counter-increment: mnav;
+    content: "0" counter(mnav);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--accent-text);
+    margin-right: 0.9rem;
+    vertical-align: 0.35em;
+  }
 
   .hero { padding-top: calc(var(--nav-h) + 2.5rem); }
 
@@ -965,6 +988,13 @@ html.js .reveal.d5 { transition-delay: 300ms; }
 }
 
 @media (max-width: 768px) {
+  /* на узких экранах текст hero занимает всю ширину — скрим вертикальный */
+  .hero::before {
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--bg) 90%, transparent),
+      color-mix(in srgb, var(--bg) 65%, transparent) 70%,
+      transparent);
+  }
   .pair { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
   .footer-note { margin-left: 0; }

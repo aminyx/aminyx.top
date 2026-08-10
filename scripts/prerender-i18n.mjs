@@ -41,6 +41,7 @@ for (const lang of ['en', 'tg']) {
   $('meta[property="og:title"]').attr('content', dict['meta.title']);
   $('meta[property="og:description"]').attr('content', dict['meta.desc']);
   $('meta[property="og:image:alt"]').attr('content', dict['meta.title']);
+  $('meta[property="og:image"]').attr('content', `https://aminyx.top/assets/img/og-${lang}.png`);
   $('meta[property="og:locale"]').attr('content', LOCALES[lang]);
   $('meta[property="og:locale:alternate"]').remove();
   const ogLocale = $('meta[property="og:locale"]');
