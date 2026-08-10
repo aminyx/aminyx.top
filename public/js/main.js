@@ -293,8 +293,9 @@
         if (n >= TOTAL) break;
         var x = c * (cw + gap), y = r * (ch + gap);
         if (n < lit) {
+          /* поле ~55% насыщенности: плита-доказательство не перекрикивает CTA */
           mctx.fillStyle = accent;
-          mctx.globalAlpha = 0.55 + 0.45 * Math.min(1, (lit - n) / 60);
+          mctx.globalAlpha = 0.32 + 0.23 * Math.min(1, (lit - n) / 60);
         } else {
           mctx.fillStyle = dim;
           mctx.globalAlpha = 0.5;

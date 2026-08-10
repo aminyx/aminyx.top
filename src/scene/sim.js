@@ -210,8 +210,10 @@ export function createSim() {
     t.packet = hexToRgb(accent);
     t.line = hexToRgb(base);
     t.node = hexToRgb(base);
-    t.lineA = isLight ? 0.5 : 0.48;
-    t.nodeA = isLight ? 0.65 : 0.75;
+    /* светлая тема — «чертёж»: линии тонкие и тихие; тёмный сланец на белом
+       при равной альфе читается вдвое громче, чем серо-голубой на чёрном */
+    t.lineA = isLight ? 0.2 : 0.48;
+    t.nodeA = isLight ? 0.38 : 0.75;
     t.lineCss = base;
     t.nodeCss = base;
     t.packetCss = accent;
