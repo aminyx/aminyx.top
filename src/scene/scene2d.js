@@ -43,9 +43,10 @@ export function mount2d(rootEl) {
     for (i = 0; i < sim.N; i++) {
       var n = sim.nodes[i];
       sim.nodePos(n, pa);
-      c.globalAlpha = th.nodeA * (0.25 + n.health * 0.75) * (1 - n.z * 0.55) * (0.4 + 0.6 * sim.intensity);
-      c.fillStyle = th.nodeCss;
-      c.beginPath(); c.arc(sx(pa), sy(pa), 1.1 + (1 - n.z) * 1.7, 0, Math.PI * 2); c.fill();
+      var hov = i === sim.hoverIdx;
+      c.globalAlpha = hov ? 0.95 : th.nodeA * (0.25 + n.health * 0.75) * (1 - n.z * 0.55) * (0.4 + 0.6 * sim.intensity);
+      c.fillStyle = hov ? th.packetCss : th.nodeCss;
+      c.beginPath(); c.arc(sx(pa), sy(pa), (1.1 + (1 - n.z) * 1.7) * (hov ? 1.9 : 1), 0, Math.PI * 2); c.fill();
     }
     for (i = 0; i < sim.packets.length; i++) {
       var p = sim.packets[i];
@@ -73,6 +74,9 @@ export function mount2d(rootEl) {
     lastT = now;
     sim.onScrollState();
     sim.step(dt);
+    sim.hoverIdx = sim.probe.active && !sim.reduceMotion
+      ? sim.nearestNode(sim.probe.x, sim.probe.y, 0.09)
+      : -1;
     draw();
     if (running && !force) rafId = requestAnimationFrame(frame);
   }

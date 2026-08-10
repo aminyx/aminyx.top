@@ -52,7 +52,8 @@ function BreathingBloom({ sim }) {
   useFrame((_, delta) => {
     const b = ref.current;
     if (!b) return;
-    const target = sim.fail.active ? 0.8 : 0.4;
+    /* дышит и на естественный failover, и на ручной отказ посетителя */
+    const target = 0.4 + 0.45 * Math.max(sim.fail.active ? 0.9 : 0, sim.manualPulse);
     b.intensity += (target - b.intensity) * Math.min(delta * 2.2, 1);
   });
   return <Bloom ref={ref} mipmapBlur intensity={0.4} luminanceThreshold={0.55} luminanceSmoothing={0.25} />;
@@ -90,6 +91,15 @@ function SystemLayer({ sim }) {
     sim.onScrollState();
     if (!sim.reduceMotion) sim.step(dt);
 
+    /* зонд: ближайший живой узел под курсором + курсор-перекрестие */
+    const prevHover = sim.hoverIdx;
+    sim.hoverIdx = sim.probe.active && !sim.reduceMotion
+      ? sim.nearestNode(sim.probe.x, sim.probe.y, 0.09)
+      : -1;
+    if ((sim.hoverIdx >= 0) !== (prevHover >= 0)) {
+      document.documentElement.classList.toggle('sys-probe', sim.hoverIdx >= 0);
+    }
+
     const dpr = state.gl.getPixelRatio();
     const th = sim.theme, b = buffers;
     const pa = [0, 0, 0], pb = [0, 0, 0];
@@ -116,16 +126,18 @@ function SystemLayer({ sim }) {
       b.lineCol[o4 + 4] = mr; b.lineCol[o4 + 5] = mg; b.lineCol[o4 + 6] = mb; b.lineCol[o4 + 7] = al;
     }
 
-    /* узлы */
+    /* узлы; узел под зондом — крупнее и янтарный: «этот можно испытать» */
     const na = th.nodeA * (0.4 + 0.6 * sim.intensity);
     for (i = 0; i < N; i++) {
       const n = sim.nodes[i];
       sim.nodePos(n, pa);
       o3 = i * 3; o4 = i * 4;
+      const hov = i === sim.hoverIdx;
       b.nodePos[o3] = pa[0]; b.nodePos[o3 + 1] = pa[1]; b.nodePos[o3 + 2] = 0;
-      b.nodeSize[i] = (2.6 + (1 - n.z) * 4.2) * dpr;
-      b.nodeCol[o4] = th.node[0]; b.nodeCol[o4 + 1] = th.node[1]; b.nodeCol[o4 + 2] = th.node[2];
-      b.nodeCol[o4 + 3] = na * (0.25 + n.health * 0.75) * (1 - n.z * 0.55);
+      b.nodeSize[i] = (2.6 + (1 - n.z) * 4.2) * dpr * (hov ? 1.9 : 1);
+      const col = hov ? th.packet : th.node;
+      b.nodeCol[o4] = col[0]; b.nodeCol[o4 + 1] = col[1]; b.nodeCol[o4 + 2] = col[2];
+      b.nodeCol[o4 + 3] = hov ? 0.95 : na * (0.25 + n.health * 0.75) * (1 - n.z * 0.55);
     }
     /* узел-фокус: система сходится к единственной яркой точке за CTA */
     let nv = N;
