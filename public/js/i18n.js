@@ -3,6 +3,7 @@ window.I18N = {
   ru: {
     'meta.title': 'Aminyx | Разработка продуктов: бэкенд, Android, веб, безопасность',
     'meta.desc': 'Собираю продукты целиком: Go, Rust, Kotlin, веб и инфраструктура. Всё в проде, с реальным трафиком и платежами. Заказная разработка и собственные продукты.',
+    'meta.ogAlt': 'Aminyx — собираю продукты целиком: бэкенд, Android, веб, безопасность',
     'a11y.skip': 'К содержанию',
     'a11y.theme': 'Переключить тему',
     'a11y.menu': 'Меню',
@@ -17,6 +18,7 @@ window.I18N = {
     'craft.title': 'Craft — интерактивная лаборатория | aminyx.top',
     'craft.tag': 'Лаборатория',
     'craft.lead': 'Механики из реальной инженерии — не видео и не картинки: каждую можно потрогать. Это те же принципы, на которых построены Aminyx Link и SomonVPN.',
+    'craft.desc': 'Интерактивные механики из реальной инженерии: multipath-failover, Reed-Solomon FEC, congestion control, kill switch. Каждую можно потрогать.',
     'craft.v1t': 'Multipath failover',
     'craft.v1p': 'Клик по активному пути обрывает его. Смотрите, как трафик мгновенно перетекает на резервный маршрут.',
     'craft.v2t': 'Reed-Solomon FEC',
@@ -120,6 +122,7 @@ window.I18N = {
   tg: {
     'meta.title': 'Aminyx | Таҳияи маҳсулот: бэкенд, Android, веб, амният',
     'meta.desc': 'Маҳсулотро пурра месозам: Go, Rust, Kotlin, веб ва инфрасохтор. Ҳама дар кор, бо трафики воқеӣ ва пардохтҳо. Таҳияи фармоишӣ ва маҳсулоти худӣ.',
+    'meta.ogAlt': 'Aminyx — маҳсулотро пурра месозам: бэкенд, Android, веб, амният',
     'a11y.skip': 'Ба мундариҷа',
     'a11y.theme': 'Иваз кардани мавзӯъ',
     'a11y.menu': 'Меню',
@@ -134,6 +137,7 @@ window.I18N = {
     'craft.title': 'Craft — озмоишгоҳи интерактивӣ | aminyx.top',
     'craft.tag': 'Озмоишгоҳ',
     'craft.lead': 'Механикаҳо аз муҳандисии воқеӣ — на видео ва на расм: ҳар якеро ламс кардан мумкин аст. Ҳамон принсипҳое, ки Aminyx Link ва SomonVPN бар онҳо сохта шудаанд.',
+    'craft.desc': 'Механикаҳои интерактивӣ аз муҳандисии воқеӣ: multipath-failover, Reed-Solomon FEC, congestion control, kill switch. Ҳар якеро ламс кардан мумкин аст.',
     'craft.v1t': 'Multipath failover',
     'craft.v1p': 'Ба роҳи фаъол клик кунед — канда мешавад. Бубинед, ки трафик фавран ба роҳи эҳтиётӣ мегузарад.',
     'craft.v2t': 'Reed-Solomon FEC',
@@ -237,6 +241,7 @@ window.I18N = {
   en: {
     'meta.title': 'Aminyx | Product development: backend, Android, web, security',
     'meta.desc': 'I build products end to end: Go, Rust, Kotlin, web and infrastructure. In production with real traffic and payments. Custom development and my own products.',
+    'meta.ogAlt': 'Aminyx — I build products end to end: backend, Android, web, security',
     'a11y.skip': 'Skip to content',
     'a11y.theme': 'Toggle theme',
     'a11y.menu': 'Menu',
@@ -251,6 +256,7 @@ window.I18N = {
     'craft.title': 'Craft — an interactive lab | aminyx.top',
     'craft.tag': 'The lab',
     'craft.lead': 'Mechanics from real engineering — not videos, not stills: every piece responds to your hands. The same principles that power Aminyx Link and SomonVPN.',
+    'craft.desc': 'Interactive mechanics from real engineering: multipath failover, Reed-Solomon FEC, congestion control, kill switch. Every piece responds to your hands.',
     'craft.v1t': 'Multipath failover',
     'craft.v1p': 'Click the active path to sever it. Watch traffic reroute to the backup instantly.',
     'craft.v2t': 'Reed-Solomon FEC',

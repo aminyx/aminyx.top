@@ -12,6 +12,12 @@ function applyLang(lang) {
   docEl.lang = lang;
   try { localStorage.setItem('lang', lang); } catch (e) {}
   if (dict['craft.title']) document.title = dict['craft.title'];
+  /* описание страницы /craft тоже локализуем (иначе в EN/TG оставалось русским) */
+  var setMeta = function (sel, val) { var m = document.querySelector(sel); if (m && val) m.setAttribute('content', val); };
+  if (dict['craft.desc']) {
+    setMeta('meta[name="description"]', dict['craft.desc']);
+    setMeta('meta[property="og:description"]', dict['craft.desc']);
+  }
   document.querySelectorAll('[data-i18n]').forEach(function (el) {
     var v = dict[el.dataset.i18n];
     if (v) el.textContent = v;

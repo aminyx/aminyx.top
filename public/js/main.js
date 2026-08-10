@@ -44,6 +44,14 @@
     document.title = dict['meta.title'];
     var metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute('content', dict['meta.desc']);
+    /* og:* тоже держим в актуальном языке при клиентском переключении */
+    var setOg = function (prop, val) {
+      var m = document.querySelector('meta[property="' + prop + '"]');
+      if (m && val) m.setAttribute('content', val);
+    };
+    setOg('og:title', dict['meta.title']);
+    setOg('og:description', dict['meta.desc']);
+    setOg('og:image:alt', dict['meta.ogAlt']);
 
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var v = dict[el.dataset.i18n];
@@ -67,8 +75,13 @@
      узлов — короткий кросс-фейд вместо скачка; без API и под
      reduced-motion — мгновенно, как раньше */
   function withTransition(apply) {
-    if (!document.startViewTransition || reduceMotion) apply();
-    else document.startViewTransition(apply);
+    if (!document.startViewTransition || reduceMotion) { apply(); return; }
+    var t = document.startViewTransition(apply);
+    /* пропущенный/прерванный переход (быстрое переключение языка, уход со страницы)
+       отклоняет .ready/.finished с InvalidStateError — это ожидаемо, гасим промис,
+       чтобы не сыпать «Uncaught (in promise)» в консоль */
+    if (t && t.ready && t.ready.catch) t.ready.catch(function () {});
+    if (t && t.finished && t.finished.catch) t.finished.catch(function () {});
   }
 
   document.querySelectorAll('.lang-switch button').forEach(function (btn) {
