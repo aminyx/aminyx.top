@@ -842,6 +842,16 @@ html.js .h1.staged .w {
   transition: color var(--t-fast) var(--ease-out);
 }
 .social a:hover { color: var(--text-1); }
+/* ник — фолбэк KPI-канала: когда t.me недоступен, ник ищут в приложении */
+.nick-copy {
+  font-family: var(--font-mono);
+  font-size: var(--fs-tech);
+  font-weight: 500;
+  color: var(--text-3);
+  transition: color var(--t-fast) var(--ease-out);
+}
+.nick-copy:hover { color: var(--text-1); }
+.nick-copy.copied { color: var(--accent-text); }
 
 /* ---------- Футер ---------- */
 
