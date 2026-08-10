@@ -115,6 +115,18 @@
     });
   }
 
+  /* ---------- Web Share: кнопка живёт только там, где API есть ---------- */
+
+  var shareLi = document.getElementById('share-li');
+  var shareBtn = document.getElementById('share-btn');
+  if (shareLi && shareBtn && navigator.share) {
+    shareLi.hidden = false;
+    shareBtn.addEventListener('click', function () {
+      navigator.share({ title: document.title, url: 'https://aminyx.top/' })
+        .catch(function () { /* отмена шаринга — не ошибка */ });
+    });
+  }
+
   /* ---------- Навигация: фон при скролле ---------- */
 
   var nav = document.getElementById('nav');
