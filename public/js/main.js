@@ -63,8 +63,18 @@
     stageH1();
   }
 
+  /* View Transition (Baseline 2025): смена языка перерисовывает десятки
+     узлов — короткий кросс-фейд вместо скачка; без API и под
+     reduced-motion — мгновенно, как раньше */
+  function withTransition(apply) {
+    if (!document.startViewTransition || reduceMotion) apply();
+    else document.startViewTransition(apply);
+  }
+
   document.querySelectorAll('.lang-switch button').forEach(function (btn) {
-    btn.addEventListener('click', function () { applyLang(btn.dataset.lang); });
+    btn.addEventListener('click', function () {
+      withTransition(function () { applyLang(btn.dataset.lang); });
+    });
   });
 
   applyLang(docEl.dataset.lang || 'ru');
@@ -77,13 +87,15 @@
   }
   syncThemeBtn();
   themeBtn.addEventListener('click', function () {
-    var next = docEl.dataset.theme === 'dark' ? 'light' : 'dark';
-    docEl.dataset.theme = next;
-    store('theme', next);
-    syncThemeBtn();
-    if (window.__setThemeColor) window.__setThemeColor(next);
-    if (window.__sceneRefreshTheme) window.__sceneRefreshTheme();
-    drawMatrix(matrixProgress);
+    withTransition(function () {
+      var next = docEl.dataset.theme === 'dark' ? 'light' : 'dark';
+      docEl.dataset.theme = next;
+      store('theme', next);
+      syncThemeBtn();
+      if (window.__setThemeColor) window.__setThemeColor(next);
+      if (window.__sceneRefreshTheme) window.__sceneRefreshTheme();
+      drawMatrix(matrixProgress);
+    });
   });
 
   /* ---------- Навигация: фон при скролле ---------- */

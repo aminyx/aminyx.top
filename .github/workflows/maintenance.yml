@@ -1,0 +1,73 @@
+name: Maintenance
+
+on:
+  schedule:
+    - cron: '43 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  upkeep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # security.txt: Expires всегда в будущем (RFC 9116 рекомендует < года)
+      - name: Refresh security.txt Expires
+        run: |
+          f=public/.well-known/security.txt
+          new=$(date -u -d '+10 months' +%Y-%m-%dT00:00:00.000Z)
+          sed -i "s/^Expires: .*/Expires: $new/" "$f"
+          if ! git diff --quiet "$f"; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$f"
+            git commit -m "Обслуживание: продлён Expires в security.txt"
+            git push
+          fi
+
+      # срок регистрации домена: issue за 35 дней до истечения
+      - name: Check domain expiry (RDAP)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          exp=$(curl -sL --max-time 30 https://rdap.org/domain/aminyx.top \
+            | python3 -c "import sys,json;d=json.load(sys.stdin);print(next(e['eventDate'] for e in d['events'] if e['eventAction']=='expiration'))" 2>/dev/null) || exit 0
+          [ -z "$exp" ] && exit 0
+          left=$(( ($(date -u -d "$exp" +%s) - $(date -u +%s)) / 86400 ))
+          echo "Домен истекает: $exp (через $left дн.)"
+          if [ "$left" -lt 35 ]; then
+            gh label create domain --repo "$GITHUB_REPOSITORY" --color B60205 2>/dev/null || true
+            open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label domain --state open --json number --jq 'length')
+            [ "$open" = "0" ] && gh issue create --repo "$GITHUB_REPOSITORY" --label domain \
+              --title "Домен aminyx.top истекает через $left дн." \
+              --body "RDAP: expiration $exp. Проверить автопродление у регистратора."
+          fi
+
+      # typosquatting: новые зарегистрированные перестановки домена
+      - name: dnstwist scan
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pip -q install dnstwist[full] 2>/dev/null || pip -q install dnstwist
+          dnstwist --registered --format list aminyx.top | sort > /tmp/twist.txt || exit 0
+          snap=.github/dnstwist-snapshot.txt
+          touch "$snap"
+          new=$(comm -13 <(sort "$snap") /tmp/twist.txt | grep -v '^aminyx\.top$' || true)
+          if [ -n "$new" ]; then
+            gh label create brand --repo "$GITHUB_REPOSITORY" --color FBCA04 2>/dev/null || true
+            gh issue create --repo "$GITHUB_REPOSITORY" --label brand \
+              --title "Новые домены-двойники aminyx.top" \
+              --body "$(printf 'Зарегистрированы новые перестановки домена:\n\n%s\n\nПроверить на фишинг/клон.' "$new")"
+            cp /tmp/twist.txt "$snap"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$snap"
+            git commit -m "Обслуживание: обновлён снапшот dnstwist"
+            git push
+          fi
