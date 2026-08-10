@@ -28,7 +28,7 @@ export function mount2d(rootEl) {
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.clearRect(0, 0, W, H);
     var pa = [0, 0, 0], pb = [0, 0, 0];
-    function sx(p) { return (p[0] * sim.aspect * 0.5 + 0.5) * W; }
+    function sx(p) { return (p[0] * 0.5 + 0.5) * W; }
     function sy(p) { return (0.5 - p[1] * 0.5) * H; }
     var i, e, th = sim.theme;
     c.lineWidth = 1;
@@ -64,7 +64,7 @@ export function mount2d(rootEl) {
       c.globalAlpha = (db.life / 900) * 0.85;
       c.fillStyle = db.spark ? th.packetCss : th.nodeCss;
       c.beginPath();
-      c.arc((db.x * sim.aspect * 0.5 + 0.5) * W, (0.5 - db.y * 0.5) * H, db.size, 0, Math.PI * 2);
+      c.arc((db.x * 0.5 + 0.5) * W, (0.5 - db.y * 0.5) * H, db.size, 0, Math.PI * 2);
       c.fill();
     }
     /* узел-фокус за CTA в финале */

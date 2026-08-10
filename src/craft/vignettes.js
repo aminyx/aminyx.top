@@ -9,6 +9,9 @@ function cssColors() {
   return {
     accent: cs.getPropertyValue('--accent').trim() || '#e8ac3f',
     accentText: cs.getPropertyValue('--accent-text').trim() || '#f0b855',
+    packet: document.documentElement.dataset.theme === 'light'
+      ? (cs.getPropertyValue('--accent-text').trim() || '#8a5a08')
+      : (cs.getPropertyValue('--accent').trim() || '#e8ac3f'),
     text1: cs.getPropertyValue('--text-1').trim(),
     text3: cs.getPropertyValue('--text-3').trim(),
     line: cs.getPropertyValue('--line-strong').trim(),
@@ -63,7 +66,7 @@ function scaffold(canvas, drawFn, clickFn) {
 
   if (clickFn) {
     canvas.style.cursor = 'crosshair';
-    canvas.addEventListener('pointerdown', function (ev) {
+    canvas.addEventListener('click', function (ev) {
       var r = canvas.getBoundingClientRect();
       clickFn(ev.clientX - r.left, ev.clientY - r.top, v);
       if (reduceMotion) v.redraw();
@@ -140,7 +143,7 @@ export function initFailover(canvas) {
     for (var k = 0; k < packets.length; k++) {
       var pk2 = packets[k], q2 = pt(paths[pk2.p], Math.min(pk2.t, 1), v);
       ctx.globalAlpha = pk2.dead ? Math.max(0, 1 - pk2.dead / 350) : 0.95;
-      ctx.fillStyle = v.colors.accent;
+      ctx.fillStyle = v.colors.packet;
       ctx.beginPath(); ctx.arc(q2.x, q2.y, 3, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 0.9;
@@ -177,7 +180,15 @@ export function initFec(canvas) {
   function newBatch() {
     batch = [];
     for (var i = 0; i < K + M; i++) {
-      batch.push({ i: i, parity: i >= K, x: -0.08 - i * 0.045, knocked: false, drop: 0 });
+      batch.push({
+        i: i,
+        parity: i >= K,
+        /* под reduced-motion блоки не летят — ставим их сразу в раскладку
+           прибытия, клики продолжают работать */
+        x: reduceMotion ? 0.86 - (K + M - 1 - i) * 0.052 : -0.08 - i * 0.045,
+        knocked: false,
+        drop: 0,
+      });
     }
     phase = 'fly';
   }
@@ -199,7 +210,7 @@ export function initFec(canvas) {
         phase = 'check';
         phaseAt = v.time;
         var lostN = batch.filter(function (b) { return b.knocked; }).length;
-        if (lostN <= M) recovered++; else failed++;
+        if (lostN > 0 && lostN <= M) recovered++; else if (lostN > M) failed++;
       }
     } else if (v.time - phaseAt > 2200) {
       newBatch();
@@ -224,7 +235,7 @@ export function initFec(canvas) {
         ctx.fillStyle = v.colors.accent;
         ctx.fillRect(px, y, size, size);
       } else {
-        ctx.fillStyle = b2.parity ? v.colors.accent : v.colors.base;
+        ctx.fillStyle = b2.parity ? v.colors.packet : v.colors.base;
         ctx.globalAlpha *= b2.parity ? 0.75 : 0.55;
         ctx.fillRect(px, b2.knocked ? py : y, size, size);
       }
@@ -247,6 +258,7 @@ export function initFec(canvas) {
       var px = b.x * v.W, py = v.H * 0.42;
       if (!b.knocked && x > px - 8 && x < px + size + 8 && y > py - 10 && y < py + size + 10) {
         b.knocked = true;
+        if (reduceMotion) b.drop = 700;
         return;
       }
     }
@@ -259,6 +271,15 @@ export function initFec(canvas) {
 export function initCongestion(canvas) {
   var ALGS = ['RENO', 'CUBIC', 'BBR'];
   var alg = 0, cwnd = 4, wmax = 42, tSinceLoss = 0, hist = [];
+  /* под reduced-motion график не накапливается — предзаполняем пилу Reno */
+  if (reduceMotion) {
+    var cw = 4;
+    for (var hI = 0; hI < 240; hI++) {
+      cw += cw < 12 ? 0.19 : 0.064;
+      if (hI === 90 || hI === 170) cw /= 2;
+      hist.push(Math.min(cw, 56));
+    }
+  }
 
   var v = scaffold(canvas, function (ctx, v, dt) {
     tSinceLoss += dt * 0.001;
@@ -324,14 +345,16 @@ export function initKillswitch(canvas) {
   var v = scaffold(canvas, function (ctx, v, dt) {
     var now = performance.now();
     var down = downUntil > now;
-    gate += ((down ? 1 : 0) - gate) * Math.min(dt * 0.02, 1);
+    if (reduceMotion) gate = down ? 1 : 0;
+    else gate += ((down ? 1 : 0) - gate) * Math.min(dt * 0.02, 1);
 
     if (v.time > spawnAt) { packets.push({ x: 0.1 }); spawnAt = v.time + 300; }
 
     var gateX = v.W * 0.3;
     for (var i = packets.length - 1; i >= 0; i--) {
       var p = packets[i];
-      var atGate = p.x * v.W >= gateX - 6 && gate > 0.5;
+      var pxk = p.x * v.W;
+      var atGate = gate > 0.5 && pxk >= gateX - 6 && pxk <= gateX + 2;
       if (!atGate) p.x += dt * 0.00022;
       if (p.x > 0.92) packets.splice(i, 1);
       if (atGate && p.x * v.W > gateX - 8) { p.x = (gateX - 8) / v.W - (i % 5) * 0.02; if (!p.counted) { p.counted = true; blocked++; } }
@@ -353,7 +376,7 @@ export function initKillswitch(canvas) {
     /* пакеты */
     for (var k = 0; k < packets.length; k++) {
       ctx.globalAlpha = 0.95;
-      ctx.fillStyle = v.colors.accent;
+      ctx.fillStyle = v.colors.packet;
       ctx.beginPath(); ctx.arc(packets[k].x * v.W, y, 3, 0, Math.PI * 2); ctx.fill();
     }
     /* узлы app / net */
