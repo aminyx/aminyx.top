@@ -19,7 +19,7 @@ function cssColors() {
   };
 }
 
-function scaffold(canvas, drawFn, clickFn) {
+function scaffold(canvas, drawFn, clickFn, keyFn) {
   var ctx = canvas.getContext('2d');
   var W = 0, H = 0, dpr = 1, running = false, rafId = 0, lastT = 0, visible = false;
   var v = {
@@ -70,6 +70,19 @@ function scaffold(canvas, drawFn, clickFn) {
       var r = canvas.getBoundingClientRect();
       clickFn(ev.clientX - r.left, ev.clientY - r.top, v);
       if (reduceMotion) v.redraw();
+    });
+    /* Клавиатурная операбельность (WCAG 2.1.1): канвас фокусируем (tabindex — в
+       разметке), Enter/Space = первичное действие в центре, стрелки уходят в
+       keyFn виньетки (например переключение алгоритма в congestion). */
+    if (canvas.getAttribute('tabindex') === null) canvas.tabIndex = 0;
+    canvas.addEventListener('keydown', function (ev) {
+      var handled = keyFn ? keyFn(ev.key, v) : false;
+      if (!handled && (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar')) {
+        var r = canvas.getBoundingClientRect();
+        clickFn(r.width / 2, r.height / 2, v);
+        handled = true;
+      }
+      if (handled) { ev.preventDefault(); if (reduceMotion) v.redraw(); }
     });
   }
   resize();
@@ -333,6 +346,13 @@ export function initCongestion(canvas) {
     else if (alg === 1) cwnd = Math.max(3, cwnd * 0.7);
     /* BBR — модельно loss-agnostic: окно почти не проседает */
     else cwnd = Math.max(3, cwnd * 0.96);
+  }, function (key) {
+    /* стрелки переключают алгоритм с клавиатуры — эквивалент клика по [RENO]/[CUBIC]/[BBR] */
+    if (key === 'ArrowRight' || key === 'ArrowUp') alg = (alg + 1) % 3;
+    else if (key === 'ArrowLeft' || key === 'ArrowDown') alg = (alg + 2) % 3;
+    else return false;
+    tSinceLoss = 0; wmax = Math.max(cwnd, 20); if (alg === 0) cwnd = 4;
+    return true;
   });
   return v;
 }

@@ -351,6 +351,10 @@ html.js .h1.staged .w {
   gap: 0.9rem;
 }
 
+/* На /craft в шапке нет .nav-links — тулбар прижимаем вправо здесь,
+   а не инлайн-стилем (его блокирует строгий CSP страницы). */
+body.craft-page .nav-tools { margin-left: auto; }
+
 .lang-switch {
   display: flex;
   border: 1px solid var(--line);
@@ -946,6 +950,9 @@ body.craft-page .nav { border-bottom-color: var(--line); }
   border-bottom: 1px solid var(--line);
   touch-action: manipulation;
 }
+/* Канвасы фокусируемы с клавиатуры (scaffold ставит tabindex); карточка
+   с overflow:hidden обрезала бы внешний контур — рисуем его внутрь. */
+.craft-card canvas:focus-visible { outline-offset: -3px; }
 .craft-card figcaption { padding: clamp(1.1rem, 2vw, 1.5rem); }
 .craft-idx {
   font-family: var(--font-mono);
@@ -1250,3 +1257,18 @@ html.sys-probe { cursor: crosshair; }
     transition: none;
   }
 }
+
+/* ---------- Правовые страницы (/privacy) ----------
+   Раньше эти правила жили инлайновым <style> в privacy/index.html, но строгий
+   CSP страницы (default-src 'self', без style-src 'unsafe-inline') их блокировал —
+   страница ехала без вёрстки. Вынесено во внешний CSS, который CSP разрешает. */
+
+.legal { max-width: 44rem; margin-inline: auto; padding: calc(var(--nav-h) + 4rem) clamp(1.25rem, 4vw, 2.75rem) 5rem; position: relative; z-index: 1; }
+.legal h1 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+.legal h2 { font-size: 1.15rem; font-weight: 700; margin: 2.6rem 0 0.7rem; }
+.legal p { color: var(--text-2); font-size: var(--fs-caption); line-height: 1.65; margin-bottom: 0.8rem; }
+.legal .tag { margin-top: 2.8rem; }
+.legal > .tag:first-child { margin-top: 0; }
+.legal a.link-out { margin-top: 2.5rem; }
+.legal p a { color: var(--accent-text); border-bottom: 1px solid transparent; transition: border-color var(--t-fast) var(--ease-out); }
+.legal p a:hover { border-bottom-color: var(--accent-text); }

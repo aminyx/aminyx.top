@@ -24,14 +24,14 @@
   <link rel="preload" href="/assets/fonts/JetBrainsMono-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/JetBrainsMono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/fonts/fonts.css?v=2">
-  <link rel="stylesheet" href="/css/style.css?v=9">
+  <link rel="stylesheet" href="/css/style.css?v=10">
 </head>
 <body class="craft-page">
 
 <header class="nav" id="nav">
   <div class="container nav-inner">
-    <a class="wordmark" href="/" aria-label="aminyx — на главную">aminyx<span class="wordmark-dot">.</span></a>
-    <div class="nav-tools" style="margin-left:auto">
+    <a class="wordmark" href="/" aria-label="aminyx">aminyx<span class="wordmark-dot">.</span></a>
+    <div class="nav-tools">
       <div class="lang-switch" role="group" aria-label="Язык" data-i18n-aria="a11y.lang">
         <button type="button" data-lang="ru" aria-pressed="false">RU</button>
         <button type="button" data-lang="tg" aria-pressed="false">TJ</button>
@@ -54,38 +54,38 @@
 
   <div class="craft-grid">
     <figure class="craft-card" data-vignette="failover">
-      <canvas></canvas>
+      <canvas tabindex="0" role="application" aria-labelledby="ct-failover" aria-describedby="cd-failover"></canvas>
       <figcaption>
         <span class="craft-idx" aria-hidden="true">01</span>
-        <h2 data-i18n="craft.v1t">Multipath failover</h2>
-        <p data-i18n="craft.v1p">Клик по активному пути обрывает его. Смотрите, как трафик мгновенно перетекает на резервный маршрут.</p>
+        <h2 id="ct-failover" data-i18n="craft.v1t">Multipath failover</h2>
+        <p id="cd-failover" data-i18n="craft.v1p">Клик по активному пути обрывает его. Смотрите, как трафик мгновенно перетекает на резервный маршрут.</p>
       </figcaption>
     </figure>
 
     <figure class="craft-card" data-vignette="fec">
-      <canvas></canvas>
+      <canvas tabindex="0" role="application" aria-labelledby="ct-fec" aria-describedby="cd-fec"></canvas>
       <figcaption>
         <span class="craft-idx" aria-hidden="true">02</span>
-        <h2 data-i18n="craft.v2t">Reed-Solomon FEC</h2>
-        <p data-i18n="craft.v2p">Кликами выбивайте блоки в полёте. Пока потерь не больше числа парити-блоков — данные восстанавливаются без ретрансляции.</p>
+        <h2 id="ct-fec" data-i18n="craft.v2t">Reed-Solomon FEC</h2>
+        <p id="cd-fec" data-i18n="craft.v2p">Кликами выбивайте блоки в полёте. Пока потерь не больше числа парити-блоков — данные восстанавливаются без ретрансляции.</p>
       </figcaption>
     </figure>
 
     <figure class="craft-card" data-vignette="congestion">
-      <canvas></canvas>
+      <canvas tabindex="0" role="application" aria-labelledby="ct-congestion" aria-describedby="cd-congestion"></canvas>
       <figcaption>
         <span class="craft-idx" aria-hidden="true">03</span>
-        <h2 data-i18n="craft.v3t">Congestion control</h2>
-        <p data-i18n="craft.v3p">Клик — потеря пакета. Сравните, как Reno, CUBIC и BBR восстанавливают окно после сбоя.</p>
+        <h2 id="ct-congestion" data-i18n="craft.v3t">Congestion control</h2>
+        <p id="cd-congestion" data-i18n="craft.v3p">Клик — потеря пакета. Сравните, как Reno, CUBIC и BBR восстанавливают окно после сбоя.</p>
       </figcaption>
     </figure>
 
     <figure class="craft-card" data-vignette="killswitch">
-      <canvas></canvas>
+      <canvas tabindex="0" role="application" aria-labelledby="ct-killswitch" aria-describedby="cd-killswitch"></canvas>
       <figcaption>
         <span class="craft-idx" aria-hidden="true">04</span>
-        <h2 data-i18n="craft.v4t">Kill switch</h2>
-        <p data-i18n="craft.v4p">Клик обрывает VPN-туннель. Заслонка закрывается быстрее, чем уходит первый пакет: утечек — ноль.</p>
+        <h2 id="ct-killswitch" data-i18n="craft.v4t">Kill switch</h2>
+        <p id="cd-killswitch" data-i18n="craft.v4p">Клик обрывает VPN-туннель. Заслонка закрывается быстрее, чем уходит первый пакет: утечек — ноль.</p>
       </figcaption>
     </figure>
 
