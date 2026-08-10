@@ -904,6 +904,107 @@ html.js .reveal.d3 { transition-delay: 180ms; }
 html.js .reveal.d4 { transition-delay: 240ms; }
 html.js .reveal.d5 { transition-delay: 300ms; }
 
+/* ---------- /craft: лаборатория ---------- */
+
+body.craft-page .nav::before { opacity: 1; }
+body.craft-page .nav { border-bottom-color: var(--line); }
+
+.craft {
+  padding-top: calc(var(--nav-h) + clamp(3rem, 7vw, 5.5rem));
+  padding-bottom: clamp(4rem, 8vw, 6rem);
+}
+.craft-h1 {
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin: 0.4rem 0 1rem;
+}
+.craft-lead {
+  color: var(--text-2);
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  max-width: 44rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+.craft-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1.2rem, 2.5vw, 2rem);
+}
+.craft-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--surface-1) 92%, transparent);
+  overflow: hidden;
+  margin: 0;
+}
+.craft-card canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid var(--line);
+  touch-action: manipulation;
+}
+.craft-card figcaption { padding: clamp(1.1rem, 2vw, 1.5rem); }
+.craft-idx {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent-text);
+}
+.craft-card h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0.35rem 0 0.4rem;
+}
+.craft-card figcaption p {
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+  line-height: 1.55;
+}
+.craft-foot { margin-top: clamp(2.5rem, 5vw, 4rem); }
+
+.type-lab {
+  border-bottom: 1px solid var(--line);
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-content: center;
+  gap: 1.2rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem);
+}
+.type-sample {
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-align: center;
+  outline: none;
+  min-width: 6ch;
+  font-variation-settings: "wght" 800;
+}
+.type-ctl {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+.type-ctl input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+.type-ctl output {
+  min-width: 3ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 820px) {
+  .craft-grid { grid-template-columns: 1fr; }
+}
+
 /* ---------- Адаптив ---------- */
 
 @media (max-width: 1024px) {
