@@ -32,6 +32,9 @@ export function createSim() {
     chaosNext: 0,
     storm: { until: 0, nextKill: 0 },
     stats: { kills: 0, recoveries: 0 },
+    debris: [],            /* осколки убитых узлов: баллистика без физдвижка */
+    zoom: 1,               /* «камера»: наезд по мере скролла */
+    rot: 0,                /* …и лёгкий поворот субстрата */
     time: 0,
     aspect: 1,
     intensity: 1,          /* от скролла: hero 1 → середина 0.42 → контакт 0.85 */
@@ -123,7 +126,27 @@ export function createSim() {
     sim.killed[i] = sim.time + (ms || 2600);
     sim.stats.kills++;
     sim.manualPulse = 1;
+    spawnDebris(i);
     return true;
+  }
+
+  /* узел раскалывается: 10 осколков разлетаются и гаснут под «гравитацией» */
+  function spawnDebris(i) {
+    if (sim.reduceMotion || sim.debris.length > 36) return;
+    var out = [0, 0, 0];
+    nodePos(sim.nodes[i], out);
+    for (var k = 0; k < 10; k++) {
+      var a = Math.random() * Math.PI * 2;
+      var sp = 0.00012 + Math.random() * 0.00035;
+      sim.debris.push({
+        x: out[0], y: out[1],
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp + 0.00012,
+        life: 900,
+        size: 1.2 + Math.random() * 1.8,
+        spark: Math.random() < 0.25,
+      });
+    }
   }
 
   function killAt(cx, cy) {
@@ -170,6 +193,13 @@ export function createSim() {
     var depth = 0.55 + (1 - n.z) * 0.45;
     px = px * depth + sim.pointer.x * 0.03 * (1 - n.z);
     py = py * depth + sim.pointer.y * 0.03 * (1 - n.z) + sim.scrollPar * (0.22 + n.z * 0.3);
+    /* «камера»: наезд и лёгкий поворот по мере чтения страницы */
+    if (sim.zoom !== 1 || sim.rot !== 0) {
+      var cr = Math.cos(sim.rot), sr = Math.sin(sim.rot);
+      var rx = (px * cr - py * sr) * sim.zoom;
+      py = (px * sr + py * cr) * sim.zoom;
+      px = rx;
+    }
     /* финал страницы: узлы стягиваются к точке за CTA — частично,
        чтобы система сходилась, но не схлопывалась в пятно */
     if (sim.converge > 0) {
@@ -232,6 +262,15 @@ export function createSim() {
       sim.chaosNext = sim.time + 1600 + Math.random() * 1400;
     }
     sim.manualPulse *= Math.pow(0.5, dt / 700);
+    /* осколки: баллистика + затухание */
+    for (i = sim.debris.length - 1; i >= 0; i--) {
+      var db = sim.debris[i];
+      db.life -= dt;
+      if (db.life <= 0) { sim.debris.splice(i, 1); continue; }
+      db.vy -= dt * 0.0000009;
+      db.x += db.vx * dt;
+      db.y += db.vy * dt;
+    }
     var i;
     for (i = 0; i < N; i++) {
       var n = sim.nodes[i];
@@ -287,6 +326,9 @@ export function createSim() {
     var c = (p - 0.8) / 0.2;
     c = c < 0 ? 0 : c > 1 ? 1 : c;
     sim.converge = sim.reduceMotion ? 0 : c * c * (3 - 2 * c);
+    /* «камера»-рассказчик: медленный наезд и поворот ~4° за страницу */
+    sim.zoom = sim.reduceMotion ? 1 : 1 + p * 0.14;
+    sim.rot = sim.reduceMotion ? 0 : p * 0.07;
   };
 
   function hexToRgb(s) {

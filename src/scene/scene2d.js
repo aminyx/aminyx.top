@@ -58,6 +58,15 @@ export function mount2d(rootEl) {
       c.fillStyle = th.packetCss;
       c.beginPath(); c.arc(x, y, 1.8, 0, Math.PI * 2); c.fill();
     }
+    /* осколки убитых узлов */
+    for (i = 0; i < sim.debris.length; i++) {
+      var db = sim.debris[i];
+      c.globalAlpha = (db.life / 900) * 0.85;
+      c.fillStyle = db.spark ? th.packetCss : th.nodeCss;
+      c.beginPath();
+      c.arc((db.x * sim.aspect * 0.5 + 0.5) * W, (0.5 - db.y * 0.5) * H, db.size, 0, Math.PI * 2);
+      c.fill();
+    }
     /* узел-фокус за CTA в финале */
     if (sim.converge > 0.01) {
       var ax = sim.aspect < 1 ? sim.aspect : Math.min(sim.aspect, 1.25);

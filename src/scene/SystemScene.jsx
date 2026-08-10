@@ -66,8 +66,8 @@ function SystemLayer({ sim }) {
   const packetsRef = useRef();
 
   const buffers = useMemo(() => {
-    /* N + 1: последний слот узлового буфера — яркий узел-фокус за CTA */
-    const E = sim.edges.length, N = sim.N + 1, P = sim.PMAX * 4;
+    /* N + 1: слот узла-фокуса; P: пакеты с хвостами + бюджет осколков */
+    const E = sim.edges.length, N = sim.N + 1, P = sim.PMAX * 4 + 48;
     return {
       linePos: new Float32Array(E * 2 * 3), lineCol: new Float32Array(E * 2 * 4),
       nodePos: new Float32Array(N * 3), nodeSize: new Float32Array(N), nodeCol: new Float32Array(N * 4),
@@ -169,6 +169,17 @@ function SystemLayer({ sim }) {
         b.pktCol[o4 + 3] = (s === 0 ? 0.95 : 0.4 - s * 0.09) * (0.45 + 0.55 * sim.intensity);
         pv++;
       }
+    }
+    /* осколки убитых узлов */
+    for (i = 0; i < sim.debris.length && pv < sim.PMAX * 4 + 48; i++) {
+      const db = sim.debris[i];
+      o3 = pv * 3; o4 = pv * 4;
+      const col = db.spark ? th.packet : th.node;
+      b.pktPos[o3] = db.x; b.pktPos[o3 + 1] = db.y; b.pktPos[o3 + 2] = 0;
+      b.pktSize[pv] = db.size * 1.6 * dpr;
+      b.pktCol[o4] = col[0]; b.pktCol[o4 + 1] = col[1]; b.pktCol[o4 + 2] = col[2];
+      b.pktCol[o4 + 3] = (db.life / 900) * 0.85;
+      pv++;
     }
 
     for (const ref of [linesRef, nodesRef, packetsRef]) {
