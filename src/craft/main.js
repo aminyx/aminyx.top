@@ -28,7 +28,10 @@ function applyLang(lang) {
 document.querySelectorAll('.lang-switch button').forEach(function (btn) {
   btn.addEventListener('click', function () { applyLang(btn.dataset.lang); });
 });
-applyLang(docEl.dataset.lang || 'ru');
+/* в prod-сборке Vite поднимает модуль в head — словари (defer) исполняются
+   позже; DOMContentLoaded гарантирует наличие window.I18N */
+if (window.I18N) applyLang(docEl.dataset.lang || 'ru');
+else document.addEventListener('DOMContentLoaded', function () { applyLang(docEl.dataset.lang || 'ru'); });
 
 /* ---------- тема ---------- */
 

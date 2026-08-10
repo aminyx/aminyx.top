@@ -113,6 +113,7 @@ export function createSim() {
     var out = [0, 0, 0];
     var best = -1, bestD = (maxDist || 0.14) * (maxDist || 0.14);
     for (var i = 0; i < N; i++) {
+      if (sim.nodes[i].health < 0.5) continue;
       nodePos(sim.nodes[i], out);
       var dx = out[0] - cx, dy = out[1] - cy;
       var d = dx * dx + dy * dy;
@@ -151,7 +152,7 @@ export function createSim() {
 
   function killAt(cx, cy) {
     var i = nearestNode(cx, cy, 0.16);
-    if (i < 0 || sim.nodes[i].health < 0.5) return -1;
+    if (i < 0) return -1;
     return killNode(i) ? i : -1;
   }
 
@@ -418,12 +419,17 @@ export function attachInput(sim, onThemeChange) {
   var downAt = 0, downX = 0, downY = 0, stormFired = false, holdTimer = 0;
 
   function onDown(ev) {
+    /* только основная кнопка и первый палец: правый клик — контекстное меню,
+       средний — autoscroll, второй палец — жест */
+    if (ev.button !== 0 || ev.isPrimary === false) return;
     if (sim.reduceMotion || isInteractive(ev.target)) return;
     downAt = performance.now();
     downX = ev.clientX; downY = ev.clientY;
     stormFired = false;
     clearTimeout(holdTimer);
     holdTimer = setTimeout(function () {
+      /* медленное выделение текста — не шторм */
+      if (String(window.getSelection && window.getSelection())) return;
       stormFired = true;
       sim.stormNow();
       sfxStorm();
@@ -432,6 +438,7 @@ export function attachInput(sim, onThemeChange) {
   }
   function onUp(ev) {
     clearTimeout(holdTimer);
+    if (ev.button !== 0) return;
     if (sim.reduceMotion || stormFired || isInteractive(ev.target)) return;
     if (performance.now() - downAt > 500) return;
     if (Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 14) return;
@@ -442,9 +449,20 @@ export function attachInput(sim, onThemeChange) {
       dismissHint();
     }
   }
+  /* drag (выделение, свайп) отменяет таймер шторма */
+  function onDragCheck(ev) {
+    if (!holdTimer) return;
+    if (Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 12) clearTimeout(holdTimer);
+  }
+  function onCancel() { clearTimeout(holdTimer); }
+  /* курсор ушёл из окна — зонд гаснет */
+  function onLeave() { sim.probe.active = false; }
   document.addEventListener('pointerdown', onDown, { passive: true });
   document.addEventListener('pointerup', onUp, { passive: true });
-  document.addEventListener('pointercancel', function () { clearTimeout(holdTimer); }, { passive: true });
+  document.addEventListener('pointermove', onDragCheck, { passive: true });
+  document.addEventListener('pointercancel', onCancel, { passive: true });
+  document.addEventListener('pointerleave', onLeave, { passive: true });
+  window.addEventListener('blur', onLeave);
 
   /* пульт для терминала и Konami (main.js) */
   window.__system = {
@@ -475,6 +493,10 @@ export function attachInput(sim, onThemeChange) {
     if (onMove) window.removeEventListener('pointermove', onMove);
     document.removeEventListener('pointerdown', onDown);
     document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointermove', onDragCheck);
+    document.removeEventListener('pointercancel', onCancel);
+    document.removeEventListener('pointerleave', onLeave);
+    window.removeEventListener('blur', onLeave);
     clearTimeout(hintTimer);
     clearTimeout(holdTimer);
     if (window.__sceneRefreshTheme) delete window.__sceneRefreshTheme;

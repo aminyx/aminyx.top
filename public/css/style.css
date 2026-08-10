@@ -979,10 +979,10 @@ body.craft-page .nav { border-bottom-color: var(--line); }
   line-height: 1;
   letter-spacing: -0.02em;
   text-align: center;
-  outline: none;
   min-width: 6ch;
   font-variation-settings: "wght" 800;
 }
+.type-sample:focus:not(:focus-visible) { outline: none; }
 .type-ctl {
   display: flex;
   align-items: center;
@@ -1042,8 +1042,9 @@ body.craft-page .nav { border-bottom-color: var(--line); }
   .nav-links > a.active { border-bottom-color: var(--accent-text); }
   .nav-cta-m { display: inline-flex; margin-top: 1rem; padding: 0.85rem 1.6rem; font-size: 1rem; }
   /* CTA остаётся в баре (конверсия ≤1 клика из любой точки);
-     язык переезжает в оверлей — в баре ему не хватает места */
-  .nav-tools .lang-switch { display: none; }
+     язык переезжает в оверлей — в баре ему не хватает места.
+     На /craft оверлея нет — там переключатель остаётся в баре */
+  body:not(.craft-page) .nav-tools .lang-switch { display: none; }
   .lang-switch-m { display: flex; margin-top: 0.4rem; }
   /* цели касания ≥44px: язык — первоклассное действие трёхъязычного сайта */
   .lang-switch-m button { padding: 0.7rem 1.1rem; font-size: 0.8rem; }
@@ -1141,7 +1142,8 @@ html.sys-probe { cursor: crosshair; }
   position: fixed;
   top: calc(var(--nav-h) + 10px);
   right: clamp(1.25rem, 4vw, 2.75rem);
-  z-index: 110;
+  z-index: 95;
+  pointer-events: none;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 500;
@@ -1187,6 +1189,7 @@ html.sys-probe { cursor: crosshair; }
 .sys-line input {
   flex: 1;
   font: inherit;
+  font-size: 1rem;
   color: var(--text-1);
   background: none;
   border: 0;
@@ -1216,7 +1219,9 @@ html.sys-probe { cursor: crosshair; }
 
 @media (forced-colors: active) {
   /* декоративные слои теряют смысл в системной палитре */
-  #system-root, .grain { display: none; }
+  #system-root, .grain, #scene-hint, #chaos-hud { display: none; }
+  /* канвасы виньеток рисуют авторскими токенами — им нужен тёмный фон */
+  .craft-card canvas, .type-lab { forced-color-adjust: none; background: #0a0b0e; }
   /* фоны заливок выпиливаются — прозрачная рамка становится видимой границей */
   .btn { border: 1px solid transparent; }
   .status-dot { border: 1px solid transparent; }
@@ -1231,6 +1236,7 @@ html.sys-probe { cursor: crosshair; }
   *, *::before, *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
   html.js .reveal {
     opacity: 1;

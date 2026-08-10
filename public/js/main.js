@@ -228,19 +228,28 @@
     termPrint('type help to list commands');
   }
 
-  var termOpen = false;
+  var termOpen = false, termPrevFocus = null;
   function toggleTerm(open) {
     if (open && !term) buildTerm();
     if (!term) return;
     termOpen = open;
     term.hidden = !open;
-    if (open) termInput.focus();
+    if (open) {
+      termPrevFocus = document.activeElement;
+      termInput.focus();
+    } else if (termPrevFocus && document.contains(termPrevFocus)) {
+      termPrevFocus.focus();
+      termPrevFocus = null;
+    }
   }
 
   document.addEventListener('keydown', function (e) {
     var t = e.target;
-    var typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
-    if (e.key === '`' && !e.ctrlKey && !e.metaKey && !e.altKey && (!typing || t === termInput)) {
+    var typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+    /* та же физическая клавиша на русской/таджикской раскладке даёт «ё»;
+       внутри полей ввода не перехватываем — закрытие только по Escape */
+    var termKey = e.key === '`' || e.key === '~' || e.key === 'ё' || e.key === 'Ё' || e.code === 'Backquote';
+    if (termKey && !e.ctrlKey && !e.metaKey && !e.altKey && !typing) {
       e.preventDefault();
       toggleTerm(!termOpen);
     } else if (e.key === 'Escape' && termOpen) {
@@ -253,6 +262,8 @@
   var chaosHud = document.getElementById('chaos-hud');
   var chaosOn = false;
   function setChaosMode(on) {
+    /* без загруженной сцены HUD не включаем — не рассинхронизируем состояние */
+    if (on && !sys()) return;
     chaosOn = on;
     if (sys()) sys().chaos(on);
     if (chaosHud) chaosHud.hidden = !on;

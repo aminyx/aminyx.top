@@ -234,12 +234,18 @@ function StaticFrame({ sim }) {
     const t1 = setTimeout(kick, 80);
     const t2 = setTimeout(kick, 350);
     /* после восстановления WebGL-контекста под frameloop='never' никто
-       не перерисует кадр сам */
+       не перерисует кадр сам; при ресайзе пинок должен уйти после того,
+       как R3F пересоздаст drawing buffer (ресайз буфера очищает канвас) */
     gl.domElement.addEventListener('webglcontextrestored', kick);
+    let rt = 0;
+    const onResize = () => { clearTimeout(rt); rt = setTimeout(kick, 90); };
+    window.addEventListener('resize', onResize);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(rt);
       gl.domElement.removeEventListener('webglcontextrestored', kick);
+      window.removeEventListener('resize', onResize);
     };
   }, [sim, advance, gl]);
   return null;
@@ -263,7 +269,9 @@ export default function SystemApp({ sim }) {
       style={{ pointerEvents: 'none' }}
     >
       {!sim.reduceMotion && (
-        <PerformanceMonitor onChange={({ factor }) => setDegraded(factor < 0.5)} />
+        /* гистерезис: вход в деградацию ниже 0.35, выход выше 0.65 —
+           без флаппинга композера на пограничном GPU */
+        <PerformanceMonitor onChange={({ factor }) => setDegraded((d) => (d ? factor < 0.65 : factor < 0.35))} />
       )}
       <SystemLayer sim={sim} />
       {!degraded && (
