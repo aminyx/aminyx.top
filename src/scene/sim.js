@@ -25,6 +25,8 @@ export function createSim() {
     time: 0,
     aspect: 1,
     intensity: 1,          /* от скролла: hero 1 → середина 0.42 → контакт 0.85 */
+    converge: 0,           /* финал: система сходится к узлу за CTA (DIRECTION v2) */
+    focal: { x: 0, y: -0.24 },  /* clip-координаты CTA контакта (~62% высоты) */
     pointer: { x: 0, y: 0 },
     scrollPar: 0,
     maxScroll: 1,
@@ -93,6 +95,13 @@ export function createSim() {
     var depth = 0.55 + (1 - n.z) * 0.45;
     px = px * depth + sim.pointer.x * 0.03 * (1 - n.z);
     py = py * depth + sim.pointer.y * 0.03 * (1 - n.z) + sim.scrollPar * (0.22 + n.z * 0.3);
+    /* финал страницы: узлы стягиваются к точке за CTA — частично,
+       чтобы система сходилась, но не схлопывалась в пятно */
+    if (sim.converge > 0) {
+      var cv = sim.converge * (0.45 + 0.3 * (1 - n.z));
+      px += (sim.focal.x - px) * cv;
+      py += (sim.focal.y - py) * cv;
+    }
     /* узкие экраны: растягиваем по ширине (края обрезаются красиво);
        широкие: не даём сцене сжаться в центральную треть */
     out[0] = px / (sim.aspect < 1 ? sim.aspect : Math.min(sim.aspect, 1.25));
@@ -176,6 +185,12 @@ export function createSim() {
       ? 1 - (1 - mid) * (p / 0.28)
       : p > 0.8 ? mid + (tail - mid) * ((p - 0.8) / 0.2) : mid;
     sim.scrollPar = p * 0.35;
+    /* smoothstep на последних ~20% скролла; под reduced-motion схождение
+       выключено: единственный статичный кадр не должен заморозить финал
+       (кадр перерисовывается по смене темы в любой точке скролла) */
+    var c = (p - 0.8) / 0.2;
+    c = c < 0 ? 0 : c > 1 ? 1 : c;
+    sim.converge = sim.reduceMotion ? 0 : c * c * (3 - 2 * c);
   };
 
   function hexToRgb(s) {

@@ -14,8 +14,12 @@
   d.dataset.theme = t;
 
   if (!l) {
-    var langs = (navigator.languages || [navigator.language || 'ru']).join(',').toLowerCase();
-    l = langs.indexOf('tg') !== -1 ? 'tg' : (langs.indexOf('ru') !== -1 ? 'ru' : 'en');
+    /* сравниваем первичные субтеги, не подстроки: иначе регион Того
+       (fr-TG) ложно включал таджикский */
+    var tags = (navigator.languages || [navigator.language || 'ru']).map(function (s) {
+      return String(s).toLowerCase().split('-')[0];
+    });
+    l = tags.indexOf('tg') !== -1 ? 'tg' : (tags.indexOf('ru') !== -1 ? 'ru' : 'en');
   }
   d.dataset.lang = l;
   if (l !== 'ru') d.lang = l;

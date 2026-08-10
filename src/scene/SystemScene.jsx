@@ -65,7 +65,8 @@ function SystemLayer({ sim }) {
   const packetsRef = useRef();
 
   const buffers = useMemo(() => {
-    const E = sim.edges.length, N = sim.N, P = sim.PMAX * 4;
+    /* N + 1: последний слот узлового буфера — яркий узел-фокус за CTA */
+    const E = sim.edges.length, N = sim.N + 1, P = sim.PMAX * 4;
     return {
       linePos: new Float32Array(E * 2 * 3), lineCol: new Float32Array(E * 2 * 4),
       nodePos: new Float32Array(N * 3), nodeSize: new Float32Array(N), nodeCol: new Float32Array(N * 4),
@@ -126,6 +127,17 @@ function SystemLayer({ sim }) {
       b.nodeCol[o4] = th.node[0]; b.nodeCol[o4 + 1] = th.node[1]; b.nodeCol[o4 + 2] = th.node[2];
       b.nodeCol[o4 + 3] = na * (0.25 + n.health * 0.75) * (1 - n.z * 0.55);
     }
+    /* узел-фокус: система сходится к единственной яркой точке за CTA */
+    let nv = N;
+    if (sim.converge > 0.01) {
+      const ax = sim.aspect < 1 ? sim.aspect : Math.min(sim.aspect, 1.25);
+      o3 = N * 3; o4 = N * 4;
+      b.nodePos[o3] = sim.focal.x / ax; b.nodePos[o3 + 1] = sim.focal.y; b.nodePos[o3 + 2] = 0;
+      b.nodeSize[N] = (5.2 + Math.sin(sim.time * 0.0035) * 1.1) * dpr * sim.converge;
+      b.nodeCol[o4] = th.packet[0]; b.nodeCol[o4 + 1] = th.packet[1]; b.nodeCol[o4 + 2] = th.packet[2];
+      b.nodeCol[o4 + 3] = 0.95 * sim.converge;
+      nv = N + 1;
+    }
 
     /* пакеты с коротким хвостом */
     let pv = 0;
@@ -152,6 +164,7 @@ function SystemLayer({ sim }) {
       if (!g) continue;
       for (const name of Object.keys(g.attributes)) g.attributes[name].needsUpdate = true;
     }
+    if (nodesRef.current) nodesRef.current.geometry.setDrawRange(0, nv);
     if (packetsRef.current) packetsRef.current.geometry.setDrawRange(0, pv);
   });
 

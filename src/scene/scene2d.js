@@ -57,6 +57,14 @@ export function mount2d(rootEl) {
       c.fillStyle = th.packetCss;
       c.beginPath(); c.arc(x, y, 1.8, 0, Math.PI * 2); c.fill();
     }
+    /* узел-фокус за CTA в финале */
+    if (sim.converge > 0.01) {
+      var ax = sim.aspect < 1 ? sim.aspect : Math.min(sim.aspect, 1.25);
+      var fp = [sim.focal.x / ax, sim.focal.y, 0];
+      c.globalAlpha = 0.95 * sim.converge;
+      c.fillStyle = th.packetCss;
+      c.beginPath(); c.arc(sx(fp), sy(fp), 2.6 * sim.converge + 0.6, 0, Math.PI * 2); c.fill();
+    }
     c.globalAlpha = 1;
   }
 
