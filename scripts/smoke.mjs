@@ -3,10 +3,12 @@
 import { preview } from 'vite';
 import { chromium } from 'playwright';
 
+/* locale контекста имитирует браузер посетителя: на / автодетект должен
+   дать ru при ru-RU; на /tg/ префикс пути обязан победить en-US-детекцию */
 const EXPECT = {
-  '/': { lang: 'ru', title: 'Aminyx | Разработка продуктов: бэкенд, Android, веб, безопасность' },
-  '/en/': { lang: 'en', title: 'Aminyx | Product development: backend, Android, web, security' },
-  '/tg/': { lang: 'tg', title: 'Aminyx | Таҳияи маҳсулот: бэкенд, Android, веб, амният' },
+  '/': { lang: 'ru', locale: 'ru-RU', title: 'Aminyx | Разработка продуктов: бэкенд, Android, веб, безопасность' },
+  '/en/': { lang: 'en', locale: 'en-US', title: 'Aminyx | Product development: backend, Android, web, security' },
+  '/tg/': { lang: 'tg', locale: 'en-US', title: 'Aminyx | Таҳияи маҳсулот: бэкенд, Android, веб, амният' },
 };
 
 const server = await preview({ preview: { port: 4599, strictPort: true } });
@@ -16,7 +18,8 @@ const errors = [];
 
 try {
   for (const [path, exp] of Object.entries(EXPECT)) {
-    const page = await browser.newPage();
+    const ctx = await browser.newContext({ locale: exp.locale });
+    const page = await ctx.newPage();
     const pageErrors = [];
     page.on('pageerror', (e) => pageErrors.push(String(e)));
     await page.goto(base + path, { waitUntil: 'networkidle' });
@@ -37,7 +40,7 @@ try {
     }
 
     if (pageErrors.length) errors.push(`${path}: pageerror: ${pageErrors.join('; ')}`);
-    await page.close();
+    await ctx.close();
   }
 
   const page = await browser.newPage();
