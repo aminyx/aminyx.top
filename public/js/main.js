@@ -98,6 +98,23 @@
     });
   });
 
+  /* ---------- Копирование ника: фолбэк, когда t.me заблокирован ---------- */
+
+  var nick = document.getElementById('nick-copy');
+  if (nick && navigator.clipboard) {
+    nick.addEventListener('click', function () {
+      navigator.clipboard.writeText('@itsaminyx').then(function () {
+        var dict = window.I18N && window.I18N[docEl.dataset.lang];
+        nick.textContent = (dict && dict['contact.copied']) || 'Скопировано';
+        nick.classList.add('copied');
+        setTimeout(function () {
+          nick.textContent = '@itsaminyx';
+          nick.classList.remove('copied');
+        }, 1400);
+      });
+    });
+  }
+
   /* ---------- Навигация: фон при скролле ---------- */
 
   var nav = document.getElementById('nav');
