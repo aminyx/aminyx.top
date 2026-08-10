@@ -14,6 +14,9 @@
   function stageH1() {
     var h1 = document.getElementById('hero-h1');
     if (!h1 || reduceMotion || !docEl.classList.contains('js')) return;
+    /* без снятия staged повторный вызов (смена языка) рисует спаны
+       сразу в конечном состоянии — анимация не переигрывается */
+    h1.classList.remove('staged');
     var words = h1.textContent.split(' ');
     h1.textContent = '';
     words.forEach(function (w, i) {
