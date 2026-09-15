@@ -252,6 +252,28 @@
       </div>
     </article>
 
+    <!-- Somoni Tracker -->
+    <article class="case veil">
+      <div class="container">
+        <header class="case-head reveal">
+          <p class="tag" data-i18n="work.tracker.tag">Конкурсный проект, код открыт</p>
+          <h3 class="h3-case">Somoni Tracker</h3>
+        </header>
+        <dl class="case-fields">
+          <div class="reveal"><dt data-i18n="case.problem">Задача</dt><dd data-i18n="work.tracker.f1">Трата записывается одной строкой в чат — «кофе 350», «вчера такси 30»; категорию бот ставит сам: 13 групп и словарь на 1255 слов по-русски, по-таджикски и по-английски. Отдельной регистрации нет: аккаунт — это Telegram.</dd></div>
+          <div class="reveal d1"><dt data-i18n="case.arch">Архитектура</dt><dd data-i18n="work.tracker.f2">Бот на grammY и панель на Next.js 16 стоят на общем ядре: разбор строки, категории, границы периодов и агрегаты лежат в одном модуле, данные — в одном файле SQLite. Отчёт за неделю в чате и в панели считает один и тот же код, поэтому цифры не могут разойтись.</dd></div>
+          <div class="reveal d2"><dt data-i18n="case.eng">Инженерия</dt><dd data-i18n="work.tracker.f3">Сравнение с прошлым периодом обрезано по числу прошедших дней: третьего сентября месяц сравнивается с 1–3 августа, а не с целым августом, и в подписи так и стоит — «за те же 3 дня августа». Иначе «−89 %» — не экономия, а просто ещё не наступивший месяц.</dd></div>
+          <div class="reveal d3"><dt data-i18n="case.result">Результат</dt><dd data-i18n="work.tracker.f4">Третье место на конкурсе CodeCup.tech: 85 баллов против 105 и 96 у первых двух. После подведения итогов бот и панель выключены, код остался открытым: 8242 строки в src и 218 тестов.</dd></div>
+        </dl>
+        <div class="case-foot reveal">
+          <ul class="stack" aria-label="Стек" data-i18n-aria="a11y.stack">
+            <li>TypeScript</li><li>Next.js</li><li>React</li><li>grammY</li><li>SQLite</li><li>Drizzle</li>
+          </ul>
+          <a class="link-out" href="https://github.com/aminyx/somoni-tracker" target="_blank" rel="noopener"><span data-i18n="work.tracker.link">Код на GitHub</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
+        </div>
+      </div>
+    </article>
+
     <!-- Пара: Hunter + maryam -->
     <div class="container">
       <div class="pair">
@@ -282,6 +304,57 @@
         </article>
       </div>
     </div>
+    <!-- Открытый код -->
+    <article class="case case-oss veil" id="oss">
+      <div class="container">
+        <header class="case-head reveal">
+          <p class="tag" data-i18n="oss.tag">Открытый код</p>
+          <h3 class="h3-case" data-i18n="oss.h3">Написано с нуля</h3>
+          <p class="case-lede" data-i18n="oss.lede">Структуры данных, компиляторы и протоколы, собранные руками, а не подключённые пакетом. Всё открыто — можно зайти и прочитать.</p>
+        </header>
+        <ul class="spec-grid">
+          <li class="reveal">
+            <h4><a href="https://github.com/aminyx/keelstore" target="_blank" rel="noopener">keelstore</a></h4>
+            <p data-i18n="oss.keelstore">Встраиваемое LSM-хранилище ключ-значение: WAL с CRC и восстановлением после обрыва, свой скиплист и фильтр Блума, уровневое слияние, снапшот-изоляция. Ни одной внешней зависимости.</p>
+          </li>
+          <li class="reveal d1">
+            <h4><a href="https://github.com/aminyx/keelsql" target="_blank" rel="noopener">keelsql</a></h4>
+            <p data-i18n="oss.keelsql">SQL-движок поверх keelstore: разбор запроса, планировщик, умеющий опустить условие в индекс, исполнитель-вулкан и дифференциальный тест против двух других баз.</p>
+          </li>
+          <li class="reveal d2">
+            <h4><a href="https://github.com/aminyx/hnsw" target="_blank" rel="noopener">hnsw</a></h4>
+            <p data-i18n="oss.hnsw">Индекс приближённого поиска HNSW, написанный с нуля и без единой зависимости. Демонстрация строит граф прямо во вкладке браузера.</p>
+          </li>
+          <li class="reveal d3">
+            <h4><a href="https://github.com/aminyx/sable" target="_blank" rel="noopener">sable</a></h4>
+            <p data-i18n="oss.sable">Статически типизированный язык с выводом типов Хиндли–Милнера. Компилятор собирает WebAssembly сам, побайтово, и работает в браузере.</p>
+          </li>
+          <li class="reveal d4">
+            <h4><a href="https://github.com/aminyx/driftpad" target="_blank" rel="noopener">driftpad</a></h4>
+            <p data-i18n="oss.driftpad">Совместные заметки на CRDT, написанном вручную: RGA для текста, LWW-регистры, офлайн в IndexedDB, синхронизация по version vectors. Сходимость проверяется property-тестами.</p>
+          </li>
+          <li class="reveal d5">
+            <h4><a href="https://github.com/aminyx/pulsewire" target="_blank" rel="noopener">pulsewire</a></h4>
+            <p data-i18n="oss.pulsewire">Realtime-платформа на WebSocket, масштабируемая вширь: рассылка между узлами через NATS, отсечение медленных клиентов, продолжение после обрыва без пропусков.</p>
+          </li>
+          <li class="reveal d5">
+            <h4><a href="https://github.com/aminyx/keyforge" target="_blank" rel="noopener">keyforge</a></h4>
+            <p data-i18n="oss.keyforge">OpenID Connect с нуля по RFC 9700: обязательный PKCE S256, семейства refresh-токенов с обнаружением повторного использования, ротация JWKS, passkeys.</p>
+          </li>
+          <li class="reveal d5">
+            <h4><a href="https://github.com/aminyx/evalgate" target="_blank" rel="noopener">evalgate</a></h4>
+            <p data-i18n="oss.evalgate">Регрессионные тесты для промптов: наборы в YAML, детерминированные проверки и судья-LLM, калибровка судьи по каппе Коэна, гейт качества в CI.</p>
+          </li>
+          <li class="reveal d5">
+            <h4><a href="https://github.com/aminyx/actions-lock" target="_blank" rel="noopener">actions-lock</a></h4>
+            <p data-i18n="oss.actionslock">Пиннинг GitHub Actions по SHA коммита и обнаружение подменённых тегов — вектор атаки tj-actions. Один бинарник, без доверия по умолчанию.</p>
+          </li>
+        </ul>
+        <div class="case-foot reveal">
+          <a class="link-out" href="https://github.com/aminyx?tab=repositories" target="_blank" rel="noopener"><span data-i18n="oss.all">Все репозитории</span> <span class="arr" aria-hidden="true">&#8599;</span></a>
+        </div>
+      </div>
+    </article>
   </section>
 
   <!-- ======== 06 PROCESS ======== -->
