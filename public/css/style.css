@@ -687,6 +687,16 @@ body.craft-page .nav-tools { margin-left: auto; }
   color: var(--accent-text);
   margin-bottom: 0.45rem;
 }
+/* Ссылка на репозиторий в заголовке ячейки открытого кода. Подчёркивание
+   появляется по наведению: девять подчёркнутых строк подряд превращают
+   сетку в список ссылок и забивают собой описания. */
+.spec-grid h4 a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+.spec-grid h4 a:hover { border-bottom-color: currentColor; }
 .spec-grid p {
   font-size: var(--fs-caption);
   color: var(--text-2);
