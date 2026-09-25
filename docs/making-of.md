@@ -2,6 +2,8 @@
 
 *by Aminjon Azizov (Aminyx)*
 
+> **Note (September 2026):** this article describes v2 of the site. In v3 the full-page substrate became an interactive globe in the hero, every project got its own 3D scene, and React Three Fiber was replaced by a plain three.js engine that renders all scenes through one WebGL context — see `docs/decisions.md`. The simulation mechanics described below are unchanged.
+
 I spend my days building [Aminyx Link](https://aminyx.top), a Rust networking platform: a transport-independent session layer with multipath routing, failover, Reed-Solomon FEC, and pluggable congestion control (Reno, CUBIC, BBR). When I redesigned my portfolio, [aminyx.top](https://aminyx.top), I kept running into the same problem every engineer's site has: the work is invisible. You can write "731 automated tests" in a stat block, but a paragraph about failover reads the same whether you built the thing or copied the words.
 
 So I made the background prove it. The entire page sits on top of one fixed, full-viewport WebGL canvas running a live simulation of the platform's core mechanic: nodes, routes, packets that hop between them, regional failures, and traffic that reroutes around the damage. Visitors can break it. Clicking the background kills a node; the routes rebuild themselves while you watch.
