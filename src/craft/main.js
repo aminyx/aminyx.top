@@ -1,6 +1,9 @@
 /* Вход страницы /craft: тема, язык, ленивая инициализация виньеток. */
 import { initFailover, initFec, initCongestion, initKillswitch, initTypeLab } from './vignettes.js';
 
+import { I18N } from '../i18n.js';
+
+window.I18N = I18N;
 var docEl = document.documentElement;
 
 /* ---------- язык (компактная версия applyLang главной) ---------- */

@@ -14,7 +14,7 @@ function cssColors() {
       : (cs.getPropertyValue('--accent').trim() || '#e8ac3f'),
     text1: cs.getPropertyValue('--text-1').trim(),
     text3: cs.getPropertyValue('--text-3').trim(),
-    line: cs.getPropertyValue('--line-strong').trim(),
+    line: cs.getPropertyValue('--line-3').trim(),
     base: document.documentElement.dataset.theme === 'light' ? '#5d6572' : '#8a93a1',
   };
 }

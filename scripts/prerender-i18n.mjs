@@ -1,14 +1,10 @@
 /* Прегенерация языковых версий из dist/index.html: dist/en/ и dist/tg/.
-   Словари берутся из public/js/i18n.js (единственный источник переводов),
+   Словари берутся из src/i18n.js (единственный источник переводов),
    поэтому статические страницы никогда не расходятся с клиентским i18n.
    Кластер hreflang прописан в исходном index.html и копируется как есть. */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { load } from 'cheerio';
-
-const dictsSrc = readFileSync('public/js/i18n.js', 'utf-8');
-const win = {};
-new Function('window', dictsSrc)(win);
-const I18N = win.I18N;
+import { I18N } from '../src/i18n.js';
 
 const html = readFileSync('dist/index.html', 'utf-8');
 
@@ -34,6 +30,11 @@ for (const lang of ['en', 'tg']) {
     const v = dict[$(el).attr('data-i18n-alt')];
     if (v) $(el).attr('alt', v);
   });
+  $('[data-i18n-ph]').each((_, el) => {
+    const v = dict[$(el).attr('data-i18n-ph')];
+    if (v) $(el).attr('placeholder', v);
+  });
+  $('.contact-cta a[href^="mailto:"]').attr('href', 'mailto:itsaminyx@gmail.com?subject=' + encodeURIComponent(dict['brief.subject']));
 
   const url = `https://aminyx.top/${lang}/`;
   $('link[rel="canonical"]').attr('href', url);
