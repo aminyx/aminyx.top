@@ -48,7 +48,8 @@ export function create(ctx) {
   const labels = [];
   for (let d = 0; d < DAYS; d++) {
     const s = textSprite(String(d + 1), { size: 0.14 });
-    s.position.set(colX(d), -0.02, 0.48);
+    /* перед передней кромкой плиты, иначе её перекрывает глубина */
+    s.position.set(colX(d), 0.02, 0.76);
     root.add(s);
     labels.push(s);
   }
@@ -108,17 +109,25 @@ export function create(ctx) {
     }
     let cur = 0, prev = 0;
     for (const b of list) if (!b.dying) cur += b.amount;
-    for (let d = 0; d <= st.today; d++) prev += lastMonth[d];
+    const last = Math.min(st.today, DAYS - 1);
+    for (let d = 0; d <= last; d++) prev += lastMonth[d];
     const pct = Math.round((cur / prev - 1) * 100);
-    const n = st.today + 1;
+    const n = last + 1;
     chips.vs.set(ctx.t('hud.vs').replace('{n}', n), (pct > 0 ? '+' : pct < 0 ? '−' : '') + Math.abs(pct) + ' %', pct > 0 ? 'bad' : 'ok');
   }
 
   function spend() {
+    if (st.reset || st.today >= DAYS) return;
     const item = demo[st.di++ % demo.length];
     st.chat = item;
-    st.chatT = 0;
-    st.pending = item;
+    if (reduced) {
+      /* без анимации: сообщение сразу «допечатано», блок сразу в столбце */
+      st.chatT = 99;
+      addBlock(st.today, item, true);
+    } else {
+      st.chatT = 0;
+      st.pending = item;
+    }
     ctx.invalidate();
   }
   const ctl = orbit(ctx, root, {

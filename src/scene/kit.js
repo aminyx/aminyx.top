@@ -185,9 +185,7 @@ export function putColor(arr, i, c, a) {
 
 export function textSprite(text, { color = '#ffffff', size = 0.22, weight = 500 } = {}) {
   const canvas = document.createElement('canvas');
-  const tex = new CanvasTexture(canvas);
-  tex.colorSpace = SRGBColorSpace;
-  const mat = new SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+  const mat = new SpriteMaterial({ transparent: true, depthWrite: false });
   const sprite = new Sprite(mat);
   sprite.userData.set = (txt, col) => {
     const px = 64;
@@ -201,7 +199,12 @@ export function textSprite(text, { color = '#ffffff', size = 0.22, weight = 500 
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
     ctx.fillText(txt, w / 2, canvas.height / 2);
-    tex.needsUpdate = true;
+    /* r185 выделяет неизменяемое хранилище текстуры: при новом размере
+       канваса старую текстуру нельзя перезалить — создаём новую */
+    if (mat.map) mat.map.dispose();
+    mat.map = new CanvasTexture(canvas);
+    mat.map.colorSpace = SRGBColorSpace;
+    mat.needsUpdate = true;
     sprite.scale.set(size * (w / canvas.height), size, 1);
   };
   sprite.userData.set(text, color);
@@ -228,7 +231,9 @@ export function hudChip(container) {
       label.textContent = labelText;
       val.textContent = valueText == null ? '' : String(valueText);
       val.hidden = valueText == null || valueText === '';
-      el.className = 'hud-chip' + (state ? ' is-' + state : '');
+      /* только класс состояния: дополнительные (is-chat) не трогаем */
+      el.classList.remove('is-ok', 'is-hot', 'is-bad');
+      if (state) el.classList.add('is-' + state);
     },
     show(on) { el.hidden = !on; },
   };
@@ -277,6 +282,8 @@ export function orbit(ctx, target, opts = {}) {
     held = false;
     st.vYaw = st.vPitch = 0;
     clearTimeout(holdTimer);
+    /* захват сразу: иначе быстрый выход за край уносит pointerup мимо канваса */
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* указатель уже ушёл */ }
     if (opts.onHold) {
       holdTimer = setTimeout(() => {
         if (down && !down.moved) { held = true; opts.onHold(down.px, down.py); ctx.invalidate(); }
@@ -292,13 +299,14 @@ export function orbit(ctx, target, opts = {}) {
       if (opts.onHover && !st.dragging) opts.onHover(p.x, p.y);
     }
     if (!down || e.pointerId !== down.id) return;
+    /* кнопка отпущена где-то вне канваса — драг закончился */
+    if (e.pointerType === 'mouse' && !(e.buttons & 1)) { onCancel(); return; }
     const dx = e.clientX - down.x, dy = e.clientY - down.y;
     if (!down.moved && Math.abs(dx) + Math.abs(dy) > 5) {
       down.moved = true;
       down.lx = e.clientX; down.ly = e.clientY;
       st.dragging = true;
       clearTimeout(holdTimer);
-      try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* уже отпущен */ }
     }
     if (!st.dragging) return;
     const now = performance.now();
@@ -361,6 +369,8 @@ export function orbit(ctx, target, opts = {}) {
   canvas.addEventListener('pointermove', onMove);
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointercancel', onCancel);
+  /* захват отобран (канвас переехал в диалог и т. п.) — сбросить драг */
+  canvas.addEventListener('lostpointercapture', (e) => { if (down && e.pointerId === down.id) onCancel(); });
   canvas.addEventListener('pointerleave', onLeave);
   canvas.addEventListener('wheel', onWheel, { passive: false });
   canvas.addEventListener('keydown', onKey);

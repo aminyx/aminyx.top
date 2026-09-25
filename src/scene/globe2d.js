@@ -131,5 +131,6 @@ export function mountGlobe2d(stage) {
   });
 
   resize();
+  hud(1);
   if (!reduced) raf = requestAnimationFrame(frame);
 }
