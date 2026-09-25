@@ -1,6 +1,4 @@
-/* Виньетки лаборатории /craft: предметные механики на canvas2d.
-   Общий каркас: DPR-скейл, rAF с паузой вне вьюпорта, цвета из CSS-токенов,
-   reduced-motion — статичный кадр, клики перерисовывают один кадр. */
+// виньетки /craft на canvas2d: пауза вне экрана, цвета из CSS, при reduced-motion рисуем один кадр
 
 var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -71,9 +69,7 @@ function scaffold(canvas, drawFn, clickFn, keyFn) {
       clickFn(ev.clientX - r.left, ev.clientY - r.top, v);
       if (reduceMotion) v.redraw();
     });
-    /* Клавиатурная операбельность (WCAG 2.1.1): канвас фокусируем (tabindex — в
-       разметке), Enter/Space = первичное действие в центре, стрелки уходят в
-       keyFn виньетки (например переключение алгоритма в congestion). */
+    // клавиатура: Enter/Space = клик в центр, остальное отдаём keyFn
     if (canvas.getAttribute('tabindex') === null) canvas.tabIndex = 0;
     canvas.addEventListener('keydown', function (ev) {
       var handled = keyFn ? keyFn(ev.key, v) : false;
@@ -92,8 +88,6 @@ function scaffold(canvas, drawFn, clickFn, keyFn) {
 function mono(ctx, size) {
   ctx.font = '500 ' + size + 'px "JetBrains Mono", monospace';
 }
-
-/* ---------- 01 Multipath failover ---------- */
 
 export function initFailover(canvas) {
   var paths = [
@@ -184,8 +178,6 @@ export function initFailover(canvas) {
   return v;
 }
 
-/* ---------- 02 Reed-Solomon FEC ---------- */
-
 export function initFec(canvas) {
   var K = 8, M = 4;
   var batch = null, phase = 'fly', phaseAt = 0, recovered = 0, failed = 0;
@@ -196,8 +188,7 @@ export function initFec(canvas) {
       batch.push({
         i: i,
         parity: i >= K,
-        /* под reduced-motion блоки не летят — ставим их сразу в раскладку
-           прибытия, клики продолжают работать */
+        // reduced-motion: сразу в раскладку прибытия
         x: reduceMotion ? 0.86 - (K + M - 1 - i) * 0.052 : -0.08 - i * 0.045,
         knocked: false,
         drop: 0,
@@ -279,12 +270,10 @@ export function initFec(canvas) {
   return v;
 }
 
-/* ---------- 03 Congestion control ---------- */
-
 export function initCongestion(canvas) {
   var ALGS = ['RENO', 'CUBIC', 'BBR'];
   var alg = 0, cwnd = 4, wmax = 42, tSinceLoss = 0, hist = [];
-  /* под reduced-motion график не накапливается — предзаполняем пилу Reno */
+  // под reduced-motion график не копится, сразу рисуем пилу Reno
   if (reduceMotion) {
     var cw = 4;
     for (var hI = 0; hI < 240; hI++) {
@@ -333,7 +322,7 @@ export function initCongestion(canvas) {
     }
     ctx.globalAlpha = 0.85;
     ctx.fillStyle = v.colors.text3;
-    ctx.fillText('cwnd ' + Math.round(cwnd) + '  ·  click = packet loss', x0, v.H - 12);
+    ctx.fillText('cwnd ' + Math.round(cwnd), x0, v.H - 12);
     ctx.globalAlpha = 1;
   }, function (x, y, v) {
     if (y < 34) {
@@ -344,10 +333,9 @@ export function initCongestion(canvas) {
     tSinceLoss = 0;
     if (alg === 0) cwnd = Math.max(3, cwnd / 2);
     else if (alg === 1) cwnd = Math.max(3, cwnd * 0.7);
-    /* BBR — модельно loss-agnostic: окно почти не проседает */
+    // BBR почти не реагирует на потери
     else cwnd = Math.max(3, cwnd * 0.96);
   }, function (key) {
-    /* стрелки переключают алгоритм с клавиатуры — эквивалент клика по [RENO]/[CUBIC]/[BBR] */
     if (key === 'ArrowRight' || key === 'ArrowUp') alg = (alg + 1) % 3;
     else if (key === 'ArrowLeft' || key === 'ArrowDown') alg = (alg + 2) % 3;
     else return false;
@@ -357,10 +345,8 @@ export function initCongestion(canvas) {
   return v;
 }
 
-/* ---------- 04 Kill switch ---------- */
-
 export function initKillswitch(canvas) {
-  var downUntil = 0, packets = [], spawnAt = 0, leaked = 0, blocked = 0, gate = 0;
+  var downUntil = 0, packets = [], spawnAt = 0, blocked = 0, gate = 0;
 
   var v = scaffold(canvas, function (ctx, v, dt) {
     var now = performance.now();
@@ -381,25 +367,25 @@ export function initKillswitch(canvas) {
     }
 
     var y = v.H * 0.5;
-    /* туннель */
+    // туннель
     ctx.globalAlpha = down ? 0.1 : 0.35;
     ctx.strokeStyle = v.colors.base;
     ctx.setLineDash(down ? [3, 7] : []);
     ctx.strokeRect(v.W * 0.28, y - 18, v.W * 0.5, 36);
     ctx.setLineDash([]);
-    /* заслонка */
+    // заслонка
     if (gate > 0.02) {
       ctx.globalAlpha = 0.9 * gate;
       ctx.fillStyle = v.colors.text1;
       ctx.fillRect(gateX - 2, y - 26 * gate, 4, 52 * gate);
     }
-    /* пакеты */
+    // пакеты
     for (var k = 0; k < packets.length; k++) {
       ctx.globalAlpha = 0.95;
       ctx.fillStyle = v.colors.packet;
       ctx.beginPath(); ctx.arc(packets[k].x * v.W, y, 3, 0, Math.PI * 2); ctx.fill();
     }
-    /* узлы app / net */
+    // узлы app и net
     ctx.fillStyle = v.colors.text1;
     ctx.globalAlpha = 0.9;
     ctx.beginPath(); ctx.arc(v.W * 0.08, y, 5, 0, Math.PI * 2); ctx.fill();
@@ -408,25 +394,10 @@ export function initKillswitch(canvas) {
     ctx.globalAlpha = 0.85;
     ctx.fillStyle = v.colors.text3;
     mono(ctx, 10);
-    ctx.fillText((down ? 'VPN DOWN — gate closed' : 'VPN up') + '   leaked: ' + leaked + '   blocked: ' + blocked, v.W * 0.08, v.H - 12);
+    ctx.fillText((down ? 'VPN down, gate closed' : 'VPN up') + '   blocked: ' + blocked, v.W * 0.08, v.H - 12);
     ctx.globalAlpha = 1;
   }, function () {
     if (downUntil < performance.now()) downUntil = performance.now() + 2600;
   });
   return v;
-}
-
-/* ---------- 05 Вариативная ось (DOM) ---------- */
-
-export function initTypeLab() {
-  var sample = document.getElementById('type-sample');
-  var range = document.getElementById('type-wght');
-  var out = document.getElementById('type-out');
-  if (!sample || !range) return;
-  function apply() {
-    sample.style.fontVariationSettings = '"wght" ' + range.value;
-    if (out) out.value = range.value;
-  }
-  range.addEventListener('input', apply);
-  apply();
 }

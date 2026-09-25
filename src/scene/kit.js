@@ -1,12 +1,7 @@
-/* Общий инструментарий 3D-сцен: палитра из CSS-токенов, материалы
-   светящихся точек и линий, орбитальное управление (мышь, тач, клавиатура),
-   текстовые спрайты и чипы HUD. Сцены не знают про движок — только про ctx. */
 import {
   Color, ShaderMaterial, CustomBlending, AddEquation, SrcAlphaFactor, OneFactor,
   OneMinusSrcAlphaFactor, CanvasTexture, SpriteMaterial, Sprite, SRGBColorSpace, Vector3,
 } from 'three';
-
-/* ---------- палитра ---------- */
 
 const TOKENS = ['node', 'line', 'core', 'cool', 'hot', 'danger', 'body', 'ok'];
 
@@ -30,11 +25,8 @@ export const damp = (a, b, lambda, dt) => b + (a - b) * Math.exp(-lambda * dt);
 export const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 export const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
 
-/* ---------- светящиеся точки и линии ----------
-   Цвета в атрибутах — линейные (THREE.Color), в конце шейдера перевод
-   в выходное пространство. Блендинг: в тёмной теме цвет складывается
-   (свечение), альфа — «поверх», чтобы 2D-композиция не теряла свечение;
-   в светлой — обычный over, сложение на белом невидимо. */
+// цвета в атрибутах линейные, в шейдере переводим в выходное пространство.
+// тёмная тема: цвет складываем (свечение), альфу кладём поверх, чтобы копия в 2D не теряла свечение. светлая: обычный over, сложение на белом не видно
 
 export function setGlowBlend(mat, light) {
   mat.blending = CustomBlending;
@@ -134,7 +126,7 @@ export function linesMaterial({ light = false, facing = false, glow = false } = 
   return mat;
 }
 
-/* френель-оболочка: стекло туннеля, атмосфера, воронка */
+// френель-оболочка: стекло туннеля и воронки
 export function fresnelMaterial({ color, power = 2.2, intensity = 1, base = 0.0, light = false, side } = {}) {
   const mat = new ShaderMaterial({
     uniforms: {
@@ -175,13 +167,11 @@ export function fresnelMaterial({ color, power = 2.2, intensity = 1, base = 0.0,
   return mat;
 }
 
-/* запись цвета в RGBA-атрибут */
+// запись цвета в RGBA-атрибут
 export function putColor(arr, i, c, a) {
   const o = i * 4;
   arr[o] = c.r; arr[o + 1] = c.g; arr[o + 2] = c.b; arr[o + 3] = a;
 }
-
-/* ---------- текстовые спрайты (подписи путей и т. п.) ---------- */
 
 export function textSprite(text, { color = '#ffffff', size = 0.22, weight = 500 } = {}) {
   const canvas = document.createElement('canvas');
@@ -199,8 +189,8 @@ export function textSprite(text, { color = '#ffffff', size = 0.22, weight = 500 
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
     ctx.fillText(txt, w / 2, canvas.height / 2);
-    /* r185 выделяет неизменяемое хранилище текстуры: при новом размере
-       канваса старую текстуру нельзя перезалить — создаём новую */
+    // r185 выделяет неизменяемое хранилище текстуры: при новом размере
+    // канваса старую текстуру нельзя перезалить, создаём новую
     if (mat.map) mat.map.dispose();
     mat.map = new CanvasTexture(canvas);
     mat.map.colorSpace = SRGBColorSpace;
@@ -210,8 +200,6 @@ export function textSprite(text, { color = '#ffffff', size = 0.22, weight = 500 
   sprite.userData.set(text, color);
   return sprite;
 }
-
-/* ---------- чипы HUD в DOM ---------- */
 
 export function hudChip(container) {
   const el = document.createElement('span');
@@ -231,7 +219,7 @@ export function hudChip(container) {
       label.textContent = labelText;
       val.textContent = valueText == null ? '' : String(valueText);
       val.hidden = valueText == null || valueText === '';
-      /* только класс состояния: дополнительные (is-chat) не трогаем */
+      // только класс состояния, дополнительные (is-chat) не трогаем
       el.classList.remove('is-ok', 'is-hot', 'is-bad');
       if (state) el.classList.add('is-' + state);
     },
@@ -239,11 +227,8 @@ export function hudChip(container) {
   };
 }
 
-/* ---------- орбитальное управление ----------
-   Вращает target (Group) по рысканью/тангажу. Горизонтальный драг — наш,
-   вертикальный на таче отдаём скроллу страницы (touch-action: pan-y).
-   Короткий клик → onTap(x, y), удержание → onHold, наведение → onHover.
-   Колесо масштабирует только в полноэкранном режиме. */
+// орбита: горизонтальный драг наш, вертикальный на таче отдаём скроллу (pan-y).
+// тап -> onTap, удержание -> onHold, колесо зумит только в полноэкранном режиме
 
 export function orbit(ctx, target, opts = {}) {
   const canvas = ctx.canvas;
@@ -282,8 +267,8 @@ export function orbit(ctx, target, opts = {}) {
     held = false;
     st.vYaw = st.vPitch = 0;
     clearTimeout(holdTimer);
-    /* захват сразу: иначе быстрый выход за край уносит pointerup мимо канваса */
-    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* указатель уже ушёл */ }
+    // захват сразу, иначе быстрый выход за край уносит pointerup мимо канваса
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {} // указатель уже ушёл
     if (opts.onHold) {
       holdTimer = setTimeout(() => {
         if (down && !down.moved) { held = true; opts.onHold(down.px, down.py); ctx.invalidate(); }
@@ -299,7 +284,7 @@ export function orbit(ctx, target, opts = {}) {
       if (opts.onHover && !st.dragging) opts.onHover(p.x, p.y);
     }
     if (!down || e.pointerId !== down.id) return;
-    /* кнопка отпущена где-то вне канваса — драг закончился */
+    // кнопка отпущена вне канваса, драг закончился
     if (e.pointerType === 'mouse' && !(e.buttons & 1)) { onCancel(); return; }
     const dx = e.clientX - down.x, dy = e.clientY - down.y;
     if (!down.moved && Math.abs(dx) + Math.abs(dy) > 5) {
@@ -310,7 +295,7 @@ export function orbit(ctx, target, opts = {}) {
     }
     if (!st.dragging) return;
     const now = performance.now();
-    /* дельта от прошлого события, а не movementX: на таче в Safari он нулевой */
+    // дельта от прошлого события: movementX на таче в Safari нулевой
     const ddx = e.clientX - down.lx, ddy = e.clientY - down.ly;
     down.lx = e.clientX; down.ly = e.clientY;
     st.yaw = clamp(st.yaw + ddx * k, st.minYaw, st.maxYaw);
@@ -369,7 +354,7 @@ export function orbit(ctx, target, opts = {}) {
   canvas.addEventListener('pointermove', onMove);
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointercancel', onCancel);
-  /* захват отобран (канвас переехал в диалог и т. п.) — сбросить драг */
+  // захват отобран (канвас переехал в диалог и т. п.), сбросить драг
   canvas.addEventListener('lostpointercapture', (e) => { if (down && e.pointerId === down.id) onCancel(); });
   canvas.addEventListener('pointerleave', onLeave);
   canvas.addEventListener('wheel', onWheel, { passive: false });
@@ -387,7 +372,7 @@ export function orbit(ctx, target, opts = {}) {
       }
       if (!ctx.reduced && st.idle > 1.2) {
         if (Number.isFinite(st.minYaw)) {
-          /* ограниченный рыскань: мягкое покачивание вместо вращения */
+          // рыскань ограничен: покачиваем около середины диапазона
           st.yaw = damp(st.yaw, (st.minYaw + st.maxYaw) / 2 + Math.sin(st.idle * 0.35) * (st.maxYaw - st.minYaw) * 0.18, 0.8, dt);
         } else {
           st.yaw += st.auto * dt;
@@ -395,7 +380,7 @@ export function orbit(ctx, target, opts = {}) {
         if (opts.pitchHome != null) st.pitch = damp(st.pitch, opts.pitchHome, 0.6, dt);
       }
     }
-    /* лёгкий наклон к курсору — сцена «смотрит» на посетителя */
+    // лёгкий наклон к курсору
     const tx = st.hovering && !ctx.reduced ? st.hoverX : 0;
     const ty = st.hovering && !ctx.reduced ? st.hoverY : 0;
     st.tiltX = damp(st.tiltX, tx, 3, dt);
@@ -409,21 +394,21 @@ export function orbit(ctx, target, opts = {}) {
   return st;
 }
 
-/* перевод координат указателя (CSS px канваса) в NDC */
+// перевод координат указателя (CSS px канваса) в NDC
 export function toNdc(x, y, canvas) {
   const r = canvas.getBoundingClientRect();
   return { x: (x / r.width) * 2 - 1, y: -(y / r.height) * 2 + 1 };
 }
 
-/* дистанция камеры, при которой прямоугольник halfW × halfH целиком
-   помещается в кадр при текущем aspect (4:3 слот, квадрат на телефоне,
-   полноэкранный режим) */
+// дистанция камеры, при которой прямоугольник halfW × halfH целиком
+// помещается в кадр при текущем aspect (4:3 слот, квадрат на телефоне,
+// полноэкранный режим)
 export function fitDistance(camera, halfW, halfH, margin = 1.08) {
   const tanH = Math.tan((camera.fov * Math.PI) / 360);
   return Math.max(halfH / tanH, halfW / (tanH * Math.max(camera.aspect, 0.2))) * margin;
 }
 
-/* свет по умолчанию для «твёрдых» объектов: ключевой + заполняющий */
+// свет по умолчанию для твёрдых объектов: ключевой + заполняющий
 export function studioLights(scene, THREE) {
   const key = new THREE.DirectionalLight('#ffffff', 1.6);
   key.position.set(3, 5, 4);

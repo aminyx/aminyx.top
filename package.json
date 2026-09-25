@@ -1,14 +1,15 @@
 {
   "name": "aminyx-top",
   "version": "3.0.0",
-  "description": "Личный сайт: разработка продуктов под заказ и собственные проекты.",
+  "description": "Личный сайт aminyx.top",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/prerender-i18n.mjs",
     "preview": "vite preview",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "og": "node scripts/og.mjs"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,4 @@
-/* Звук системы: синтез Web Audio, ни одного аудиофайла.
-   Выключен по умолчанию; включается командой sfx on в терминале.
-   Характер — приборный: щелчки реле и гул, не музыка. */
+// звуки на Web Audio, без файлов. по умолчанию выкл, в терминале: sfx on
 
 var ctx = null;
 var enabled = false;
@@ -31,7 +29,7 @@ export function setSfx(on) {
 
 export function sfxEnabled() { return enabled; }
 
-/* отказ узла: короткий шумовой щелчок + падающий тон */
+// отказ узла: короткий шумовой щелчок + падающий тон
 export function sfxKill() {
   if (!enabled) return;
   var c = ac(); if (!c) return;
@@ -45,7 +43,7 @@ export function sfxKill() {
   o.start(t); o.stop(t + 0.13);
 }
 
-/* восстановление: мягкий восходящий тон */
+// восстановление: мягкий восходящий тон
 export function sfxHeal() {
   if (!enabled) return;
   var c = ac(); if (!c) return;
@@ -59,7 +57,7 @@ export function sfxHeal() {
   o.start(t); o.stop(t + 0.2);
 }
 
-/* шторм: низкий фильтрованный шумовой накат */
+// шторм: низкий фильтрованный шумовой накат
 export function sfxStorm() {
   if (!enabled) return;
   var c = ac(); if (!c) return;

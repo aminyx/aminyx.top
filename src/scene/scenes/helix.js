@@ -1,6 +1,3 @@
-/* maryam.best — окно браузера с настоящим скриншотом сайта поворачивается
-   за курсором, рядом вращается двойная спираль ДНК (кивок на 3D-сцену
-   самого сайта). Клик раскручивает спираль. */
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { orbit, fitDistance, studioLights, damp } from '../kit.js';
@@ -17,7 +14,6 @@ export function create(ctx) {
   const root = new THREE.Group();
   scene.add(root);
 
-  /* ---------- окно браузера ---------- */
   const win = new THREE.Group();
   const frameMat = new THREE.MeshStandardMaterial({ metalness: 0.35, roughness: 0.35, envMapIntensity: 0.8 });
   const frame = new THREE.Mesh(new RoundedBoxGeometry(3.2, 2.12, 0.08, 4, 0.06), frameMat);
@@ -71,7 +67,6 @@ export function create(ctx) {
     urlMat.needsUpdate = true;
   }
 
-  /* ---------- ДНК ---------- */
   const dna = new THREE.Group();
   const baseGeo = new THREE.SphereGeometry(0.075, 18, 14);
   const aMat = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.2, toneMapped: false });

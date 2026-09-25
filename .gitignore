@@ -1,8 +1,4 @@
-.playwright-mcp/
 node_modules/
-Thumbs.db
-.DS_Store
-.indexnow-key
-
-design/
 dist/
+.DS_Store
+Thumbs.db

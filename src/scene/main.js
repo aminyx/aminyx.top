@@ -1,9 +1,7 @@
-/* Точка входа сцен: проба возможностей и ленивая загрузка ПОСЛЕ первой
-   отрисовки — контент не ждёт three.js. Цепочка фолбэков:
-   WebGL2 → canvas2d-глобус (только hero) → скриншоты/схемы в слотах. */
+// сцены грузим после первой отрисовки. фолбэк: WebGL2 -> canvas2d-глобус (hero) -> скриншоты
 const stages = Array.from(document.querySelectorAll('.stage[data-scene]'));
 
-/* three 0.185 создаёт только WebGL2-контекст */
+// three 0.185 создаёт только WebGL2-контекст
 function hasWebGL2() {
   try {
     return !!document.createElement('canvas').getContext('webgl2');
@@ -12,7 +10,7 @@ function hasWebGL2() {
   }
 }
 
-/* экономия трафика: на Save-Data и 2G не тянем three ради декора */
+// экономия трафика: на Save-Data и 2G three не грузим
 function liteConnection() {
   const c = navigator.connection;
   return !!(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || '')));

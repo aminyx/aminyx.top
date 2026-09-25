@@ -1,5 +1,5 @@
-/* canvas2d-фолбэк глобуса для устройств без WebGL2 и режима Save-Data:
-   та же симуляция и тот же пульт терминала, простая перспективная проекция. */
+// canvas2d-фолбэк глобуса для устройств без WebGL2 и режима Save-Data:
+// та же симуляция и тот же пульт терминала, простая перспективная проекция
 import { createNetSim, exposeSystem, heroHud, arcPoint } from './sim.js';
 import { sfxKill } from './sfx.js';
 
@@ -38,7 +38,7 @@ export function mountGlobe2d(stage) {
     draw();
   }
 
-  /* поворот (рысканье, затем тангаж) и перспектива; z > 0 — к зрителю */
+  // поворот (рысканье, затем тангаж) и перспектива, z > 0 к зрителю
   function proj(p, out) {
     const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
     const x1 = p[0] * cy + p[2] * sy, z1 = -p[0] * sy + p[2] * cy;

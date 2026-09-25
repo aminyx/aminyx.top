@@ -1,7 +1,4 @@
-/* SomonVPN — Smart Connect. Телефон шлёт пакеты по стеклянному туннелю
-   к серверу через DPI-фильтр. Когда DPI начинает резать WireGuard, пакеты
-   разбиваются о стену; после нескольких потерь клиент сам переключается
-   на VLESS Reality (пакеты-«октаэдры» проходят) и запоминает конфигурацию. */
+// SomonVPN: DPI режет WireGuard, Smart Connect уходит на VLESS Reality и запоминает
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { orbit, hudChip, fresnelMaterial, textSprite, fitDistance, studioLights, damp, setGlowBlend } from '../kit.js';
@@ -19,7 +16,6 @@ export function create(ctx) {
   const root = new THREE.Group();
   scene.add(root);
 
-  /* ---------- телефон ---------- */
   const bodyMat = new THREE.MeshStandardMaterial({ metalness: 0.55, roughness: 0.32, envMapIntensity: 0.9 });
   const phone = new THREE.Group();
   const phoneBody = new THREE.Mesh(new RoundedBoxGeometry(0.92, 1.8, 0.1, 4, 0.13), bodyMat);
@@ -45,11 +41,11 @@ export function create(ctx) {
     c.fillStyle = g;
     c.fillRect(0, 0, 256, 512);
     const col = state === 'ok' ? th.okCss : state === 'switch' ? th.hotCss : th.dangerCss;
-    /* статус-бар */
+    // статус-бар
     c.fillStyle = 'rgba(255,255,255,0.35)';
     c.fillRect(24, 26, 36, 8);
     c.fillRect(196, 26, 36, 8);
-    /* кнопка подключения с ореолом */
+    // кнопка подключения с ореолом
     const glow = c.createRadialGradient(128, 230, 20, 128, 230, 120);
     glow.addColorStop(0, col + '66');
     glow.addColorStop(1, 'rgba(0,0,0,0)');
@@ -58,13 +54,13 @@ export function create(ctx) {
     c.lineWidth = 10;
     c.strokeStyle = col;
     c.beginPath(); c.arc(128, 230, 62, 0, Math.PI * 2); c.stroke();
-    /* щит */
+    // щит
     c.fillStyle = col;
     c.beginPath();
     c.moveTo(128, 196); c.lineTo(156, 208); c.lineTo(156, 232);
     c.quadraticCurveTo(156, 258, 128, 270); c.quadraticCurveTo(100, 258, 100, 232);
     c.lineTo(100, 208); c.closePath(); c.fill();
-    /* «список серверов» — абстрактные строки */
+    // строки списка серверов
     for (let i = 0; i < 3; i++) {
       c.fillStyle = 'rgba(255,255,255,' + (i === 0 ? 0.16 : 0.08) + ')';
       c.beginPath();
@@ -76,7 +72,6 @@ export function create(ctx) {
     screenTex.needsUpdate = true;
   }
 
-  /* ---------- сервер ---------- */
   const server = new THREE.Group();
   const unitGeo = new RoundedBoxGeometry(1.15, 0.3, 0.9, 3, 0.05);
   for (let i = 0; i < 3; i++) {
@@ -98,7 +93,6 @@ export function create(ctx) {
   server.rotation.y = -0.45;
   root.add(server);
 
-  /* ---------- DPI-стена ---------- */
   const wall = new THREE.Group();
   const wallMat = new THREE.ShaderMaterial({
     uniforms: { uColor: { value: new THREE.Color() }, uTime: { value: 0 }, uHit: { value: 0 }, uOn: { value: 0 } },
@@ -129,7 +123,6 @@ export function create(ctx) {
   wall.position.set(0, 0.05, 0.05);
   root.add(wall);
 
-  /* ---------- туннель ---------- */
   const curve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-1.95, 0.05, 0.3),
     new THREE.Vector3(-1.0, 0.26, 0.32),
@@ -143,7 +136,6 @@ export function create(ctx) {
   const glass = new THREE.Mesh(new THREE.TubeGeometry(curve, 120, 0.17, 28), glassMat);
   root.add(coreTube, glass);
 
-  /* ---------- пакеты ---------- */
   const wgMat = new THREE.MeshStandardMaterial({ roughness: 0.3, metalness: 0.2, toneMapped: false });
   const rlMat = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.3, toneMapped: false });
   const wgMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 0.08, 0.08), wgMat, MAXP);
@@ -152,7 +144,6 @@ export function create(ctx) {
   root.add(wgMesh, rlMesh);
   const packets = [];
 
-  /* ---------- состояние Smart Connect ---------- */
   const st = { proto: 'wg', dpi: false, lost: 0, remembered: false, phase: 'clear', t: 0, switchAt: 0, spawn: 0, hit: 0 };
 
   const chips = ctx.hud ? {
@@ -172,8 +163,7 @@ export function create(ctx) {
   function setPhase(p) { st.phase = p; st.t = 0; }
   function blockOn() {
     st.dpi = true;
-    /* на запомненной Reality блокировка WireGuard ничего не рвёт — сразу
-       фаза «reality», иначе сценарий застрял бы в blocked без выхода */
+    // уже на Reality: блокировка WG ничего не рвёт, сразу фаза reality
     setPhase(st.proto === 'reality' ? 'reality' : 'blocked');
   }
   function toggle() {
@@ -187,7 +177,6 @@ export function create(ctx) {
     onTap: toggle, onKey: toggle,
   });
 
-  /* ---------- палитра ---------- */
   function setTheme(t) {
     th = t;
     bodyMat.color.copy(t.body);
@@ -205,7 +194,6 @@ export function create(ctx) {
   setTheme(th);
   const tmpC = new THREE.Color();
 
-  /* ---------- кадр ---------- */
   const dummy = new THREE.Object3D();
   const pos = new THREE.Vector3();
   function update(dt, time) {
@@ -214,7 +202,7 @@ export function create(ctx) {
     camera.lookAt(0, 0.05, 0);
 
     st.t += dt;
-    /* автосценарий демонстрации */
+    // автосценарий демонстрации
     if (st.phase === 'clear' && st.t > 4.2 && st.proto === 'wg') blockOn();
     if (st.phase === 'blocked' && st.proto === 'wg' && st.lost >= 3 && !st.switchAt) st.switchAt = time + 0.7;
     if (st.switchAt && time > st.switchAt) {
@@ -226,12 +214,12 @@ export function create(ctx) {
     }
     if (st.phase === 'reality' && st.t > 6.5) { st.dpi = false; setPhase('calm'); }
     if (st.phase === 'calm' && st.t > 5) {
-      /* новая сессия демонстрации */
+      // новая сессия демонстрации
       st.proto = 'wg'; st.remembered = false; st.lost = 0;
       setPhase('clear');
     }
 
-    /* поток пакетов */
+    // поток пакетов
     st.spawn -= dt;
     if (st.spawn <= 0 && !reduced) {
       st.spawn = 0.24;
@@ -244,8 +232,8 @@ export function create(ctx) {
       if (!pk.fall) {
         const prevU = pk.u;
         pk.u += pk.speed * dt;
-        /* режется только пакет, пересекающий стену в этот кадр:
-           уже прошедшие DPI до включения фильтра долетают */
+        // режется только пакет, пересекающий стену в этот кадр:
+        // прошедшие DPI до включения фильтра долетают
         if (st.dpi && pk.proto === 'wg' && prevU < 0.49 && pk.u >= 0.49) {
           pk.fall = true;
           curve.getPointAt(0.49, pk.p);
@@ -301,7 +289,7 @@ export function create(ctx) {
   }
 
   if (reduced) {
-    /* статичный кадр: момент после переключения — видны обе механики */
+    // статичный кадр сразу после переключения, видны обе механики
     st.dpi = true; st.proto = 'reality'; st.remembered = true; st.lost = 3; st.phase = 'reality';
     for (let i = 0; i < 8; i++) packets.push({ u: 0.06 + i * 0.12, speed: 0, proto: 'reality', fall: false, p: new THREE.Vector3(), v: new THREE.Vector3(), life: 1, spin: i });
   }
