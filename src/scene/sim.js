@@ -1,8 +1,4 @@
-/* Симуляция «живой сети» Aminyx Link на сфере: узлы, маршруты, пакеты,
-   failover-каскады и ручные отказы. Механика продукта, а не орнамент:
-   пакет, дошедший до узла, продолжает путь по случайному живому ребру;
-   регион гаснет — трафик стекается на выжившие маршруты.
-   Модуль не знает о рендерере: его читают и WebGL-глобус, и canvas2d-фолбэк. */
+// симуляция сети hero без рендера: её читают globe.js и globe2d.js
 import { setSfx, sfxEnabled, sfxKill, sfxHeal, sfxStorm } from './sfx.js';
 
 const TAU = Math.PI * 2;
@@ -13,7 +9,7 @@ function norm(v) {
   return v;
 }
 
-/* точка на дуге a→b (единичные векторы) с подъёмом над поверхностью */
+// точка на дуге a -> b (единичные векторы) с подъёмом над поверхностью
 export function arcPoint(a, b, t, lift, out) {
   const d = Math.min(1, Math.max(-1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
   const om = Math.acos(d);
@@ -44,7 +40,7 @@ export function createNetSim({ n = 180, k = 3, pmax = 70, reduced = false } = {}
     intro: reduced ? 1 : 0,
   };
 
-  /* узлы: сфера Фибоначчи с джиттером — равномерно, но не «сеткой» */
+  // узлы: сфера Фибоначчи с джиттером, чтобы не читалась сетка
   const golden = Math.PI * (3 - Math.sqrt(5));
   for (let i = 0; i < n; i++) {
     const y = 1 - (i / (n - 1)) * 2;
@@ -58,7 +54,7 @@ export function createNetSim({ n = 180, k = 3, pmax = 70, reduced = false } = {}
     sim.nodes.push({ p, alt: 1 + Math.random() * 0.025, ph: Math.random() * TAU, health: 1, deg: 0, boot: Math.random() });
   }
 
-  /* рёбра: k ближайших соседей без дублей */
+  // рёбра: k ближайших соседей без дублей
   const seen = new Set();
   for (let i = 0; i < n; i++) sim.adj.push([]);
   for (let i = 0; i < n; i++) {
@@ -149,7 +145,7 @@ export function createNetSim({ n = 180, k = 3, pmax = 70, reduced = false } = {}
   };
   sim.aliveCount = () => { let c = 0; for (let i = 0; i < n; i++) if (alive(i)) c++; return c; };
 
-  /* dt — миллисекунды */
+  // dt в миллисекундах
   sim.step = (dt) => {
     sim.time += dt;
     if (sim.intro < 1) sim.intro = Math.min(1, sim.intro + dt / 1800);
@@ -222,7 +218,7 @@ export function createNetSim({ n = 180, k = 3, pmax = 70, reduced = false } = {}
   return sim;
 }
 
-/* пульт для терминала, палитры и Konami (src/ui/main.js) */
+// пульт для терминала, палитры и Konami (src/ui/main.js)
 export function exposeSystem(sim) {
   window.__system = {
     kill: (count) => { const c = sim.killRandom(count || 1); sfxKill(); return c; },
@@ -240,7 +236,7 @@ export function exposeSystem(sim) {
   return window.__system;
 }
 
-/* HUD героя: 4 Гц, без перерисовки layout на каждом кадре */
+// HUD героя: 4 Гц, без перерисовки layout на каждом кадре
 export function heroHud(sim) {
   const hud = document.getElementById('hero-hud');
   if (!hud) return () => {};

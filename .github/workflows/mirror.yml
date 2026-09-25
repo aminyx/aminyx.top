@@ -19,7 +19,7 @@ jobs:
             echo "ok=true" >> "$GITHUB_OUTPUT"
           else
             echo "ok=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::CODEBERG_TOKEN не задан — зеркалирование пропущено (шаги в docs/owner-todo.md)"
+            echo "::notice::CODEBERG_TOKEN не задан, зеркало пропущено"
           fi
       - uses: actions/checkout@v4
         if: steps.has.outputs.ok == 'true'

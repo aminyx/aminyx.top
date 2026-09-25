@@ -1,15 +1,6 @@
-/* Движок сцен: ОДИН WebGL-контекст на всю страницу рисует любое число
-   3D-сцен, каждую — в свой <canvas> в потоке документа.
-
-   Почему не один fixed-канвас с ножницами (drei View): такой слой всегда
-   на кадр отстаёт от прокрутки, не умеет скругления и перекрывает меню.
-   Здесь сцена рендерится в общий невидимый буфер, и готовый кадр копируется
-   drawImage в 2D-канвас слота — GPU→GPU. Слот живёт в DOM: прокручивается
-   без задержки, обрезается border-radius, уходит под навигацию и диалоги,
-   а статичный кадр (reduced-motion) просто остаётся на месте.
-
-   Кадры рисуются только у видимых сцен; модуль сцены грузится лениво,
-   когда слот подъезжает к экрану; при просадке FPS снижается DPR. */
+// один WebGL-контекст на все сцены: рендер в скрытый буфер, кадр копируется drawImage в 2D-канвас слота.
+// fixed-канвас с ножницами (drei View) отстаёт от скролла на кадр и лезет поверх меню.
+// рисуем только видимые слоты, при просадке FPS снижаем DPR
 import { WebGLRenderer, NeutralToneMapping, PMREMGenerator } from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { readTheme } from './kit.js';
@@ -57,8 +48,8 @@ export function boot(stages, { onFail } = {}) {
   let bufW = 0, bufH = 0;
   let quality = isMobile ? 0.85 : 1;
   let slowFor = 0, fastFor = 0, ema = 16, minDt = 16, winMin = 1e9, winN = 0;
-  /* под reduced-motion сцены получают застывшее время: перерисовка по
-     перетаскиванию не должна оживлять кольца, флаг и прочие анимации */
+  // под reduced-motion сцены получают застывшее время: перерисовка по
+  // перетаскиванию не должна оживлять кольца, флаг и прочие анимации
   const FROZEN_T = 12.5;
 
   function ensureBuffer(w, h) {
@@ -91,13 +82,13 @@ export function boot(stages, { onFail } = {}) {
     v.h = h;
     if (v.inst && v.inst.resize) v.inst.resize(w, h, r.width, r.height);
     v.dirty = true;
-    /* смена canvas.width очищает 2D-канвас: перерисовать сразу, иначе
-       браузер покажет пустой кадр (ресайз, шаг качества, тулбар мобильного) */
+    // смена canvas.width очищает 2D-канвас: перерисовать сразу, иначе
+    // браузер покажет пустой кадр (ресайз, шаг качества, тулбар мобильного)
     if (changed && !lost && isActive(v)) { renderView(v); v.dirty = false; }
   }
 
-  /* буфер растёт под самый большой слот; после полноэкранного режима
-     или ресайза ужимается обратно, чтобы не резолвить лишний MSAA */
+  // буфер растёт под самый большой слот, после полноэкранного режима
+  // или ресайза ужимается обратно, чтобы не резолвить лишний MSAA
   function fitBuffer() {
     let w = 1, h = 1;
     views.forEach((v) => { if (v.w) { w = Math.max(w, v.w); h = Math.max(h, v.h); } });
@@ -127,7 +118,7 @@ export function boot(stages, { onFail } = {}) {
     renderer.clear(true, true, true);
     renderer.render(v.inst.scene, cam);
     v.ctx.clearRect(0, 0, v.w, v.h);
-    /* WebGL-буфер растёт от левого нижнего угла, 2D — от левого верхнего */
+    // WebGL-буфер растёт от левого нижнего угла, 2D от левого верхнего
     v.ctx.drawImage(glCanvas, 0, bufH - v.h, v.w, v.h, 0, 0, v.w, v.h);
   }
 
@@ -151,13 +142,13 @@ export function boot(stages, { onFail } = {}) {
     if (!reduced) kick();
   }
 
-  /* адаптивное качество с гистерезисом: вниз на устойчивой просадке,
-     вверх — только после долгой ровной работы */
+  // адаптивное качество с гистерезисом: вниз на устойчивой просадке,
+  // вверх только после долгой ровной работы
   function adapt(dtMs) {
     if (reduced) return;
     ema = ema * 0.92 + dtMs * 0.08;
-    /* минимальный интервал за окно ≈ частота дисплея: на 30 Гц (iOS Low
-       Power, ограничение браузера) ровные 33 мс — не повод снижать DPR */
+    // минимальный интервал за окно ≈ частота дисплея: на 30 Гц (iOS Low
+    // Power, ограничение браузера) ровные 33 мс не повод снижать DPR
     winMin = Math.min(winMin, dtMs);
     if (++winN >= 90) { minDt = winMin; winMin = 1e9; winN = 0; }
     const slow = Math.max(26, minDt * 1.4), fast = Math.max(17.5, minDt * 1.08);
@@ -202,8 +193,7 @@ export function boot(stages, { onFail } = {}) {
       sizeView(v);
       kick();
     }).catch((err) => {
-      /* без повторных попыток: повтор плодил бы HUD-чипы и слушатели,
-         а для глобуса — WebGL и canvas2d-фолбэк на одном канвасе */
+      // без ретраев: повтор задвоит HUD-чипы и слушатели, а у глобуса ещё WebGL и canvas2d на одном канвасе
       v.failed = true;
       console.warn('[scene]', v.key, err);
       v.stage.classList.add('no-gl');
@@ -243,7 +233,7 @@ export function boot(stages, { onFail } = {}) {
     ro.observe(canvas);
   });
 
-  /* смена темы / языка: сцены перечитывают палитру и подписи */
+  // смена темы или языка: сцены перечитывают палитру и подписи
   window.addEventListener('themechange', () => {
     theme = readTheme();
     views.forEach((v) => {
@@ -259,13 +249,13 @@ export function boot(stages, { onFail } = {}) {
     });
     kick();
   });
-  /* смена режима «3D / скриншот» */
+  // переключатель 3D/скриншот
   document.addEventListener('click', (e) => {
     if (e.target.closest && e.target.closest('.stage-modes')) setTimeout(() => { views.forEach((v) => { v.dirty = true; }); kick(); }, 0);
   });
   document.addEventListener('visibilitychange', () => { last = 0; if (!document.hidden) kick(); });
-  /* resize ловит и смену DPR (зум, перенос окна на другой монитор),
-     которую ResizeObserver не видит */
+  // resize ловит и смену DPR (зум, перенос окна на другой монитор),
+  // которую ResizeObserver не видит
   let resizeT = 0;
   window.addEventListener('resize', () => {
     clearTimeout(resizeT);
@@ -281,7 +271,7 @@ export function boot(stages, { onFail } = {}) {
   glCanvas.addEventListener('webglcontextrestored', () => {
     lost = false;
     bufW = bufH = 0;
-    /* PMREM-окружение жило в render target и пропало вместе с контекстом */
+    // PMREM-окружение жило в render target и пропало вместе с контекстом
     const hadEnv = envTex;
     envTex = null;
     views.forEach((v) => {
@@ -295,10 +285,9 @@ export function boot(stages, { onFail } = {}) {
     focus(canvas) {
       focusCanvas = canvas;
       views.forEach((v) => { v.dirty = true; });
-      /* после переезда канваса размеры меняются — пересчитать сразу */
+      // после переезда канваса размеры меняются, пересчитать сразу
       requestAnimationFrame(() => { views.forEach(sizeView); if (!canvas) fitBuffer(); kick(); });
     },
-    stats: () => ({ views: views.length, loaded: views.filter((v) => v.inst).length, quality, buffer: [bufW, bufH] }),
   };
 
   kick();

@@ -1,8 +1,4 @@
-/* Aminyx Link — multipath. Клиент и сервер связаны четырьмя транспортами
-   (TCP, QUIC, HTTP/3, UDP). Трафик балансируется по живым путям, каждый
-   пятый пакет — FEC-чётность. Обрыв пути (клик или авто) — пакеты на нём
-   гибнут, FEC восстанавливает данные без ретрансляции, поток уходит на
-   оставшиеся маршруты. Вокруг клиента — кольцо гибридного обмена ключами. */
+// Aminyx Link: 4 транспорта (TCP, QUIC, HTTP/3, UDP), каждый 5-й пакет FEC-чётность, клик рвёт путь
 import * as THREE from 'three';
 import { orbit, hudChip, textSprite, fitDistance, studioLights, damp, pointsMaterial, putColor, setGlowBlend } from '../kit.js';
 import { sfxKill, sfxHeal } from '../sfx.js';
@@ -28,7 +24,7 @@ export function create(ctx) {
 
   const A = new THREE.Vector3(-2.5, 0, 0), B = new THREE.Vector3(2.5, 0, 0);
 
-  /* конечные точки: икосаэдры с ребрами и светящимся ядром */
+  // конечные точки: икосаэдры с рёбрами и светящимся ядром
   const endMat = new THREE.MeshStandardMaterial({ metalness: 0.4, roughness: 0.35, flatShading: true, envMapIntensity: 0.8 });
   const edgeMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.8 });
   const ends = [A, B].map((p) => {
@@ -40,7 +36,7 @@ export function create(ctx) {
     return g;
   });
 
-  /* кольцо гибридного обмена ключами X25519 + ML-KEM-768 */
+  // кольцо гибридного обмена ключами X25519 + ML-KEM-768
   const ringMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.75, toneMapped: false });
   const ring = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.008, 8, 96), ringMat);
   const ring2 = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.005, 8, 96), ringMat);
@@ -49,7 +45,7 @@ export function create(ctx) {
   const keyMat = new THREE.MeshBasicMaterial({ toneMapped: false });
   const keys = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12), keyMat); root.add(m); return m; });
 
-  /* пути: тонкая светящаяся трубка + невидимая толстая для клика */
+  // пути: тонкая светящаяся трубка + невидимая толстая для клика
   const paths = CTRL.map((c, i) => {
     const curve = new THREE.CubicBezierCurve3(A.clone().add(new THREE.Vector3(0.3, 0, 0)), c[0], c[1], B.clone().add(new THREE.Vector3(-0.3, 0, 0)));
     const mat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.8, toneMapped: false, depthWrite: false });
@@ -62,7 +58,7 @@ export function create(ctx) {
     return { curve, mat, tube, hit, label, cut: 0, speed: [0.34, 0.46, 0.42, 0.52][i], cutFlash: 0 };
   });
 
-  /* пакеты: данные (холодные кубы) и FEC-чётность (янтарные октаэдры) */
+  // пакеты: данные (холодные кубы) и FEC-чётность (янтарные октаэдры)
   const dataMat = new THREE.MeshStandardMaterial({ roughness: 0.3, toneMapped: false });
   const fecMat = new THREE.MeshStandardMaterial({ roughness: 0.3, toneMapped: false });
   const dataMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.075, 0.075, 0.075), dataMat, MAXP);
@@ -71,7 +67,7 @@ export function create(ctx) {
   root.add(dataMesh, fecMesh);
   const packets = [];
 
-  /* искры гибнущих пакетов */
+  // искры гибнущих пакетов
   const SPK = 120;
   const spPos = new Float32Array(SPK * 3), spSize = new Float32Array(SPK), spCol = new Float32Array(SPK * 4);
   const spGeo = new THREE.BufferGeometry();
@@ -98,7 +94,7 @@ export function create(ctx) {
   function cut(i, dur) {
     const p = paths[i];
     if (!p || p.cut > 0) return;
-    /* хотя бы один путь всегда жив: multipath, а не обрыв связи */
+    // последний живой путь не рвём
     if (paths.filter((q) => q.cut <= 0).length <= 1) return;
     p.cut = dur || 4.5;
     p.cutFlash = 1;
@@ -108,7 +104,7 @@ export function create(ctx) {
       if (pk.path !== i) continue;
       burst(p.curve.getPointAt(Math.min(pk.u, 1)), pk.fec);
       packets.splice(k, 1);
-      /* потерю данных закрывает чётность своей группы — без ретрансляции */
+      // потерю данных закрывает чётность своей группы, без ретрансляции
       if (!pk.fec) st.fec++;
     }
     sfxKill();
@@ -175,7 +171,7 @@ export function create(ctx) {
       k.position.set(A.x + Math.cos(a) * 0.67, A.y + Math.sin(a) * 0.67 * Math.cos(time * 0.3), A.z + Math.sin(a) * 0.3);
     });
 
-    /* авто-обрыв для демонстрации */
+    // авто-обрыв для демонстрации
     st.autoCut -= dt;
     if (st.autoCut <= 0 && !reduced) {
       st.autoCut = 6 + Math.random() * 3;
@@ -192,7 +188,7 @@ export function create(ctx) {
       p.mat.opacity = dead ? 0.22 + 0.2 * Math.abs(Math.sin(time * 5)) : 0.75;
     });
 
-    /* планировщик: round-robin по живым путям, каждая пятая — чётность */
+    // планировщик: round-robin по живым путям, каждый пятый пакет FEC-чётность
     st.spawn -= dt;
     if (st.spawn <= 0 && !reduced && packets.length < MAXP) {
       st.spawn = 0.09;

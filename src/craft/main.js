@@ -1,21 +1,16 @@
-/* Вход страницы /craft: тема, язык, ленивая инициализация виньеток. */
-import { initFailover, initFec, initCongestion, initKillswitch, initTypeLab } from './vignettes.js';
-
+// /craft: язык, тема, виньетки
+import { initFailover, initFec, initCongestion, initKillswitch } from './vignettes.js';
 import { I18N } from '../i18n.js';
 
-window.I18N = I18N;
 var docEl = document.documentElement;
 
-/* ---------- язык (компактная версия applyLang главной) ---------- */
-
 function applyLang(lang) {
-  var dict = window.I18N && window.I18N[lang];
+  var dict = I18N[lang];
   if (!dict) return;
   docEl.dataset.lang = lang;
   docEl.lang = lang;
   try { localStorage.setItem('lang', lang); } catch (e) {}
   if (dict['craft.title']) document.title = dict['craft.title'];
-  /* описание страницы /craft тоже локализуем (иначе в EN/TG оставалось русским) */
   var setMeta = function (sel, val) { var m = document.querySelector(sel); if (m && val) m.setAttribute('content', val); };
   if (dict['craft.desc']) {
     setMeta('meta[name="description"]', dict['craft.desc']);
@@ -37,12 +32,7 @@ function applyLang(lang) {
 document.querySelectorAll('.lang-switch button').forEach(function (btn) {
   btn.addEventListener('click', function () { applyLang(btn.dataset.lang); });
 });
-/* в prod-сборке Vite поднимает модуль в head — словари (defer) исполняются
-   позже; DOMContentLoaded гарантирует наличие window.I18N */
-if (window.I18N) applyLang(docEl.dataset.lang || 'ru');
-else document.addEventListener('DOMContentLoaded', function () { applyLang(docEl.dataset.lang || 'ru'); });
-
-/* ---------- тема ---------- */
+applyLang(docEl.dataset.lang || 'ru');
 
 var themeBtn = document.getElementById('theme-toggle');
 function syncThemeBtn() {
@@ -58,8 +48,6 @@ themeBtn.addEventListener('click', function () {
   window.dispatchEvent(new Event('craft-theme'));
 });
 
-/* ---------- виньетки ---------- */
-
 var INITS = {
   failover: initFailover,
   fec: initFec,
@@ -69,7 +57,6 @@ var INITS = {
 
 document.querySelectorAll('.craft-card[data-vignette]').forEach(function (card) {
   var kind = card.dataset.vignette;
-  if (kind === 'type') { initTypeLab(); return; }
   var canvas = card.querySelector('canvas');
   if (canvas && INITS[kind]) INITS[kind](canvas);
 });

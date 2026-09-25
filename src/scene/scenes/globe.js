@@ -1,8 +1,6 @@
-/* Hero: живая сеть Aminyx Link на сфере. Узлы и дуги-маршруты, пакеты
-   со шлейфом, failover-каскад с кольцом зоны отказа, ручные отказы
-   посетителя (клик по узлу), шторм по удержанию, CHAOS MODE из терминала. */
+// hero: глобус поверх sim.js. клик по узлу = отказ, удержание = шторм
 import {
-  Scene, PerspectiveCamera, Group, Mesh, SphereGeometry, PlaneGeometry, RingGeometry,
+  Scene, PerspectiveCamera, Group, Mesh, SphereGeometry, RingGeometry,
   BufferGeometry, BufferAttribute, Points, LineSegments, LineLoop, LineBasicMaterial,
   MeshBasicMaterial, ShaderMaterial, Vector3, Color, DoubleSide, AdditiveBlending, NormalBlending,
 } from 'three';
@@ -25,7 +23,7 @@ export function create(ctx) {
   const root = new Group();
   scene.add(root);
 
-  /* ядро: матовая сфера с холодным ободком — закрывает обратную сторону */
+  // ядро: матовая сфера с холодным ободком, закрывает обратную сторону
   const coreMat = new ShaderMaterial({
     uniforms: { uCore: { value: new Color() }, uRim: { value: new Color() }, uRimK: { value: 0.5 } },
     vertexShader: /* glsl */`
@@ -49,30 +47,7 @@ export function create(ctx) {
   core.renderOrder = 0;
   root.add(core);
 
-  /* ореол-атмосфера: плоскость лицом к камере, центр закрыт ядром по глубине */
-  const haloMat = new ShaderMaterial({
-    uniforms: { uColor: { value: new Color() }, uK: { value: 1 } },
-    vertexShader: /* glsl */`
-      varying vec2 vP;
-      void main() { vP = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: /* glsl */`
-      uniform vec3 uColor; uniform float uK;
-      varying vec2 vP;
-      void main() {
-        float r = length(vP);
-        float a = r < 1.0 ? 0.0 : pow(max(0.0, 1.0 - (r - 1.0) / 0.42), 3.0) * 0.55 * uK;
-        if (a < 0.003) discard;
-        gl_FragColor = vec4(uColor, a);
-        #include <colorspace_fragment>
-      }`,
-    transparent: true,
-    depthWrite: false,
-  });
-  const halo = new Mesh(new PlaneGeometry(3.2, 3.2), haloMat);
-  halo.renderOrder = 1;
-  scene.add(halo);
-
-  /* пыль поверхности: плотная сфера Фибоначчи — «материк» без карты */
+  // пыль на поверхности, сфера Фибоначчи
   const DUST = isMobile ? 1100 : 2200;
   const dustPos = new Float32Array(DUST * 3), dustSize = new Float32Array(DUST), dustCol = new Float32Array(DUST * 4);
   const golden = Math.PI * (3 - Math.sqrt(5));
@@ -92,7 +67,7 @@ export function create(ctx) {
   dust.renderOrder = 2;
   root.add(dust);
 
-  /* дуги маршрутов: геометрия статична, цвет пишется каждый кадр */
+  // дуги маршрутов: геометрия статична, цвет пишется каждый кадр
   const E = sim.edges.length;
   const linePos = new Float32Array(E * SEG * 2 * 3);
   const lineCol = new Float32Array(E * SEG * 2 * 4);
@@ -116,7 +91,6 @@ export function create(ctx) {
   lines.frustumCulled = false;
   root.add(lines);
 
-  /* узлы */
   const N = sim.N;
   const nodePos = new Float32Array(N * 3), nodeSize = new Float32Array(N), nodeCol = new Float32Array(N * 4);
   sim.nodes.forEach((nd, i) => nodePos.set([nd.p[0] * nd.alt, nd.p[1] * nd.alt, nd.p[2] * nd.alt], i * 3));
@@ -130,7 +104,7 @@ export function create(ctx) {
   nodes.frustumCulled = false;
   root.add(nodes);
 
-  /* пакеты со шлейфом + осколки */
+  // пакеты со шлейфом и осколки
   const P = sim.PMAX * 4 + 80;
   const pkPos = new Float32Array(P * 3), pkSize = new Float32Array(P), pkCol = new Float32Array(P * 4);
   const pkGeo = new BufferGeometry();
@@ -143,7 +117,6 @@ export function create(ctx) {
   packets.frustumCulled = false;
   root.add(packets);
 
-  /* кольцо зоны отказа */
   const RING = 96;
   const ringGeo = new BufferGeometry();
   ringGeo.setAttribute('position', new BufferAttribute(new Float32Array(RING * 3), 3));
@@ -170,7 +143,7 @@ export function create(ctx) {
     ringGeo.computeBoundingSphere();
   }
 
-  /* ударные волны ручных отказов */
+  // ударные волны ручных отказов
   const waves = [];
   for (let i = 0; i < 5; i++) {
     const m = new Mesh(new RingGeometry(0.9, 1, 48), new MeshBasicMaterial({ transparent: true, depthWrite: false, side: DoubleSide, opacity: 0 }));
@@ -189,18 +162,13 @@ export function create(ctx) {
     w.visible = true;
   }
 
-  /* ---------- палитра ---------- */
   let C = {};
   function setTheme(t) {
     th = t;
     C = { line: t.line.clone(), hot: t.hot.clone(), node: t.node.clone(), danger: t.danger.clone(), cool: t.cool.clone(), tmp: new Color() };
     coreMat.uniforms.uCore.value.copy(t.core);
     coreMat.uniforms.uRim.value.copy(t.cool);
-    coreMat.uniforms.uRimK.value = t.light ? 0.28 : 0.55;
-    haloMat.uniforms.uColor.value.copy(t.cool);
-    haloMat.uniforms.uK.value = t.light ? 0.55 : 1;
-    haloMat.blending = t.light ? NormalBlending : AdditiveBlending;
-    haloMat.needsUpdate = true;
+    coreMat.uniforms.uRimK.value = t.light ? 0.12 : 0.22;
     [dustMat, nodeMat, pkMat, lineMat].forEach((m) => setGlowBlend(m, t.light));
     ringMat.color.copy(t.danger);
     waves.forEach((w) => { w.material.color.copy(t.danger); w.material.blending = t.light ? NormalBlending : AdditiveBlending; w.material.needsUpdate = true; });
@@ -209,7 +177,6 @@ export function create(ctx) {
   }
   setTheme(th);
 
-  /* ---------- интерактив ---------- */
   const tip = document.getElementById('globe-tip');
   let hoverIdx = -1;
   const wv = new Vector3();
@@ -283,7 +250,6 @@ export function create(ctx) {
     },
   });
 
-  /* ---------- кадр ---------- */
   const pa = [0, 0, 0], pb = [0, 0, 0];
   function update(dt) {
     ctl.update(dt);
@@ -292,14 +258,12 @@ export function create(ctx) {
     const intro = sim.intro;
     const e3 = 1 - Math.pow(1 - intro, 3);
     root.scale.setScalar(0.86 + 0.14 * e3);
-    halo.scale.setScalar(0.86 + 0.14 * e3);
     camera.position.z = 5.4 * ctl.zoom;
     camera.lookAt(0, 0, 0);
-    halo.lookAt(camera.position);
     [dustMat, nodeMat, pkMat, lineMat].forEach((m) => { m.uniforms.uFade.value = e3; });
     root.updateMatrixWorld();
 
-    /* дуги: тепло трафика → янтарь, мёртвые — красноватые и тусклые */
+    // дуги: тепло трафика -> янтарь, мёртвые красноватые и тусклые
     const baseA = th.light ? 0.3 : 0.4;
     for (let e = 0; e < sim.edges.length; e++) {
       const ed = sim.edges[e];
@@ -348,7 +312,7 @@ export function create(ctx) {
     pkGeo.attributes.aSize.needsUpdate = true;
     pkGeo.attributes.aColor.needsUpdate = true;
 
-    /* зона отказа: кольцо вспыхивает и гаснет вместе с каскадом */
+    // зона отказа: кольцо вспыхивает и гаснет вместе с каскадом
     const f = sim.fail;
     if (f.active && ringFor !== f.t0) { buildRing(); ringFor = f.t0; }
     const tgt = f.active ? 0.85 * Math.min(1, (sim.time - f.t0) / 300) * (0.75 + 0.25 * Math.sin(sim.time * 0.012)) : 0;

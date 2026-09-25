@@ -5,8 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# build-джоба исполняет npm ci (postinstall-скрипты всего дерева зависимостей) —
-# токены деплоя ей не выдаются, права подняты только у джобы deploy
+# npm ci гоняет postinstall всех зависимостей, поэтому права на деплой только у job deploy
 permissions:
   contents: read
 

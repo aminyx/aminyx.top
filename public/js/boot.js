@@ -1,5 +1,4 @@
-/* Выполняется до отрисовки: класс js, тема, язык, цвет браузерной панели.
-   Вынесен из инлайна ради строгой CSP (script-src 'self'). */
+/* до первой отрисовки: .js, тема, язык, theme-color. отдельным файлом из-за CSP */
 (function () {
   var d = document.documentElement;
   d.classList.add('js');
@@ -14,15 +13,13 @@
   d.dataset.theme = t;
 
   if (!l) {
-    /* префикс пути (/en/, /tg/ — прегенерированные hreflang-версии)
-       главнее автодетекта: URL — явное намерение */
+    /* /en/ и /tg/ в пути важнее языка браузера */
     var path = location.pathname;
     if (path.indexOf('/en/') === 0) l = 'en';
     else if (path.indexOf('/tg/') === 0) l = 'tg';
   }
   if (!l) {
-    /* сравниваем первичные субтеги, не подстроки: иначе регион Того
-       (fr-TG) ложно включал таджикский */
+    /* только первичный субтег: fr-TG это Того, не таджикский */
     var tags = (navigator.languages || [navigator.language || 'ru']).map(function (s) {
       return String(s).toLowerCase().split('-')[0];
     });
@@ -32,7 +29,7 @@
   if (l !== 'ru') d.lang = l;
 
   window.__setThemeColor = function (theme) {
-    var color = theme === 'light' ? '#f5f4f0' : '#07080b';
+    var color = theme === 'light' ? '#f5f4f0' : '#0f1012';
     var metas = document.querySelectorAll('meta[name="theme-color"]');
     for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', color);
   };

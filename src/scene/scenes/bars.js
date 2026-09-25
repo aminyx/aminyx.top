@@ -1,7 +1,4 @@
-/* Somoni Tracker — строка из чата становится блоком траты в столбце дня.
-   Цвет блока — категория, которую бот ставит сам. Прозрачные каркасы
-   позади — те же дни прошлого месяца, и только прошедшие: сравнение
-   обрезано по числу прошедших дней, как в продукте. */
+// Somoni Tracker: строка из чата -> блок траты, каркасы = те же прошедшие дни прошлого месяца
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { orbit, hudChip, textSprite, fitDistance, studioLights, damp } from '../kit.js';
@@ -32,7 +29,7 @@ export function create(ctx) {
   blocks.frustumCulled = false;
   root.add(blocks);
 
-  /* каркасы прошлого месяца */
+  // каркасы прошлого месяца
   const ghostMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.4 });
   const ghostFillMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.07, depthWrite: false });
   const unitEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1));
@@ -48,13 +45,13 @@ export function create(ctx) {
   const labels = [];
   for (let d = 0; d < DAYS; d++) {
     const s = textSprite(String(d + 1), { size: 0.14 });
-    /* перед передней кромкой плиты, иначе её перекрывает глубина */
+    // перед передней кромкой плиты, иначе её перекрывает глубина
     s.position.set(colX(d), 0.02, 0.76);
     root.add(s);
     labels.push(s);
   }
 
-  /* демо-строки из словаря: «кофе 350|Кафе;…» */
+  // демо-строки из словаря, формат: кофе 350|Кафе;...
   let demo = [];
   let cats = [];
   function parseDemo() {
@@ -121,7 +118,7 @@ export function create(ctx) {
     const item = demo[st.di++ % demo.length];
     st.chat = item;
     if (reduced) {
-      /* без анимации: сообщение сразу «допечатано», блок сразу в столбце */
+      // без анимации: сообщение сразу целиком, блок сразу в столбце
       st.chatT = 99;
       addBlock(st.today, item, true);
     } else {
@@ -157,7 +154,7 @@ export function create(ctx) {
       st.next -= dt;
       if (st.next <= 0 && !st.pending && !st.reset) { st.next = 2.4; spend(); }
       if (st.chat) st.chatT += dt;
-      /* сообщение «допечатано» — бот ставит категорию, блок падает в столбец */
+      // сообщение допечатано: бот ставит категорию, блок падает
       if (st.pending && st.chatT * 18 >= st.pending.text.length + 6) {
         addBlock(st.today, st.pending, false);
         st.pending = null;
@@ -212,7 +209,7 @@ export function create(ctx) {
 
     ghosts.forEach((g, d) => {
       const on = d <= st.today && !st.reset;
-      /* высота сопоставима со стопкой: итог дня как две траты */
+      // высота сопоставима со стопкой: итог дня как две траты
       const h = 2 * heightOf(lastMonth[d] / 2);
       g.visible = on || g.scale.y > 0.02;
       const sy = on ? h : 0.001;

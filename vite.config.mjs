@@ -6,8 +6,7 @@ const r = (p) => resolve(import.meta.dirname, p);
 export default defineConfig({
   build: {
     target: 'es2020',
-    /* three — единственный тяжёлый чанк; грузится лениво после первой
-       отрисовки и только если на странице есть 3D-сцена */
+    // three грузится лениво, большой чанк ожидаем
     chunkSizeWarningLimit: 800,
     rollupOptions: {
       input: {

@@ -1,21 +1,17 @@
-/* Smoke-тест собранного сайта: три языковые версии, /craft, /privacy, 404.
-   Падает с ненулевым кодом при любом несоответствии — гейт для CI.
-   Сцена считается живой, когда hero-слот получил класс gl-on: это делает
-   и WebGL-движок, и canvas2d-фолбэк (на раннерах без GPU). */
+// smoke по dist: /, /en/, /tg/, /craft/, /privacy/, 404. hero живой = .gl-on (ставят и WebGL, и canvas2d-фолбэк)
 import { preview } from 'vite';
 import { chromium } from 'playwright';
 
-/* locale контекста имитирует браузер посетителя: на / автодетект должен
-   дать ru при ru-RU; на /tg/ префикс пути обязан победить en-US-детекцию */
+// locale = язык браузера: на / ждём ru, на /tg/ путь важнее en-US
 const EXPECT = {
-  '/': { lang: 'ru', locale: 'ru-RU', title: 'Aminyx | Разработка продуктов: бэкенд, Android, веб, безопасность', h1: 'Собираю продукты' },
-  '/en/': { lang: 'en', locale: 'en-US', title: 'Aminyx | Product development: backend, Android, web, security', h1: 'I build products' },
-  '/tg/': { lang: 'tg', locale: 'en-US', title: 'Aminyx | Таҳияи маҳсулот: бэкенд, Android, веб, амният', h1: 'Маҳсулотро' },
+  '/': { lang: 'ru', locale: 'ru-RU', title: 'Аминджон Азизов (Aminyx): бэкенд, Android, веб, безопасность', h1: 'Аминджон Азизов' },
+  '/en/': { lang: 'en', locale: 'en-US', title: 'Aminjon Azizov (Aminyx): backend, Android, web, security', h1: 'Aminjon Azizov' },
+  '/tg/': { lang: 'tg', locale: 'en-US', title: 'Аминҷон Азизов (Aminyx): бэкенд, Android, веб, амният', h1: 'Аминҷон Азизов' },
 };
 
 const server = await preview({ preview: { port: 4599, strictPort: true } });
 const base = 'http://localhost:4599';
-/* CHROMIUM_PATH — для окружений с предустановленным браузером */
+// CHROMIUM_PATH: для окружений с предустановленным браузером
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const errors = [];
 
@@ -44,7 +40,7 @@ try {
     }
 
     if (path === '/') {
-      /* сцена проекта поднимается лениво при подъезде слота к экрану */
+      // сцена проекта поднимается лениво, когда слот подъезжает к экрану
       await page.locator('#p-somonvpn .case-stage').scrollIntoViewIfNeeded();
       try {
         await page.waitForFunction(() => {
@@ -54,7 +50,7 @@ try {
       } catch {
         errors.push('/: 3D-сцена SomonVPN не загрузилась и не ушла в фолбэк');
       }
-      /* командная палитра: Ctrl+K открывает, поиск фильтрует */
+      // командная палитра: Ctrl+K открывает, поиск фильтрует
       await page.keyboard.press('Control+k');
       const open = await page.evaluate(() => document.getElementById('cmdk').open);
       if (!open) errors.push('/: Ctrl+K не открыл палитру');
@@ -62,7 +58,7 @@ try {
       const items = await page.$$eval('#cmdk-list [role="option"]', (els) => els.map((e) => e.textContent));
       if (!items.some((t) => t.includes('SomonVPN'))) errors.push('/: палитра не нашла SomonVPN');
       await page.keyboard.press('Escape');
-      /* бриф собирает сообщение из отмеченного */
+      // бриф собирает сообщение из отмеченного
       await page.locator('#brief').scrollIntoViewIfNeeded();
       await page.check('#brief input[value="bot"]');
       const preview = await page.textContent('#brief-preview');

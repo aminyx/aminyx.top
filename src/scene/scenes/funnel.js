@@ -1,14 +1,11 @@
-/* Username Hunter — воронка отбора. Генератор сыплет кандидатов по спирали
-   (~13 тыс./с на дев-машине), офлайн-скоринг гасит 99 % на середине
-   воронки, лучший 1 % проходит в горлышко к кольцу проверки MTProto;
-   часть из них подтверждается свободными. Клик — всплеск генерации. */
+// Username Hunter: генератор (~13 тыс./с на дев-машине) -> офлайн-скоринг отсекает 99 % -> остаток проверяем через MTProto. клик = всплеск
 import * as THREE from 'three';
 import { orbit, hudChip, fitDistance, studioLights, pointsMaterial, putColor, setGlowBlend, fresnelMaterial } from '../kit.js';
 
 const TOP = 1.35, MID = 0.1, NECK = -0.55, BOTTOM = -1.0;
 const MAX = 1500;
 
-/* профиль воронки: радиус от высоты */
+// профиль воронки: радиус от высоты
 function radiusAt(y) {
   if (y >= MID) return 0.34 + (1.5 - 0.34) * Math.pow((y - MID) / (TOP - MID), 1.35);
   if (y >= NECK) return 0.16 + (0.34 - 0.16) * ((y - NECK) / (MID - NECK));
@@ -25,7 +22,7 @@ export function create(ctx) {
   const root = new THREE.Group();
   scene.add(root);
 
-  /* каркас воронки: кольца + образующие */
+  // каркас воронки: кольца + образующие
   const pts = [];
   const RINGS = 9, RAYS = 20, SEGR = 64;
   for (let r = 0; r < RINGS; r++) {
@@ -48,7 +45,7 @@ export function create(ctx) {
   const wireMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.3, depthWrite: false });
   root.add(new THREE.LineSegments(wireGeo, wireMat));
 
-  /* стеклянная оболочка */
+  // стеклянная оболочка
   const profile = [];
   for (let i = 0; i <= 40; i++) {
     const y = BOTTOM + ((TOP - BOTTOM) * i) / 40;
@@ -57,7 +54,7 @@ export function create(ctx) {
   const shellMat = fresnelMaterial({ power: 2.0, intensity: 0.45, base: 0.02, light: th.light, side: THREE.DoubleSide });
   root.add(new THREE.Mesh(new THREE.LatheGeometry(profile, 64), shellMat));
 
-  /* кольцо скоринга на середине и кольцо MTProto под горлышком */
+  // кольцо скоринга на середине и кольцо MTProto под горлышком
   const gateMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.85, toneMapped: false });
   const gate = new THREE.Mesh(new THREE.TorusGeometry(radiusAt(MID) + 0.02, 0.012, 8, 96), gateMat);
   gate.rotation.x = Math.PI / 2;
@@ -68,7 +65,7 @@ export function create(ctx) {
   mt.position.y = BOTTOM - 0.38;
   root.add(gate, mt);
 
-  /* частицы-кандидаты */
+  // частицы-кандидаты
   const pos = new Float32Array(MAX * 3), size = new Float32Array(MAX), col = new Float32Array(MAX * 4);
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -173,7 +170,7 @@ export function create(ctx) {
   }
 
   if (reduced) {
-    /* статичный кадр: поток «прогрет» симуляцией */
+    // статичный кадр: поток заранее прогнан симуляцией
     for (let k = 0; k < 400; k++) {
       acc += 0.033 * st.rate;
       while (acc >= 1 && parts.length < MAX) { spawn(); acc -= 1; }

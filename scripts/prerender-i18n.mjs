@@ -1,7 +1,4 @@
-/* Прегенерация языковых версий из dist/index.html: dist/en/ и dist/tg/.
-   Словари берутся из src/i18n.js (единственный источник переводов),
-   поэтому статические страницы никогда не расходятся с клиентским i18n.
-   Кластер hreflang прописан в исходном index.html и копируется как есть. */
+// dist/index.html -> dist/en/, dist/tg/ по словарям из src/i18n.js
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { load } from 'cheerio';
 import { I18N } from '../src/i18n.js';

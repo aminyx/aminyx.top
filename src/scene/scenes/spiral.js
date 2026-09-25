@@ -1,7 +1,4 @@
-/* Cybersec — 270 дней курса как винтовая лестница: день = ступень,
-   шесть экзаменов — крупные янтарные блоки, десять портфолио-проектов —
-   кристаллы снаружи витка, на вершине — флаг CTF. Огонёк прогресса
-   поднимается по ступеням; клик — прыжок к следующему экзамену. */
+// Cybersec: 270 дней ступенями, 6 экзаменов, 10 проектов, флаг CTF. клик = следующий экзамен
 import * as THREE from 'three';
 import { orbit, hudChip, fitDistance, studioLights, damp, pointsMaterial, putColor, setGlowBlend } from '../kit.js';
 import { sfxHeal } from '../sfx.js';
@@ -28,7 +25,7 @@ export function create(ctx) {
 
   const isExam = (d) => (d + 1) % (DAYS / EXAMS) === 0;
 
-  /* ступени-дни */
+  // ступени-дни
   const stepMat = new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.25, envMapIntensity: 0.8 });
   const steps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.05, 0.1), stepMat, DAYS);
   const dummy = new THREE.Object3D();
@@ -45,7 +42,7 @@ export function create(ctx) {
   }
   root.add(steps);
 
-  /* центральная ось и направляющая спирали */
+  // центральная ось и направляющая спирали
   const guideMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.35 });
   const gpts = [];
   for (let d = 0; d < DAYS; d += 2) { helixPoint(d, R * 0.82, p); gpts.push(p.clone()); }
@@ -53,14 +50,14 @@ export function create(ctx) {
   const axis = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, Y0 - 0.2, 0), new THREE.Vector3(0, Y1 + 0.55, 0)]), guideMat);
   root.add(guide, axis);
 
-  /* портфолио-проекты */
+  // портфолио-проекты
   const crystalMat = new THREE.MeshStandardMaterial({ roughness: 0.2, metalness: 0.4, flatShading: true, toneMapped: false });
   const crystals = new THREE.InstancedMesh(new THREE.OctahedronGeometry(0.075), crystalMat, PROJECTS);
   const crystalDay = [];
   for (let i = 0; i < PROJECTS; i++) crystalDay.push(Math.round(((i + 0.5) / PROJECTS) * (DAYS - 1)));
   root.add(crystals);
 
-  /* флаг CTF на вершине оси */
+  // флаг CTF на вершине оси
   const flagGroup = new THREE.Group();
   const poleMat = new THREE.MeshStandardMaterial({ metalness: 0.7, roughness: 0.3 });
   const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.62, 8), poleMat);
@@ -75,7 +72,7 @@ export function create(ctx) {
   flagGroup.position.y = Y1 + 0.02;
   root.add(flagGroup);
 
-  /* огонёк прогресса + искры на финише */
+  // огонёк прогресса + искры на финише
   const SP = 90;
   const spPos = new Float32Array(SP * 3), spSize = new Float32Array(SP), spCol = new Float32Array(SP * 4);
   const spGeo = new THREE.BufferGeometry();
@@ -152,7 +149,7 @@ export function create(ctx) {
       }
     }
 
-    /* подсветка пройденных ступеней: холодный → янтарь к вершине */
+    // подсветка пройденных ступеней: холодный -> янтарь к вершине
     const lit = Math.floor(st.day);
     if (lit !== lastLit) {
       for (let d = 0; d < DAYS; d++) {
@@ -174,7 +171,6 @@ export function create(ctx) {
     }
     crystals.instanceMatrix.needsUpdate = true;
 
-    /* флаг развевается */
     const pos = flagGeo.attributes.position.array;
     for (let i = 0; i < pos.length; i += 3) {
       const x = flagBase[i];
