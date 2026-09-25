@@ -172,7 +172,9 @@ export function create(ctx) {
   function setPhase(p) { st.phase = p; st.t = 0; }
   function blockOn() {
     st.dpi = true;
-    setPhase('blocked');
+    /* на запомненной Reality блокировка WireGuard ничего не рвёт — сразу
+       фаза «reality», иначе сценарий застрял бы в blocked без выхода */
+    setPhase(st.proto === 'reality' ? 'reality' : 'blocked');
   }
   function toggle() {
     if (!st.dpi) blockOn();

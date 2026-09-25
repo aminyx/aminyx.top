@@ -56,7 +56,10 @@ export function boot(stages, { onFail } = {}) {
   let raf = 0, last = 0, lost = false;
   let bufW = 0, bufH = 0;
   let quality = isMobile ? 0.85 : 1;
-  let slowFor = 0, fastFor = 0, ema = 16;
+  let slowFor = 0, fastFor = 0, ema = 16, minDt = 16, winMin = 1e9, winN = 0;
+  /* под reduced-motion сцены получают застывшее время: перерисовка по
+     перетаскиванию не должна оживлять кольца, флаг и прочие анимации */
+  const FROZEN_T = 12.5;
 
   function ensureBuffer(w, h) {
     if (w <= bufW && h <= bufH) return;
@@ -83,10 +86,25 @@ export function boot(stages, { onFail } = {}) {
       v.canvas.width = w;
       v.canvas.height = h;
     }
+    const changed = w !== v.w || h !== v.h;
     v.w = w;
     v.h = h;
     if (v.inst && v.inst.resize) v.inst.resize(w, h, r.width, r.height);
     v.dirty = true;
+    /* смена canvas.width очищает 2D-канвас: перерисовать сразу, иначе
+       браузер покажет пустой кадр (ресайз, шаг качества, тулбар мобильного) */
+    if (changed && !lost && isActive(v)) { renderView(v); v.dirty = false; }
+  }
+
+  /* буфер растёт под самый большой слот; после полноэкранного режима
+     или ресайза ужимается обратно, чтобы не резолвить лишний MSAA */
+  function fitBuffer() {
+    let w = 1, h = 1;
+    views.forEach((v) => { if (v.w) { w = Math.max(w, v.w); h = Math.max(h, v.h); } });
+    if (w !== bufW || h !== bufH) {
+      bufW = w; bufH = h;
+      renderer.setSize(bufW, bufH, false);
+    }
   }
 
   function isActive(v) {
@@ -120,7 +138,7 @@ export function boot(stages, { onFail } = {}) {
     const active = views.filter(isActive);
     if (!active.length) { last = 0; return; }
     const dt = dtMs / 1000;
-    const t = now / 1000;
+    const t = reduced ? FROZEN_T : now / 1000;
     for (const v of active) {
       if (!reduced || v.dirty) v.inst.update(reduced ? 0 : dt, t);
     }
@@ -129,24 +147,31 @@ export function boot(stages, { onFail } = {}) {
       renderView(v);
       v.dirty = false;
     }
-    adapt(dtMs, active);
+    adapt(dtMs);
     if (!reduced) kick();
   }
 
   /* адаптивное качество с гистерезисом: вниз на устойчивой просадке,
      вверх — только после долгой ровной работы */
-  function adapt(dtMs, active) {
+  function adapt(dtMs) {
     if (reduced) return;
     ema = ema * 0.92 + dtMs * 0.08;
-    if (ema > 26) { slowFor += dtMs; fastFor = 0; } else if (ema < 17.5) { fastFor += dtMs; slowFor = 0; } else { slowFor = fastFor = 0; }
+    /* минимальный интервал за окно ≈ частота дисплея: на 30 Гц (iOS Low
+       Power, ограничение браузера) ровные 33 мс — не повод снижать DPR */
+    winMin = Math.min(winMin, dtMs);
+    if (++winN >= 90) { minDt = winMin; winMin = 1e9; winN = 0; }
+    const slow = Math.max(26, minDt * 1.4), fast = Math.max(17.5, minDt * 1.08);
+    if (ema > slow) { slowFor += dtMs; fastFor = 0; } else if (ema < fast) { fastFor += dtMs; slowFor = 0; } else { slowFor = fastFor = 0; }
     if (slowFor > 1500 && quality > 0.55) {
       quality = Math.max(0.55, quality * 0.82);
       slowFor = 0;
       views.forEach(sizeView);
+      fitBuffer();
     } else if (fastFor > 8000 && quality < 1) {
       quality = Math.min(1, quality * 1.12);
       fastFor = 0;
       views.forEach(sizeView);
+      fitBuffer();
     }
   }
 
@@ -177,7 +202,9 @@ export function boot(stages, { onFail } = {}) {
       sizeView(v);
       kick();
     }).catch((err) => {
-      v.loading = false;
+      /* без повторных попыток: повтор плодил бы HUD-чипы и слушатели,
+         а для глобуса — WebGL и canvas2d-фолбэк на одном канвасе */
+      v.failed = true;
       console.warn('[scene]', v.key, err);
       v.stage.classList.add('no-gl');
       if (onFail) onFail(v.stage, err);
@@ -237,7 +264,13 @@ export function boot(stages, { onFail } = {}) {
     if (e.target.closest && e.target.closest('.stage-modes')) setTimeout(() => { views.forEach((v) => { v.dirty = true; }); kick(); }, 0);
   });
   document.addEventListener('visibilitychange', () => { last = 0; if (!document.hidden) kick(); });
-  window.addEventListener('resize', () => { views.forEach((v) => { v.dirty = true; }); kick(); });
+  /* resize ловит и смену DPR (зум, перенос окна на другой монитор),
+     которую ResizeObserver не видит */
+  let resizeT = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => { views.forEach(sizeView); fitBuffer(); kick(); }, 120);
+  });
 
   glCanvas.addEventListener('webglcontextlost', (e) => {
     e.preventDefault();
@@ -248,7 +281,13 @@ export function boot(stages, { onFail } = {}) {
   glCanvas.addEventListener('webglcontextrestored', () => {
     lost = false;
     bufW = bufH = 0;
-    views.forEach((v) => { v.dirty = true; });
+    /* PMREM-окружение жило в render target и пропало вместе с контекстом */
+    const hadEnv = envTex;
+    envTex = null;
+    views.forEach((v) => {
+      if (hadEnv && v.inst && v.inst.scene.environment === hadEnv) v.inst.scene.environment = env();
+      v.dirty = true;
+    });
     kick();
   });
 
@@ -257,7 +296,7 @@ export function boot(stages, { onFail } = {}) {
       focusCanvas = canvas;
       views.forEach((v) => { v.dirty = true; });
       /* после переезда канваса размеры меняются — пересчитать сразу */
-      requestAnimationFrame(() => { views.forEach(sizeView); kick(); });
+      requestAnimationFrame(() => { views.forEach(sizeView); if (!canvas) fitBuffer(); kick(); });
     },
     stats: () => ({ views: views.length, loaded: views.filter((v) => v.inst).length, quality, buffer: [bufW, bufH] }),
   };
