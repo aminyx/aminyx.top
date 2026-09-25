@@ -1,4 +1,3 @@
-// Somoni Tracker: строка из чата -> блок траты, каркасы = те же прошедшие дни прошлого месяца
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { orbit, hudChip, textSprite, fitDistance, studioLights, damp } from '../kit.js';

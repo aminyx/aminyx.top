@@ -51,7 +51,7 @@
       "alternateName": "Aminyx",
       "url": "https://aminyx.top/",
       "email": "mailto:itsaminyx@gmail.com",
-      "jobTitle": "Full-stack developer and security engineer",
+      "jobTitle": "Software developer",
       "knowsLanguage": ["ru", "tg", "en"],
       "knowsAbout": ["Go", "Rust", "Kotlin", "Python", "TypeScript", "Android", "Network protocols", "Cybersecurity"],
       "sameAs": [
@@ -67,8 +67,6 @@
 
 <a class="skip-link" href="#main" data-i18n="a11y.skip">К содержанию</a>
 
-<p id="chaos-hud" class="chaos-hud" hidden aria-hidden="true">chaos mode</p>
-
 <header class="nav" id="nav">
   <div class="nav-shell">
     <a class="wordmark" href="#top" aria-label="aminyx">
@@ -79,7 +77,7 @@
       <a href="#work" data-i18n="nav.work">Работы</a>
       <a href="#oss" data-i18n="nav.oss">Код</a>
       <a href="#services" data-i18n="nav.services">Услуги</a>
-      <a href="/craft/" data-i18n="nav.craft">Craft</a>
+      <a href="/craft/" data-i18n="nav.craft">Схемы</a>
       <a href="#contact" data-i18n="nav.contact">Контакты</a>
       <div class="lang-switch lang-switch-m" role="group" aria-label="Язык" data-i18n-aria="a11y.lang">
         <button type="button" data-lang="ru" aria-pressed="false">RU</button>
@@ -90,7 +88,7 @@
       <a class="btn btn-primary nav-cta-m" href="https://t.me/itsaminyx" target="_blank" rel="noopener" data-i18n="cta.discuss">Написать в Telegram</a>
     </nav>
     <div class="nav-tools">
-      <button class="cmdk-trigger" id="cmdk-open" type="button" aria-label="Командная палитра" data-i18n-aria="a11y.palette" aria-keyshortcuts="Control+K Meta+K" aria-haspopup="dialog">
+      <button class="cmdk-trigger" id="cmdk-open" type="button" aria-label="Палитра команд" data-i18n-aria="a11y.palette" aria-keyshortcuts="Control+K Meta+K" aria-haspopup="dialog">
         <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
         <kbd class="kbd-mod">Ctrl</kbd><kbd>K</kbd>
       </button>
@@ -115,25 +113,24 @@
 
   <section class="hero" id="top">
     <div class="hero-stage stage" data-scene="globe" id="hero-stage">
-      <canvas class="stage-gl" tabindex="0" role="application" aria-label="Интерактивная 3D-модель сети Aminyx Link: узлы, маршруты и пакеты; отказ узла вызывает перестройку маршрутов" data-i18n-aria="hero.sceneAlt" aria-describedby="hero-hint"></canvas>
+      <canvas class="stage-gl" tabindex="0" role="application" aria-label="Интерактивная 3D-модель сети Aminyx Link с узлами, маршрутами и пакетами. Если выключить узел, маршруты перестроятся." data-i18n-aria="hero.sceneAlt" aria-describedby="hero-hint"></canvas>
       <div class="globe-tip" id="globe-tip" hidden></div>
     </div>
     <div class="container hero-grid">
       <div class="hero-copy">
-        <h1 class="h1" id="hero-h1"><span class="h1-a" data-i18n="hero.h1a">Аминджон Азизов,</span> <span class="h1-b" data-i18n="hero.h1b">разработчик.</span></h1>
+        <h1 class="h1" id="hero-h1"><span class="h1-a" data-i18n="hero.h1a">Аминджон Азизов,</span> <span class="h1-b" data-i18n="hero.h1b">разработчик</span></h1>
         <p class="hero-sub" data-i18n="hero.sub">Пишу бэкенд на Go и Python, Android-приложения на Kotlin, сайты и Telegram-ботов. SomonVPN работает в проде и принимает платежи. Сейчас занят сетевой платформой Aminyx Link на Rust.</p>
         <div class="hero-cta">
           <a class="btn btn-primary btn-lg" href="https://t.me/itsaminyx" target="_blank" rel="noopener"><span data-i18n="cta.discuss">Написать в Telegram</span></a>
         </div>
         <dl class="hud" id="hero-hud" hidden>
-          <div><dt data-i18n="hud.nodes">узлов в сети</dt><dd><span data-hud="alive">0</span><span class="hud-dim">/<span data-hud="nodes">0</span></span></dd></div>
+          <div><dt data-i18n="hud.nodes">узлов в модели</dt><dd><span data-hud="alive">0</span><span class="hud-dim">/<span data-hud="nodes">0</span></span></dd></div>
           <div><dt data-i18n="hud.packets">пакетов в полёте</dt><dd data-hud="packets">0</dd></div>
-          <div><dt data-i18n="hud.failovers">failover-каскадов</dt><dd data-hud="failovers">0</dd></div>
-          <div><dt data-i18n="hud.kills">выключено вами</dt><dd data-hud="kills">0</dd></div>
+          <div><dt data-i18n="hud.failovers">перестроек маршрутов</dt><dd data-hud="failovers">0</dd></div>
         </dl>
       </div>
     </div>
-    <p class="hero-hint" id="hero-hint"><span data-i18n="hint.globe">Клик по узлу выключает его, маршруты перестраиваются. Сферу можно вращать, долгое нажатие запускает шторм.</span></p>
+    <p class="hero-hint" id="hero-hint"><span data-i18n="hint.globe">Клик по узлу выключает его, маршруты перестраиваются. Долгое нажатие запускает шторм.</span></p>
   </section>
 
   <section class="section work" id="work" aria-labelledby="work-h">
@@ -176,7 +173,7 @@
                 <div class="stage-hud" data-hud-for="tunnel" aria-live="off"></div>
                 <button class="stage-expand" type="button" aria-label="Развернуть 3D на весь экран" data-i18n-aria="stage.expand"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
-              <figcaption class="stage-hint" id="hint-tunnel" data-i18n="scene.tunnel.hint">Кликните, и DPI начнёт резать WireGuard. Smart Connect переключится сам.</figcaption>
+              <figcaption class="stage-hint" id="hint-tunnel" data-i18n="scene.tunnel.hint">Кликните, и DPI начнёт резать WireGuard.</figcaption>
             </figure>
           </div>
           <dl class="case-fields">
@@ -191,19 +188,19 @@
             <div class="case-copy">
               <p class="case-meta"><span class="tag" data-i18n="work.link.tag">Платформа в разработке</span></p>
               <h3 class="h3-case" id="t-link">Aminyx Link</h3>
-              <p class="case-lede" data-i18n="work.link.p1">Сетевая платформа на Rust: транспортно-независимый сеансовый уровень, который одинаково работает поверх TCP, QUIC, HTTP/3 и собственного UDP-пути. Разработка идёт в закрытом репозитории.</p>
+              <p class="case-lede" data-i18n="work.link.p1">Сетевая платформа на Rust: транспортно-независимый сеансовый уровень, который одинаково работает поверх TCP, QUIC, HTTP/3 и собственного транспорта на UDP. Разработка идёт в закрытом репозитории.</p>
               <ul class="chips" aria-label="Стек" data-i18n-aria="a11y.stack"><li>Rust</li><li>QUIC</li><li>HTTP/3</li><li>ML-KEM-768</li><li>Criterion</li></ul>
             </div>
             <figure class="case-fig">
               <div class="case-stage stage" data-scene="multipath">
-                <canvas class="stage-gl" tabindex="0" role="application" aria-label="3D-модель multipath: четыре транспортных пути между клиентом и сервером, пакеты данных и FEC; обрыв пути перераспределяет трафик" data-i18n-aria="scene.multipath.alt" aria-describedby="hint-multipath"></canvas>
+                <canvas class="stage-gl" tabindex="0" role="application" aria-label="3D-модель multipath. Между клиентом и сервером четыре транспортных пути, по ним идут пакеты данных и FEC. Если путь оборвать, трафик уходит на остальные." data-i18n-aria="scene.multipath.alt" aria-describedby="hint-multipath"></canvas>
                 <div class="stage-fallback">
                   <svg viewBox="0 0 400 240" aria-hidden="true"><circle cx="50" cy="120" r="14" class="fb-node"/><circle cx="350" cy="120" r="14" class="fb-node"/><path d="M64 120C150 20 250 20 336 120" class="fb-path fb-hot"/><path d="M64 120C150 80 250 80 336 120" class="fb-path"/><path d="M64 120C150 160 250 160 336 120" class="fb-path fb-cut"/><path d="M64 120C150 220 250 220 336 120" class="fb-path"/></svg>
                 </div>
                 <div class="stage-hud" data-hud-for="multipath" aria-live="off"></div>
                 <button class="stage-expand" type="button" aria-label="Развернуть 3D на весь экран" data-i18n-aria="stage.expand"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
-              <figcaption class="stage-hint" id="hint-multipath" data-i18n="scene.multipath.hint">Клик по пути — обрыв. Трафик и FEC перетекают на живые маршруты.</figcaption>
+              <figcaption class="stage-hint" id="hint-multipath" data-i18n="scene.multipath.hint">Клик по пути обрывает его.</figcaption>
             </figure>
           </div>
           <dl class="spec">
@@ -211,10 +208,10 @@
             <div><dt data-i18n="work.link.s2t">Multipath</dt><dd data-i18n="work.link.s2p">Оценка путей, балансировка, автоматический failover и агрегация полосы.</dd></div>
             <div><dt data-i18n="work.link.s3t">Живая миграция сессий</dt><dd data-i18n="work.link.s3p">Смена IP или сети без потери данных и без разрыва соединения.</dd></div>
             <div><dt data-i18n="work.link.s4t">FEC</dt><dd data-i18n="work.link.s4p">Reed-Solomon и XOR с адаптивной избыточностью на каждом пути данных.</dd></div>
-            <div><dt data-i18n="work.link.s5t">Congestion control</dt><dd data-i18n="work.link.s5p">Reno, CUBIC, BBR и авторежим с подстройкой из живых метрик.</dd></div>
-            <div><dt data-i18n="work.link.s6t">731&nbsp;автотест</dt><dd><span data-i18n="work.link.s6p">RFC-first процесс: ADR, фаззинг и бенчмарки Criterion в CI.</span><canvas id="test-matrix" width="10" height="10" aria-hidden="true"></canvas><span class="matrix-cap" data-i18n="proof.cap">Одна клетка — один тест</span></dd></div>
+            <div><dt data-i18n="work.link.s5t">Congestion control</dt><dd data-i18n="work.link.s5p">Reno, CUBIC, BBR и автоматический режим, который подстраивается по живым метрикам.</dd></div>
+            <div><dt data-i18n="work.link.s6t">731&nbsp;автотест</dt><dd data-i18n="work.link.s6p">Фаззинг и бенчмарки Criterion запускаются в CI.</dd></div>
           </dl>
-          <p class="case-aside"><a class="link-out" href="/craft/" data-i18n="cmdk.craft">Лаборатория Craft</a></p>
+          <p class="case-aside"><a class="link-out" href="/craft/" data-i18n="cmdk.craft">Интерактивные схемы</a></p>
         </article>
 
         <article class="case case--brief" id="course" aria-labelledby="t-cyber">
@@ -222,7 +219,7 @@
             <div class="case-copy">
               <p class="case-meta"><span class="tag" data-i18n="work.cyber.tag">Open source, GPL-3.0</span> <a class="case-loc" href="https://aminyx.github.io/Cybersec/" target="_blank" rel="noopener">aminyx.github.io/Cybersec <span aria-hidden="true">&#8599;</span></a> <a class="case-loc" href="https://github.com/aminyx/Cybersec" target="_blank" rel="noopener">github.com/aminyx/Cybersec <span aria-hidden="true">&#8599;</span></a></p>
               <h3 class="h3-case" id="t-cyber">Cybersec</h3>
-              <p class="case-lede" data-i18n="work.cyber.p1">Бесплатный курс кибербезопасности на русском и таджикском: 270&nbsp;дней от нуля до Junior, 6&nbsp;экзаменов, 10&nbsp;портфолио-проектов и CTF с офлайн-проверкой флагов по SHA-256.</p>
+              <p class="case-lede" data-i18n="work.cyber.p1">Бесплатный курс кибербезопасности на русском и таджикском: 270&nbsp;дней от нуля до Junior, 6&nbsp;экзаменов, 10&nbsp;проектов для портфолио и CTF с офлайн-проверкой флагов по SHA-256.</p>
               <ul class="chips" aria-label="Стек" data-i18n-aria="a11y.stack"><li>Python</li><li>Vanilla JS</li><li>Markdown</li><li>GitHub Actions</li></ul>
             </div>
             <figure class="case-fig">
@@ -241,7 +238,7 @@
                 <div class="stage-hud" data-hud-for="spiral" aria-live="off"></div>
                 <button class="stage-expand" type="button" aria-label="Развернуть 3D на весь экран" data-i18n-aria="stage.expand"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
-              <figcaption class="stage-hint" id="hint-spiral" data-i18n="scene.spiral.hint">Перетащите, чтобы вращать. Клик переносит к следующему экзамену.</figcaption>
+              <figcaption class="stage-hint" id="hint-spiral" data-i18n="scene.spiral.hint">Клик переносит к следующему экзамену.</figcaption>
             </figure>
           </div>
           <p class="case-more" data-i18n="work.cyber.p2">Страницы генерируются из Markdown скриптами на чистом Python. Фреймворка и бэкенда нет, прогресс студента хранится в localStorage.</p>
@@ -257,18 +254,18 @@
             </div>
             <figure class="case-fig">
               <div class="case-stage stage" data-scene="bars">
-                <canvas class="stage-gl" tabindex="0" role="application" aria-label="3D-диаграмма трат по дням: строка из чата превращается в блок нужной категории; рядом — те же дни прошлого месяца" data-i18n-aria="scene.bars.alt" aria-describedby="hint-bars"></canvas>
+                <canvas class="stage-gl" tabindex="0" role="application" aria-label="3D-диаграмма трат по дням. Строка из чата превращается в блок своей категории, а рядом стоят столбцы за те же дни прошлого месяца." data-i18n-aria="scene.bars.alt" aria-describedby="hint-bars"></canvas>
                 <div class="stage-fallback">
                   <svg viewBox="0 0 400 240" aria-hidden="true"><path d="M40 200h320" class="fb-path"/><rect x="70" y="120" width="34" height="80" rx="4" class="fb-bar fb-hot-f"/><rect x="130" y="80" width="34" height="120" rx="4" class="fb-bar"/><rect x="190" y="140" width="34" height="60" rx="4" class="fb-bar"/><rect x="250" y="100" width="34" height="100" rx="4" class="fb-bar"/><rect x="310" y="160" width="34" height="40" rx="4" class="fb-bar fb-ghost"/></svg>
                 </div>
                 <div class="stage-hud stage-hud-chat" data-hud-for="bars" aria-live="off"></div>
                 <button class="stage-expand" type="button" aria-label="Развернуть 3D на весь экран" data-i18n-aria="stage.expand"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
-              <figcaption class="stage-hint" id="hint-bars" data-i18n="scene.bars.hint">Клик добавляет трату из чата. Прозрачные столбцы показывают те же дни прошлого месяца.</figcaption>
+              <figcaption class="stage-hint" id="hint-bars" data-i18n="scene.bars.hint">Клик добавляет трату из чата. Прозрачные столбцы — прошлый месяц.</figcaption>
             </figure>
           </div>
           <dl class="case-fields">
-            <div><dt data-i18n="case.arch">Архитектура</dt><dd data-i18n="work.tracker.f2">Бот на grammY и панель на Next.js 16 стоят на общем ядре: разбор строки, категории, границы периодов и агрегаты лежат в одном модуле, данные — в одном файле SQLite. Отчёт за неделю в чате и в панели считает один и тот же код, поэтому цифры не могут разойтись.</dd></div>
+            <div><dt data-i18n="case.arch">Архитектура</dt><dd data-i18n="work.tracker.f2">Бот на grammY и панель на Next.js 16 стоят на общем ядре: разбор строки, категории, границы периодов и агрегаты лежат в одном модуле, данные — в одном файле SQLite. Отчёт за неделю в чате и в панели считается одним и тем же кодом, поэтому цифры не могут разойтись.</dd></div>
             <div><dt data-i18n="case.eng">Как работает</dt><dd data-i18n="work.tracker.f3">Прошлый период обрезается по числу прошедших дней. Третьего сентября месяц сравнивается с 1–3 августа, и подпись так и говорит: «за те же 3 дня августа». Сравнение с целым августом показало бы «−89 %», хотя месяц просто ещё не кончился.</dd></div>
             <div><dt data-i18n="case.result">Результат</dt><dd data-i18n="work.tracker.f4">Третье место на конкурсе CodeCup.tech: 85 баллов против 105 и 96 у первых двух. После подведения итогов бот и панель выключены, код остался открытым: 8242 строки в src и 218 тестов.</dd></div>
           </dl>
@@ -298,10 +295,9 @@
                 <div class="stage-hud" data-hud-for="helix" aria-live="off"></div>
                 <button class="stage-expand" type="button" aria-label="Развернуть 3D на весь экран" data-i18n-aria="stage.expand"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
-              <figcaption class="stage-hint" id="hint-helix" data-i18n="scene.helix.hint">Ведите курсором — окно поворачивается за ним. Клик раскручивает спираль.</figcaption>
+              <figcaption class="stage-hint" id="hint-helix" data-i18n="scene.helix.hint">Клик раскручивает спираль.</figcaption>
             </figure>
           </div>
-          <p class="case-more" data-i18n="work.maryam.p2">Тексты и фото лежат отдельно от компонентов, так что CMS можно подключить, не переписывая компоненты.</p>
         </article>
 
         <article class="case case--brief" id="p-hunter" aria-labelledby="t-hunter">
@@ -309,7 +305,7 @@
             <div class="case-copy">
               <p class="case-meta"><span class="tag" data-i18n="work.hunter.tag">Инструмент</span></p>
               <h3 class="h3-case" id="t-hunter">Username Hunter</h3>
-              <p class="case-lede" data-i18n="work.hunter.p1">Проверяет, свободен ли юзернейм в Telegram, только через официальный MTProto API. Имена не регистрирует, ничего не скрейпит. Генератор выдаёт около 13&nbsp;тысяч вариантов в секунду на дев-машине, офлайн-скоринг пропускает на сетевую проверку лучший 1%.</p>
+              <p class="case-lede" data-i18n="work.hunter.p1">Проверяет, свободен ли юзернейм в Telegram, только через официальный MTProto API. Генератор выдаёт около 13&nbsp;тысяч вариантов в секунду на дев-машине, офлайн-скоринг пропускает на сетевую проверку лучший 1%.</p>
               <ul class="chips" aria-label="Стек" data-i18n-aria="a11y.stack"><li>Python</li><li>Telethon</li><li>FastAPI</li><li>React</li><li>Docker</li></ul>
             </div>
             <figure class="case-fig">
@@ -321,7 +317,7 @@
                 <div class="stage-hud" data-hud-for="funnel" aria-live="off"></div>
                 <button class="stage-expand" type="button" aria-label="Развернуть 3D на весь экран" data-i18n-aria="stage.expand"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
-              <figcaption class="stage-hint" id="hint-funnel" data-i18n="scene.funnel.hint">Клик даёт всплеск генерации. До MTProto доходит лучший 1%.</figcaption>
+              <figcaption class="stage-hint" id="hint-funnel" data-i18n="scene.funnel.hint">Клик ненадолго ускоряет генератор.</figcaption>
             </figure>
           </div>
           <p class="case-more" data-i18n="work.hunter.p2">Три интерфейса поверх одной шины событий: CLI-дашборд на Rich, REST и WebSocket на FastAPI, React-панель. 140&nbsp;тестов.</p>
@@ -334,19 +330,18 @@
   <section class="section oss" id="oss" aria-labelledby="oss-h">
     <div class="container">
       <header class="section-head">
-        <h2 class="h2" id="oss-h" data-i18n="oss.h3">Написано с нуля</h2>
-        <p class="section-lede" data-i18n="oss.lede">Хранилище, SQL-движок, компилятор, CRDT и прочее, что обычно подключают готовым пакетом. Весь код на GitHub.</p>
+        <h2 class="h2" id="oss-h" data-i18n="oss.h2">Написано с нуля</h2>
       </header>
       <ul class="oss-grid">
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/keelstore" target="_blank" rel="noopener">keelstore</a></h3><span class="oss-cat">storage engine</span><p data-i18n="oss.keelstore">Встраиваемое LSM-хранилище ключ-значение: WAL с CRC и восстановлением после обрыва, свой скиплист и фильтр Блума, уровневое слияние, снапшот-изоляция. Внешних зависимостей нет.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/keelsql" target="_blank" rel="noopener">keelsql</a></h3><span class="oss-cat">sql engine</span><p data-i18n="oss.keelsql">SQL-движок поверх keelstore: разбор запроса, планировщик, который умеет опускать условие в индекс, исполнитель по модели Volcano и дифференциальный тест против двух других СУБД.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/hnsw" target="_blank" rel="noopener">hnsw</a></h3><span class="oss-cat">vector search</span><p data-i18n="oss.hnsw">Индекс приближённого поиска HNSW без зависимостей. Демо строит граф прямо во вкладке браузера.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/sable" target="_blank" rel="noopener">sable</a></h3><span class="oss-cat">compiler</span><p data-i18n="oss.sable">Статически типизированный язык с выводом типов Хиндли–Милнера. Компилятор собирает WebAssembly сам, побайтово, и работает в браузере.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/driftpad" target="_blank" rel="noopener">driftpad</a></h3><span class="oss-cat">crdt</span><p data-i18n="oss.driftpad">Совместные заметки на CRDT, написанном вручную: RGA для текста, LWW-регистры, офлайн в IndexedDB, синхронизация по version vectors. Сходимость проверяется property-тестами.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/pulsewire" target="_blank" rel="noopener">pulsewire</a></h3><span class="oss-cat">realtime</span><p data-i18n="oss.pulsewire">Realtime на WebSocket с горизонтальным масштабированием: рассылка между узлами через NATS, отключение медленных клиентов, после переподключения клиент получает всё, что пропустил.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/keyforge" target="_blank" rel="noopener">keyforge</a></h3><span class="oss-cat">identity</span><p data-i18n="oss.keyforge">OpenID Connect по рекомендациям OAuth 2.0 Security BCP (RFC 9700): обязательный PKCE S256, семейства refresh-токенов с обнаружением повторного использования, ротация JWKS, passkeys.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/evalgate" target="_blank" rel="noopener">evalgate</a></h3><span class="oss-cat">llm evals</span><p data-i18n="oss.evalgate">Регрессионные тесты для промптов: наборы в YAML, детерминированные проверки и судья-LLM, калибровка судьи по каппе Коэна, гейт качества в CI.</p></li>
-        <li class="oss-card"><h3><a href="https://github.com/aminyx/actions-lock" target="_blank" rel="noopener">actions-lock</a></h3><span class="oss-cat">supply chain</span><p data-i18n="oss.actionslock">Пиннинг GitHub Actions по SHA коммита и поиск подменённых тегов, как в атаке на tj-actions. Один бинарник.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/keelstore" target="_blank" rel="noopener">keelstore</a></h3><p data-i18n="oss.keelstore">Встраиваемое LSM-хранилище ключ-значение без внешних зависимостей. Скиплист и фильтр Блума свои, WAL восстанавливается после обрыва.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/keelsql" target="_blank" rel="noopener">keelsql</a></h3><p data-i18n="oss.keelsql">SQL-движок поверх keelstore с исполнителем по модели Volcano. Дифференциальный тест сверяет результаты с двумя другими СУБД.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/hnsw" target="_blank" rel="noopener">hnsw</a></h3><p data-i18n="oss.hnsw">Индекс приближённого поиска HNSW без зависимостей. Демо строит граф прямо во вкладке браузера.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/sable" target="_blank" rel="noopener">sable</a></h3><p data-i18n="oss.sable">Статически типизированный язык с выводом типов Хиндли–Милнера. Компилятор собирает WebAssembly сам, побайтово, и работает в браузере.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/driftpad" target="_blank" rel="noopener">driftpad</a></h3><p data-i18n="oss.driftpad">Совместные заметки на самописном CRDT, работают офлайн через IndexedDB. Сходимость проверяется property-тестами.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/pulsewire" target="_blank" rel="noopener">pulsewire</a></h3><p data-i18n="oss.pulsewire">Realtime-платформа на WebSocket, узлы обмениваются сообщениями через NATS. После переподключения клиент получает всё, что пропустил.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/keyforge" target="_blank" rel="noopener">keyforge</a></h3><p data-i18n="oss.keyforge">OpenID Connect по OAuth 2.0 Security BCP (RFC 9700). PKCE S256 обязателен, повторное использование refresh-токена обнаруживается.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/evalgate" target="_blank" rel="noopener">evalgate</a></h3><p data-i18n="oss.evalgate">Регрессионные тесты для промптов с судьёй-LLM и гейтом качества в CI.</p></li>
+        <li class="oss-card"><h3><a href="https://github.com/aminyx/actions-lock" target="_blank" rel="noopener">actions-lock</a></h3><p data-i18n="oss.actionslock">Пиннинг GitHub Actions по SHA коммита и поиск подменённых тегов, как в атаке на tj-actions. Один бинарник.</p></li>
       </ul>
       <p class="section-foot"><a class="link-out" href="https://github.com/aminyx?tab=repositories" target="_blank" rel="noopener"><span data-i18n="oss.all">Все репозитории</span> <span class="arr" aria-hidden="true">&#8599;</span></a></p>
     </div>
@@ -385,7 +380,7 @@
         </li>
         <li class="svc">
           <h3 data-i18n="services.b6t">ИИ в продуктах</h3>
-          <p data-i18n="services.b6p">Интеграция LLM в продукты: ассистенты, автоматизация поддержки, пайплайны обработки данных.</p>
+          <p data-i18n="services.b6p">Подключаю LLM к продукту и покрываю промпты регрессионными тестами, как в evalgate.</p>
           <p class="svc-refs"><span data-i18n="nav.work">Работы</span>: <a href="https://github.com/aminyx/evalgate" target="_blank" rel="noopener">evalgate</a></p>
         </li>
       </ul>
@@ -396,10 +391,10 @@
     <div class="container">
       <header class="section-head"><h2 class="h2" id="faq-h" data-i18n="faq.h2">Цена, сроки и другие вопросы</h2></header>
       <dl class="faq-list">
-        <div class="qa"><dt data-i18n="faq.q1">Сколько стоит разработка?</dt><dd data-i18n="faq.a1">Зависит от задачи: бот, сайт и платформа с бэкендом — очень разные объёмы работы. После разговора присылаю план по этапам, с фиксированной ценой и сроком для каждого. Почасовой оплаты нет.</dd></div>
-        <div class="qa"><dt data-i18n="faq.q2">Какие сроки?</dt><dd data-i18n="faq.a2">Сроки ставлю в том же плане, по этапам. Для ориентира: SomonVPN (Android-клиент, бэкенд на Go, панель и боты) дошёл от пустого репозитория до монетизации за два с половиной месяца. По ходу работы показываю демо и промежуточные сборки.</dd></div>
+        <div class="qa"><dt data-i18n="faq.q1">Сколько стоит разработка?</dt><dd data-i18n="faq.a1">После разговора присылаю план по этапам, с фиксированной ценой и сроком для каждого. Почасовой оплаты нет.</dd></div>
+        <div class="qa"><dt data-i18n="faq.q2">Какие сроки?</dt><dd data-i18n="faq.a2">Сроки ставлю в том же плане, по этапам. По ходу работы показываю демо и промежуточные сборки.</dd></div>
         <div class="qa"><dt data-i18n="faq.q3">Что я получу в итоге?</dt><dd data-i18n="faq.a3">Продукт, развёрнутый в проде, исходный код и поддержку после релиза. Тесты и CI входят в работу по умолчанию.</dd></div>
-        <div class="qa"><dt data-i18n="faq.q5">Можно ли заказать аудит безопасности?</dt><dd data-i18n="faq.a5">Да, с вашего разрешения и в согласованных рамках.</dd></div>
+        <div class="qa"><dt data-i18n="faq.q4">Можно ли заказать аудит безопасности?</dt><dd data-i18n="faq.a4">Да. Заранее договариваемся, какие системы я проверяю и что при этом можно делать.</dd></div>
       </dl>
     </div>
   </section>
@@ -407,8 +402,8 @@
   <section class="section contact" id="contact" aria-labelledby="contact-h">
     <div class="container contact-grid">
       <div class="contact-copy">
-        <h2 class="h2" id="contact-h" data-i18n="contact.h2">Напишите, что нужно сделать.</h2>
-        <p class="contact-sub" data-i18n="contact.sub">Быстрее всего отвечаю в Telegram, почта тоже подойдёт. Первый разговор бесплатный.</p>
+        <h2 class="h2" id="contact-h" data-i18n="contact.h2">Напишите, что нужно сделать</h2>
+        <p class="contact-sub" data-i18n="contact.sub">Быстрее всего отвечаю в Telegram, почта тоже подойдёт.</p>
         <div class="contact-cta">
           <a class="btn btn-primary btn-lg" href="https://t.me/itsaminyx" target="_blank" rel="noopener"><span data-i18n="cta.discuss">Написать в Telegram</span></a>
           <a class="btn btn-ghost btn-lg" href="mailto:itsaminyx@gmail.com?subject=%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82%20%D0%B4%D0%BB%D1%8F%20Aminyx">itsaminyx@gmail.com</a>
@@ -424,7 +419,6 @@
 
       <div class="brief" id="brief" role="group" aria-labelledby="brief-h">
         <h3 class="brief-h" id="brief-h" data-i18n="brief.h">Короткий бриф</h3>
-        <p class="brief-sub" data-i18n="brief.sub">Отметьте нужное, текст соберётся ниже, останется отправить.</p>
         <fieldset class="brief-set">
           <legend data-i18n="brief.what">Что нужно</legend>
           <div class="brief-opts">
@@ -465,14 +459,12 @@
   <div class="container footer-bottom">
     <p class="footer-note"><span data-i18n="footer.copy">© 2026 Аминджон Азизов</span></p>
     <a class="footer-link" href="/privacy/" data-i18n="footer.privacy">Конфиденциальность</a>
-    <p class="footer-langs"><span lang="tg">Тоҷикӣ</span> · Русский · <span lang="en">English</span></p>
-    <p class="footer-hint"><kbd class="kbd-mod">Ctrl</kbd><kbd>K</kbd> <span data-i18n="footer.hint">палитра команд</span> · <kbd>`</kbd> <span data-i18n="footer.term">терминал</span></p>
     <a class="to-top" href="#top" aria-label="Наверх" data-i18n-aria="footer.top"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 13V3.5M4 7.5l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
 </footer>
 
-<!-- Командная палитра (Ctrl/⌘ + K) -->
-<dialog class="cmdk" id="cmdk" aria-label="Командная палитра" data-i18n-aria="a11y.palette">
+<!-- Палитра команд (Ctrl/⌘ + K) -->
+<dialog class="cmdk" id="cmdk" aria-label="Палитра команд" data-i18n-aria="a11y.palette">
   <div class="cmdk-box">
     <div class="cmdk-search">
       <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>

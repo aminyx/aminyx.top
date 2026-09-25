@@ -1,4 +1,3 @@
-// симуляция сети hero без рендера: её читают globe.js и globe2d.js
 import { setSfx, sfxEnabled, sfxKill, sfxHeal, sfxStorm } from './sfx.js';
 
 const TAU = Math.PI * 2;
@@ -218,7 +217,7 @@ export function createNetSim({ n = 180, k = 3, pmax = 70, reduced = false } = {}
   return sim;
 }
 
-// пульт для терминала, палитры и Konami (src/ui/main.js)
+// пульт для терминала и палитры (src/ui/main.js)
 export function exposeSystem(sim) {
   window.__system = {
     kill: (count) => { const c = sim.killRandom(count || 1); sfxKill(); return c; },

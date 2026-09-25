@@ -1,4 +1,3 @@
-// /craft: язык, тема, виньетки
 import { initFailover, initFec, initCongestion, initKillswitch } from './vignettes.js';
 import { I18N } from '../i18n.js';
 

@@ -1,4 +1,3 @@
-// smoke по dist: /, /en/, /tg/, /craft/, /privacy/, 404. hero живой = .gl-on (ставят и WebGL, и canvas2d-фолбэк)
 import { preview } from 'vite';
 import { chromium } from 'playwright';
 
@@ -25,11 +24,11 @@ try {
     await page.goto(base + path, { waitUntil: 'networkidle' });
 
     const title = await page.title();
-    if (title !== exp.title) errors.push(`${path}: title «${title}» ≠ «${exp.title}»`);
+    if (title !== exp.title) errors.push(`${path}: title "${title}", ожидался "${exp.title}"`);
     const lang = await page.evaluate(() => document.documentElement.lang);
-    if (lang !== exp.lang) errors.push(`${path}: html lang «${lang}» ≠ «${exp.lang}»`);
+    if (lang !== exp.lang) errors.push(`${path}: html lang "${lang}", ожидался "${exp.lang}"`);
     const h1 = (await page.textContent('#hero-h1')) || '';
-    if (!h1.includes(exp.h1)) errors.push(`${path}: h1 «${h1.trim()}» не содержит «${exp.h1}»`);
+    if (!h1.includes(exp.h1)) errors.push(`${path}: h1 "${h1.trim()}" не содержит "${exp.h1}"`);
     if (!(await page.$('a.btn-primary[href^="https://t.me/"]'))) errors.push(`${path}: нет CTA-ссылки на Telegram`);
 
     try {

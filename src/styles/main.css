@@ -76,7 +76,7 @@
   --gl-ok: #1f9a6a;
 }
 
-/* ---------- Reset и база ---------- */
+/* Reset и база */
 
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; }
@@ -153,7 +153,7 @@ main, .footer { position: relative; z-index: 1; }
   padding-inline: var(--gutter);
 }
 
-/* ---------- Типографика ---------- */
+/* Типографика */
 
 .h1 {
   font-size: var(--fs-display);
@@ -179,7 +179,7 @@ main, .footer { position: relative; z-index: 1; }
   letter-spacing: -0.015em;
 }
 
-.tag, .case-fields dt, .brief-set legend, .brief-field > span, .cmdk-group, .hud dt, .oss-cat {
+.tag, .case-fields dt, .brief-set legend, .brief-field > span, .cmdk-group, .hud dt {
   font-size: 0.8125rem;
   font-weight: 400;
   letter-spacing: 0;
@@ -187,7 +187,7 @@ main, .footer { position: relative; z-index: 1; }
   color: var(--text-3);
 }
 .tag, .case-fields dt, .brief-set legend, .brief-field > span, .cmdk-group { font-family: var(--font-sans); }
-.hud dt, .oss-cat { font-family: var(--font-mono); }
+.hud dt { font-family: var(--font-mono); }
 
 .section-head { max-width: 50rem; margin-bottom: clamp(2.4rem, 5vw, 4rem); }
 .section-lede {
@@ -201,7 +201,7 @@ main, .footer { position: relative; z-index: 1; }
 
 .arr { display: inline-block; }
 
-/* ---------- Кнопки ---------- */
+/* Кнопки */
 
 .btn {
   position: relative;
@@ -276,7 +276,7 @@ main, .footer { position: relative; z-index: 1; }
   line-height: 1.4;
 }
 
-/* ---------- Навигация ---------- */
+/* Навигация */
 
 .nav {
   position: fixed;
@@ -407,7 +407,7 @@ main, .footer { position: relative; z-index: 1; }
 .burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(4px) rotate(45deg); }
 .burger[aria-expanded="true"] span:nth-child(2) { transform: translateY(-4px) rotate(-45deg); }
 
-/* ---------- Hero ---------- */
+/* Hero */
 
 .hero {
   position: relative;
@@ -514,11 +514,11 @@ main, .footer { position: relative; z-index: 1; }
 }
 .globe-tip b { color: var(--accent-text); font-weight: 600; }
 
-/* ---------- Секции ---------- */
+/* Секции */
 
 .section { position: relative; padding-block: clamp(3.5rem, 7vw, 6rem); }
 
-/* ---------- Работы ---------- */
+/* Работы */
 
 .work-index {
   display: flex;
@@ -586,10 +586,8 @@ main, .footer { position: relative; z-index: 1; }
 .spec > div { display: grid; grid-template-columns: 16rem minmax(0, 1fr); gap: 0.3rem 2rem; padding: 0.9rem 0; border-top: 1px solid var(--line); }
 .spec dt { font-weight: 600; color: var(--text-1); }
 .spec dd { font-size: var(--fs-caption); color: var(--text-2); line-height: 1.55; }
-#test-matrix { display: block; width: 100%; max-width: 36rem; height: auto; aspect-ratio: 43 / 15; margin-top: 0.8rem; }
-.matrix-cap { display: block; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3); margin-top: 0.5rem; }
 
-/* ---------- 3D-слот ---------- */
+/* 3D-слот */
 
 .stage { position: relative; }
 .case-stage {
@@ -746,13 +744,13 @@ main, .footer { position: relative; z-index: 1; }
 .stage-hint { margin: 0; padding: 0.6rem 0 0; font-size: 0.875rem; line-height: 1.5; color: var(--text-3); transition: opacity var(--t-med) var(--ease-out); }
 .stage.no-gl + .stage-hint { display: none; }
 
-/* ---------- Открытый код ---------- */
+/* Открытый код */
 
 .oss-grid { display: block; border-bottom: 1px solid var(--line); }
 .oss-card {
   position: relative;
   display: grid;
-  grid-template-columns: 10rem 9rem minmax(0, 1fr);
+  grid-template-columns: 10rem minmax(0, 1fr);
   gap: 0.3rem 1.5rem;
   align-items: baseline;
   padding: 1rem 0.5rem;
@@ -767,7 +765,7 @@ main, .footer { position: relative; z-index: 1; }
 .oss-card:has(a:focus-visible) { outline: 2px solid var(--accent-text); outline-offset: 3px; }
 .oss-card a:focus-visible { outline: none; }
 
-/* ---------- Услуги ---------- */
+/* Услуги */
 
 .svc-list { border-bottom: 1px solid var(--line); }
 .svc {
@@ -784,14 +782,14 @@ main, .footer { position: relative; z-index: 1; }
 .svc-refs a { color: var(--accent-text); white-space: nowrap; }
 .svc-refs a:hover { text-decoration: underline; }
 
-/* ---------- FAQ ---------- */
+/* FAQ */
 
 .faq-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem clamp(2rem, 5vw, 4rem); }
 .qa { border-top: 1px solid var(--line); padding-top: 1rem; }
 .qa dt { font-weight: 650; font-size: 1.0625rem; margin-bottom: 0.4rem; }
 .qa dd { color: var(--text-2); font-size: var(--fs-caption); line-height: 1.65; }
 
-/* ---------- Контакты и бриф ---------- */
+/* Контакты и бриф */
 
 .contact-grid {
   display: grid;
@@ -823,7 +821,6 @@ main, .footer { position: relative; z-index: 1; }
   box-shadow: none;
 }
 .brief-h { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
-.brief-sub { color: var(--text-2); font-size: var(--fs-caption); margin-top: 0.35rem; }
 .brief-set { margin-top: 1.5rem; }
 .brief-set legend, .brief-field > span {
   margin-bottom: 0.65rem;
@@ -877,7 +874,7 @@ main, .footer { position: relative; z-index: 1; }
 .brief-actions { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.2rem; }
 .brief-note { margin-top: 0.9rem; font-size: 0.78rem; color: var(--text-3); }
 
-/* ---------- Футер ---------- */
+/* Футер */
 
 .footer {
   border-top: 1px solid var(--line);
@@ -898,9 +895,8 @@ main, .footer { position: relative; z-index: 1; }
 }
 .footer-link { color: var(--text-3); transition: color var(--t-fast) var(--ease-out); }
 .footer-link:hover { color: var(--text-1); }
-.footer-langs { font-family: var(--font-mono); font-size: 0.75rem; }
-.footer-hint { margin-left: auto; font-size: 0.78rem; }
 .to-top {
+  margin-left: auto;
   display: grid;
   place-items: center;
   width: 38px;
@@ -912,7 +908,7 @@ main, .footer { position: relative; z-index: 1; }
 }
 .to-top:hover { color: var(--text-1); border-color: var(--line-3); }
 
-/* ---------- Командная палитра ---------- */
+/* Командная палитра */
 
 dialog { color: inherit; }
 .cmdk {
@@ -978,7 +974,7 @@ dialog { color: inherit; }
 }
 .cmdk-foot kbd { margin-right: 0.15rem; }
 
-/* ---------- 3D на весь экран ---------- */
+/* 3D на весь экран */
 
 .explore {
   width: 100vw;
@@ -1014,7 +1010,7 @@ html:has(.explore[open]) { overflow: hidden; }
 .explore { overscroll-behavior: contain; }
 .explore-body .stage-hud { top: 16px; left: var(--gutter); }
 
-/* ---------- Тосты ---------- */
+/* Тосты */
 
 .toasts {
   position: fixed;
@@ -1042,7 +1038,7 @@ html:has(.explore[open]) { overflow: hidden; }
 .toast.out { opacity: 0; transform: translateY(6px); transition: all 300ms var(--ease-out); }
 @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
 
-/* ---------- Терминал ---------- */
+/* Терминал */
 
 .sys-terminal {
   position: fixed;
@@ -1091,26 +1087,8 @@ html:has(.explore[open]) { overflow: hidden; }
   outline: none;
 }
 
-.chaos-hud {
-  position: fixed;
-  top: calc(var(--nav-h) + 4px);
-  right: var(--gutter);
-  z-index: 95;
-  pointer-events: none;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--danger);
-  border: 1px solid color-mix(in srgb, var(--danger) 50%, transparent);
-  border-radius: var(--r-ctl);
-  padding: 0.35rem 0.8rem;
-  background: var(--surface-1);
-  animation: chaos-pulse 1.6s ease-in-out infinite;
-}
-@keyframes chaos-pulse { 50% { opacity: 0.45; } }
 
-/* ---------- /craft ---------- */
+/* /craft */
 
 body.subpage .nav-tools { margin-left: auto; }
 
@@ -1161,7 +1139,7 @@ body.subpage .nav-tools { margin-left: auto; }
 .craft-card figcaption p { font-size: var(--fs-caption); color: var(--text-2); line-height: 1.55; }
 .craft-foot { margin-top: clamp(2.5rem, 5vw, 4rem); }
 
-/* ---------- Правовые и служебные страницы ---------- */
+/* Правовые и служебные страницы */
 
 .legal {
   max-width: 46rem;
@@ -1175,8 +1153,8 @@ body.subpage .nav-tools { margin-left: auto; }
 .legal p { color: var(--text-2); font-size: var(--fs-caption); line-height: 1.7; margin-bottom: 0.8rem; }
 .legal .tag { margin-bottom: 1rem; display: block; }
 .legal a.link-out { margin-top: 2.5rem; }
-.legal p a { color: var(--accent-text); border-bottom: 1px solid transparent; transition: border-color var(--t-fast) var(--ease-out); }
-.legal p a:hover { border-bottom-color: var(--accent-text); }
+.legal p a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.legal p a:hover { text-decoration-thickness: 2px; }
 .legal-card {
   border: 0;
   border-top: 1px solid var(--line);
@@ -1210,7 +1188,7 @@ body.subpage .nav-tools { margin-left: auto; }
 .nf p { color: var(--text-2); margin: 1.2rem auto 2rem; max-width: 30rem; }
 .nf .hud-chip { margin-bottom: 1.6rem; }
 
-/* ---------- Адаптив ---------- */
+/* Адаптив */
 
 @media (max-width: 1100px) {
   .nav-links > a:not(.btn) { padding-inline: 0.6rem; }
@@ -1260,7 +1238,7 @@ body.subpage .nav-tools { margin-left: auto; }
   .hero::after { display: none; }
   .hero-sub { margin-top: 1.2rem; }
   .hero-cta { margin-top: 1.8rem; }
-  .hud { margin-top: 1.8rem; }
+  .hud { display: none; }
 
   .case-top { grid-template-columns: 1fr; }
   .case--brief .case-top { grid-template-columns: 1fr; }
@@ -1270,8 +1248,7 @@ body.subpage .nav-tools { margin-left: auto; }
 
 @media (max-width: 760px) {
   .spec > div { grid-template-columns: 1fr; }
-  .oss-card { grid-template-columns: 1fr auto; }
-  .oss-card p { grid-column: 1 / -1; }
+  .oss-card { grid-template-columns: 1fr; }
   .faq-list { grid-template-columns: 1fr; }
 }
 
@@ -1286,7 +1263,6 @@ body.subpage .nav-tools { margin-left: auto; }
   .case .case-stage { aspect-ratio: 1 / 1; }
   .case-fields { grid-template-columns: 1fr; }
   .case-fields > div:last-child:nth-child(odd) { grid-column: auto; }
-  .footer-hint { display: none; }
   .craft-grid { grid-template-columns: 1fr; }
   .cmdk { margin-top: 8vh; }
 }
@@ -1299,18 +1275,16 @@ body.subpage .nav-tools { margin-left: auto; }
   .nav-cta { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
   .hero-cta .btn { flex: 1 1 100%; }
   .contact-cta .btn { flex: 1 1 100%; }
-  .hud { gap: 0.4rem 1.2rem; }
-  .hud > div { min-width: 40%; }
   .brief-actions .btn { flex: 1 1 auto; }
   .brief-opts { grid-template-columns: 1fr; }
 }
 
-/* ---------- content-visibility ---------- */
+/* content-visibility */
 
 .oss      { content-visibility: auto; contain-intrinsic-size: auto 700px; }
 .faq      { content-visibility: auto; contain-intrinsic-size: auto 800px; }
 
-/* ---------- View Transitions ---------- */
+/* View Transitions */
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -1318,15 +1292,15 @@ body.subpage .nav-tools { margin-left: auto; }
   animation-timing-function: var(--ease-out);
 }
 
-/* ---------- Forced colors ---------- */
+/* Forced colors */
 
 @media (forced-colors: active) {
-  .chaos-hud, .hero::after, .case-stage::before { display: none; }
+  .hero::after, .case-stage::before { display: none; }
   .stage-gl, .craft-card canvas { forced-color-adjust: none; background: #0a0b0e; }
   .btn { border: 1px solid transparent; }
 }
 
-/* ---------- Reduced motion ---------- */
+/* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

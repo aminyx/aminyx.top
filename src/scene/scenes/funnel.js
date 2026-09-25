@@ -1,4 +1,4 @@
-// Username Hunter: генератор (~13 тыс./с на дев-машине) -> офлайн-скоринг отсекает 99 % -> остаток проверяем через MTProto. клик = всплеск
+// Username Hunter: генератор (~13 тыс./с на дев-машине), офлайн-скоринг отсекает 99 %, остаток проверяем через MTProto. по клику поток ненадолго ускоряется вчетверо
 import * as THREE from 'three';
 import { orbit, hudChip, fitDistance, studioLights, pointsMaterial, putColor, setGlowBlend, fresnelMaterial } from '../kit.js';
 
@@ -83,10 +83,9 @@ export function create(ctx) {
     parts.push({ y: TOP + 0.05, a: Math.random() * Math.PI * 2, w: 0.6 + Math.random() * 0.6, best, fade: 1, stage: 0, out: null, free: Math.random() < 0.35 });
   }
 
-  const chips = ctx.hud ? { gen: hudChip(ctx.hud), top: hudChip(ctx.hud), free: hudChip(ctx.hud) } : null;
+  const chips = ctx.hud ? { top: hudChip(ctx.hud), free: hudChip(ctx.hud) } : null;
   function renderHud() {
     if (!chips) return;
-    chips.gen.set('~13 000', ctx.t('hud.gen'), '');
     chips.top.set(ctx.t('hud.top'), st.passed, 'hot');
     chips.free.set(ctx.t('hud.free'), st.free, 'ok');
   }

@@ -1,4 +1,3 @@
-// dist/index.html -> dist/en/, dist/tg/ по словарям из src/i18n.js
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { load } from 'cheerio';
 import { I18N } from '../src/i18n.js';

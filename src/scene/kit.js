@@ -1,4 +1,3 @@
-// общее для сцен: палитра из CSS, материалы точек и линий, орбита, спрайты, HUD-чипы
 import {
   Color, ShaderMaterial, CustomBlending, AddEquation, SrcAlphaFactor, OneFactor,
   OneMinusSrcAlphaFactor, CanvasTexture, SpriteMaterial, Sprite, SRGBColorSpace, Vector3,

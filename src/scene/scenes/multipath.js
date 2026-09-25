@@ -81,14 +81,13 @@ export function create(ctx) {
   const sparkList = [];
 
   const st = { seq: 0, spawn: 0, rr: 0, fec: 0, retx: 0, autoCut: 5, lastCut: -1 };
-  const chips = ctx.hud ? { paths: hudChip(ctx.hud), fec: hudChip(ctx.hud), retx: hudChip(ctx.hud), kem: hudChip(ctx.hud) } : null;
+  const chips = ctx.hud ? { paths: hudChip(ctx.hud), fec: hudChip(ctx.hud), retx: hudChip(ctx.hud) } : null;
   function renderHud() {
     if (!chips) return;
     const alive = paths.filter((p) => p.cut <= 0).length;
     chips.paths.set(ctx.t('hud.paths'), alive + '/4', alive === 4 ? 'ok' : 'bad');
     chips.fec.set(ctx.t('hud.fec'), st.fec, st.fec ? 'hot' : '');
     chips.retx.set(ctx.t('hud.retx'), st.retx, 'ok');
-    chips.kem.set('X25519 + ML-KEM-768', null, 'hot');
   }
 
   function cut(i, dur) {

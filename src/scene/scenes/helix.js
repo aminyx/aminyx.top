@@ -1,4 +1,3 @@
-// maryam.best: окно со скриншотом + ДНК, клик раскручивает спираль
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { orbit, fitDistance, studioLights, damp } from '../kit.js';

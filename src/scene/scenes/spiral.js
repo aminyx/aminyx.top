@@ -1,4 +1,3 @@
-// Cybersec: 270 дней ступенями, 6 экзаменов, 10 проектов, флаг CTF. клик = следующий экзамен
 import * as THREE from 'three';
 import { orbit, hudChip, fitDistance, studioLights, damp, pointsMaterial, putColor, setGlowBlend } from '../kit.js';
 import { sfxHeal } from '../sfx.js';

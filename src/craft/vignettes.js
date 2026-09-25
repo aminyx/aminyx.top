@@ -1,4 +1,4 @@
-// виньетки /craft на canvas2d: пауза вне экрана, цвета из CSS, reduced-motion = один кадр
+// виньетки /craft на canvas2d: пауза вне экрана, цвета из CSS, при reduced-motion рисуем один кадр
 
 var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -322,7 +322,7 @@ export function initCongestion(canvas) {
     }
     ctx.globalAlpha = 0.85;
     ctx.fillStyle = v.colors.text3;
-    ctx.fillText('cwnd ' + Math.round(cwnd) + '  ·  click = packet loss', x0, v.H - 12);
+    ctx.fillText('cwnd ' + Math.round(cwnd), x0, v.H - 12);
     ctx.globalAlpha = 1;
   }, function (x, y, v) {
     if (y < 34) {

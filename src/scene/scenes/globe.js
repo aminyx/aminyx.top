@@ -1,4 +1,3 @@
-// hero: глобус поверх sim.js. клик по узлу = отказ, удержание = шторм
 import {
   Scene, PerspectiveCamera, Group, Mesh, SphereGeometry, RingGeometry,
   BufferGeometry, BufferAttribute, Points, LineSegments, LineLoop, LineBasicMaterial,
@@ -223,7 +222,7 @@ export function create(ctx) {
     tip.textContent = '';
     const b = document.createElement('b');
     b.textContent = ctx.t('tip.node') + ' ' + String(i).padStart(3, '0');
-    tip.append(b, document.createTextNode(` · ${nd.deg} ${ctx.t('tip.paths')} · ${ctx.t('tip.kill')}`));
+    tip.append(b, document.createTextNode(` · ${ctx.t('tip.paths')}: ${nd.deg} · ${ctx.t('tip.kill')}`));
   }
 
   const ctl = orbit(ctx, root, {

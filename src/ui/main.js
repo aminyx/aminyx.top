@@ -67,7 +67,6 @@ function setTheme(next) {
   syncThemeBtn();
   if (window.__setThemeColor) window.__setThemeColor(next);
   window.dispatchEvent(new CustomEvent('themechange', { detail: next }));
-  drawMatrix(matrixProgress);
 }
 const toggleTheme = () => setTheme(docEl.dataset.theme === 'dark' ? 'light' : 'dark');
 syncThemeBtn();
@@ -133,7 +132,7 @@ if (shareLi && navigator.share) {
   $('#share-btn').addEventListener('click', share);
 }
 
-const nav =$('#nav');
+const nav = $('#nav');
 const sentinel = document.createElement('div');
 sentinel.setAttribute('aria-hidden', 'true');
 sentinel.style.cssText = 'position:absolute;top:0;left:0;height:24px;width:1px;pointer-events:none;';
@@ -191,69 +190,6 @@ if (spyEls.length) {
   updateSpy();
 }
 
-// 731 = 43 × 17
-const matrix = $('#test-matrix');
-const mctx = matrix ? matrix.getContext('2d') : null;
-let matrixProgress = reduceMotion ? 1 : 0;
-const COLS = 43, ROWS = 17, TOTAL = 731;
-
-function drawMatrix(progress) {
-  if (!mctx) return;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const rect = matrix.getBoundingClientRect();
-  if (rect.width < 4) return;
-  matrix.width = Math.round(rect.width * dpr);
-  matrix.height = Math.round(rect.height * dpr);
-  mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const W = rect.width, H = rect.height, gap = 2.2;
-  const cw = (W - gap * (COLS - 1)) / COLS;
-  const ch = (H - gap * (ROWS - 1)) / ROWS;
-  const cs = getComputedStyle(docEl);
-  const accent = cs.getPropertyValue('--accent').trim();
-  const dim = cs.getPropertyValue('--line-3').trim();
-  const lit = Math.round(TOTAL * progress);
-  let n = 0;
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (n >= TOTAL) break;
-      if (n < lit) {
-        mctx.fillStyle = accent;
-        mctx.globalAlpha = 0.35 + 0.4 * Math.min(1, (lit - n) / 80);
-      } else {
-        mctx.fillStyle = dim;
-        mctx.globalAlpha = 0.55;
-      }
-      const x = c * (cw + gap), y = r * (ch + gap), rad = Math.min(cw, ch) * 0.22;
-      mctx.beginPath();
-      if (mctx.roundRect) mctx.roundRect(x, y, cw, ch, rad); else mctx.rect(x, y, cw, ch);
-      mctx.fill();
-      n++;
-    }
-  }
-  mctx.globalAlpha = 1;
-}
-function fillMatrix() {
-  if (reduceMotion) { matrixProgress = 1; drawMatrix(1); return; }
-  const t0 = performance.now(), dur = 1800;
-  const tick = (now) => {
-    const p = Math.min(1, (now - t0) / dur);
-    matrixProgress = 1 - Math.pow(1 - p, 2);
-    drawMatrix(matrixProgress);
-    if (p < 1) requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-}
-if (matrix) {
-  if (reduceMotion || !('IntersectionObserver' in window)) {
-    drawMatrix(1);
-  } else {
-    const mo = new IntersectionObserver((entries) => {
-      if (entries[entries.length - 1].isIntersecting) { fillMatrix(); mo.disconnect(); }
-    }, { threshold: 0.35 });
-    mo.observe(matrix);
-  }
-  if ('ResizeObserver' in window) new ResizeObserver(() => drawMatrix(matrixProgress)).observe(matrix);
-}
 
 $$('.stage-modes').forEach((group) => {
   const stage = group.closest('.stage');
@@ -276,7 +212,7 @@ function openExplore(stage) {
   const title = caseEl ? $('.h3-case', caseEl).textContent : 'Aminyx Link';
   const hint = document.getElementById(canvas.getAttribute('aria-describedby')) || $('#hero-hint');
   $('#explore-h').textContent = title;
-  $('#explore-hint').textContent = t('explore.hint') + (hint ? ' · ' + hint.textContent.trim() : '');
+  $('#explore-hint').textContent = t('explore.hint') + (hint ? '. ' + hint.textContent.trim() : '');
   const marks = [canvas, hud].filter(Boolean).map((el) => {
     const mark = document.createComment('explore');
     el.replaceWith(mark);
@@ -307,7 +243,7 @@ if (explore) {
 }
 $$('.stage-expand').forEach((btn) => btn.addEventListener('click', () => openExplore(btn.closest('.stage'))));
 
-const brief =$('#brief');
+const brief = $('#brief');
 const briefText = $('#brief-text');
 const briefPreview = $('#brief-preview');
 function composeBrief() {
@@ -347,16 +283,6 @@ if (brief) {
 }
 
 const sys = () => window.__system || null;
-const chaosHud = $('#chaos-hud');
-let chaosOn = false;
-function setChaosMode(on, silent) {
-  if (on && !sys()) return false;
-  chaosOn = on;
-  if (sys()) sys().chaos(on);
-  if (chaosHud) chaosHud.hidden = !on;
-  if (!silent) toast(t(on ? 'toast.chaosOn' : 'toast.chaosOff'));
-  return true;
-}
 function toggleSfx() {
   if (!sys()) return;
   const on = !sys().sfxOn();
@@ -396,15 +322,15 @@ function runCommand(raw) {
   const warm = () => termPrint('network not loaded yet, scroll up to the globe');
   switch (cmd) {
     case 'help':
-      termPrint('network  status · kill [n] · heal · storm · chaos on|off · sfx on|off');
-      termPrint('site     goto <section> · open <project> · projects · theme dark|light · lang ru|tg|en');
-      termPrint('misc     whoami · contact · palette · clear · exit');
+      termPrint('network: status, kill [n], heal, storm, chaos on|off, sfx on|off');
+      termPrint('site:    goto <section>, open <project>, projects, theme dark|light, lang ru|tg|en');
+      termPrint('misc:    whoami, contact, palette, clear, exit');
       break;
     case 'status': {
       if (!s) { warm(); break; }
       const st = s.stats();
-      termPrint(`nodes ${st.alive}/${st.nodes} alive · edges ${st.edges} · packets in flight ${st.packets}`, 'ok');
-      termPrint(`failovers ${st.failovers} · manual kills ${st.kills} · chaos ${st.chaos ? 'on' : 'off'} · sfx ${s.sfxOn() ? 'on' : 'off'}`);
+      termPrint(`nodes ${st.alive}/${st.nodes} alive, ${st.edges} edges, ${st.packets} packets in flight`, 'ok');
+      termPrint(`failovers ${st.failovers}, manual kills ${st.kills}, chaos ${st.chaos ? 'on' : 'off'}, sfx ${s.sfxOn() ? 'on' : 'off'}`);
       break;
     }
     case 'kill': {
@@ -423,7 +349,7 @@ function runCommand(raw) {
       break;
     case 'chaos':
       if (!s) { warm(); break; }
-      setChaosMode(arg !== 'off', true);
+      s.chaos(arg !== 'off');
       termPrint('chaos ' + (arg !== 'off' ? 'on' : 'off'), 'ok');
       break;
     case 'sfx':
@@ -440,17 +366,17 @@ function runCommand(raw) {
       break;
     case 'goto': case 'cd':
       if (SECTIONS[arg]) { go(SECTIONS[arg]); termPrint('→ ' + arg, 'ok'); }
-      else termPrint('sections: ' + Object.keys(SECTIONS).join(' · '));
+      else termPrint('sections: ' + Object.keys(SECTIONS).join(' '));
       break;
     case 'open':
       if (PROJECTS[arg]) { go(PROJECTS[arg]); termPrint('→ ' + arg, 'ok'); }
-      else termPrint('projects: ' + Object.keys(PROJECTS).join(' · '));
+      else termPrint('projects: ' + Object.keys(PROJECTS).join(' '));
       break;
     case 'projects': case 'ls':
       termPrint('somonvpn  link  cybersec  tracker  maryam  hunter');
       break;
     case 'whoami':
-      termPrint('Aminjon Azizov (aminyx), full-stack and security engineer. Go, Rust, Kotlin, Python, TypeScript', 'ok');
+      termPrint('Aminjon Azizov (aminyx), developer. Go, Rust, Kotlin, Python, TypeScript', 'ok');
       break;
     case 'contact':
       termPrint('telegram  https://t.me/itsaminyx');
@@ -521,7 +447,7 @@ function toggleTerm(open) {
   }
 }
 
-const cmdk =$('#cmdk');
+const cmdk = $('#cmdk');
 const cmdkInput = $('#cmdk-input');
 const cmdkList = $('#cmdk-list');
 let cmdkItems = [], cmdkActive = 0, cmdkPrevFocus = null;
@@ -535,7 +461,7 @@ function commands() {
   add('cmdk.gNav', t('cmdk.faq'), () => go('#faq'), 'faq вопросы саволҳо questions');
   add('cmdk.gNav', t('nav.contact'), () => go('#contact'), 'contact контакты тамос');
   add('cmdk.gNav', t('footer.top'), () => go('#top'), 'top hero наверх');
-  add('cmdk.gNav', t('cmdk.craft'), () => { location.href = '/craft/'; }, 'craft lab лаборатория');
+  add('cmdk.gNav', t('cmdk.craft'), () => { location.href = '/craft/'; }, 'craft схемы схемаҳо diagrams');
   [['SomonVPN', '#p-somonvpn', 'vpn'], ['Aminyx Link', '#p-link', 'rust multipath'], ['Cybersec', '#course', 'курс course ctf'],
     ['Somoni Tracker', '#p-tracker', 'tracker трекер telegram'], ['maryam.best', '#p-maryam', 'maryam dna'], ['Username Hunter', '#p-hunter', 'hunter mtproto']]
     .forEach(([name, hash, kw]) => add('cmdk.gProjects', name, () => go(hash), kw));
@@ -552,8 +478,7 @@ function commands() {
   if (navigator.share) add('cmdk.gActions', t('contact.share'), share, 'share');
   add('cmdk.gSystem', t('cmdk.terminal'), () => toggleTerm(true), 'terminal console терминал');
   add('cmdk.gSystem', t('cmdk.storm'), () => { if (sys()) { sys().storm(); go('#top'); } }, 'storm шторм chaos');
-  add('cmdk.gSystem', t('cmdk.chaos'), () => { if (setChaosMode(!chaosOn)) go('#top'); }, 'chaos хаос konami');
-  add('cmdk.gSystem', t('cmdk.heal'), () => { if (sys()) { sys().heal(); setChaosMode(false, true); toast(t('toast.healed')); } }, 'heal лечить');
+  add('cmdk.gSystem', t('cmdk.heal'), () => { if (sys()) { sys().heal(); sys().chaos(false); toast(t('toast.healed')); } }, 'heal восстановить');
   add('cmdk.gSystem', t('cmdk.sfx'), toggleSfx, 'sound sfx звук');
   add('cmdk.gLinks', 'GitHub', () => window.open('https://github.com/aminyx', '_blank', 'noopener'), 'github');
   add('cmdk.gLinks', 'X', () => window.open('https://x.com/itsaminyx', '_blank', 'noopener'), 'twitter x');
@@ -648,8 +573,6 @@ if (cmdk) {
 }
 $$('.kbd-mod').forEach((k) => { k.textContent = isMac ? '⌘' : 'Ctrl'; });
 
-const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-let kPos = 0;
 document.addEventListener('keydown', (e) => {
   const tEl = e.target;
   const typing = tEl && (tEl.tagName === 'INPUT' || tEl.tagName === 'TEXTAREA' || tEl.isContentEditable);
@@ -667,12 +590,7 @@ document.addEventListener('keydown', (e) => {
     return;
   }
   if (e.key === 'Escape' && termOpen) { toggleTerm(false); return; }
-  if (e.key === '/' && !typing && !anyDialog && !termOpen) { e.preventDefault(); openPalette(); return; }
-  if (!typing) {
-    const key = e.key || '';
-    kPos = (key === KONAMI[kPos] || key.toLowerCase() === KONAMI[kPos]) ? kPos + 1 : (key === KONAMI[0] ? 1 : 0);
-    if (kPos === KONAMI.length) { kPos = 0; setChaosMode(!chaosOn); }
-  }
+  if (e.key === '/' && !typing && !anyDialog && !termOpen) { e.preventDefault(); openPalette(); }
 });
 
 applyLang(lang());
