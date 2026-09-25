@@ -1,21 +1,45 @@
 # aminyx.top
 
-Личный сайт: разработка продуктов под заказ и собственные проекты.
+Личный сайт: разработка продуктов под заказ и собственные проекты. Версия 3 — «Сигнал».
 
-Контентное ядро — чистый HTML, CSS и JavaScript без фреймворка. Поверх него — WebGL-субстрат «живая система» (симуляция multipath-сети Aminyx Link: узлы, маршруты, пакеты, failover-каскады) на React Three Fiber с постобработкой. Собирается Vite; тяжёлый three-чанк грузится лениво после первой отрисовки и не влияет на скорость контента.
+Контент — статичный HTML (индексируется и читается без JS), поверх него — прогрессивные улучшения: 3D-сцены на three.js, командная палитра, терминал, бриф-конструктор. Собирается Vite; three.js грузится лениво после первой отрисовки и только ради сцен, которые подъезжают к экрану.
+
+## Что на странице
+
+- **Hero** — живая сеть Aminyx Link на сфере: узлы, дуги-маршруты, пакеты, failover-каскады. Клик по узлу — отказ, перетаскивание — вращение, удержание — шторм. HUD показывает реальные счётчики симуляции.
+- **Работы** — у каждого проекта своя 3D-модель главной механики:
+  SomonVPN (Smart Connect: DPI режет WireGuard → переход на VLESS Reality),
+  Aminyx Link (multipath + FEC, обрыв пути кликом),
+  Cybersec (270 дней курса винтовой лестницей, экзамены, флаг CTF),
+  Somoni Tracker (строка из чата → блок траты; сравнение с теми же днями прошлого месяца),
+  maryam.best (окно браузера со скриншотом + спираль ДНК),
+  Username Hunter (воронка отбора: 99 % отсекает офлайн-скоринг).
+  Любую сцену можно развернуть на весь экран; у проектов со скриншотом есть режим «Скриншот».
+- **Ctrl/⌘ + K** — командная палитра (разделы, проекты, тема, язык, копирование контактов, управление сетью).
+- **`** — терминал, управляющий симуляцией hero (`help`, `status`, `kill 5`, `storm`, `chaos on`, `goto work`, `open link`…). Konami-код — CHAOS MODE.
+- **Бриф** — отметить услуги и сроки, текст собирается сам и уходит в Telegram или письмом.
 
 ## Структура
 
-- `index.html` — единственная страница (Vite-entry)
-- `public/css/style.css` — стили, две темы (тёмная и светлая) на CSS-переменных
+- `index.html`, `craft/index.html`, `privacy/index.html`, `404.html` — страницы (входы Vite)
+- `src/styles/main.css` — дизайн-система: токены двух тем, компоненты, адаптив
+- `src/i18n.js` — словари ru / tg / en, единственный источник переводов
+- `src/ui/main.js` — язык, тема (круговой View Transition), навигация, reveal, палитра, терминал, бриф
+- `src/scene/main.js` — проба WebGL2/Save-Data и ленивая загрузка движка
+- `src/scene/engine.js` — движок: **один WebGL-контекст** рендерит все сцены и копирует кадр в `<canvas>` каждого слота
+- `src/scene/kit.js` — палитра из CSS-токенов, материалы свечения, орбитальное управление, HUD-чипы
+- `src/scene/sim.js` — симуляция сети (общая для WebGL и canvas2d-фолбэка), `src/scene/globe2d.js` — фолбэк
+- `src/scene/scenes/*.js` — сцены: `globe`, `tunnel`, `multipath`, `spiral`, `bars`, `helix`, `funnel`
+- `src/craft/` — лаборатория `/craft` (canvas2d-виньетки)
 - `public/js/boot.js` — тема и язык до первой отрисовки (без FOUC)
-- `public/js/i18n.js` — словари трёх языков: русский, тоҷикӣ, English
-- `public/js/main.js` — навигация, reveal-анимации, счётчики, матрица тестов
-- `src/scene/` — «живая система»: `main.jsx` (вход: проба WebGL2/Save-Data, ленивая загрузка рендерера), `sim.js` (симуляция), `mount.jsx` + `SystemScene.jsx` (React Three Fiber + EffectComposer), `scene2d.js` (canvas2d-фолбэк)
-- `public/assets/fonts/` — Onest и JetBrains Mono, вариативные woff2, самохостинг
-- `public/assets/img/` — скриншоты проектов (WebP), зерно `noise.svg`, OG-картинка
+- `public/assets/` — шрифты Onest и JetBrains Mono (самохостинг), скриншоты, OG-картинки
+- `scripts/prerender-i18n.mjs` — статические `/en/` и `/tg/` из словаря; `scripts/smoke.mjs` — smoke-тест CI
 
-Фолбэки сцены: prefers-reduced-motion — статичный кадр; нет WebGL2 или включён Save-Data — canvas2d; нет canvas — чистый фон.
+## Фолбэки
+
+- нет WebGL2 или включён Save-Data / 2G — hero рисует canvas2d-глобус, в слотах проектов остаются скриншоты и схемы;
+- `prefers-reduced-motion` — все сцены отдают один статичный кадр, анимации интерфейса выключены;
+- без JS — полностью читаемая страница со скриншотами.
 
 ## Хостинг
 
@@ -26,6 +50,7 @@ GitHub Pages через GitHub Actions: `.github/workflows/deploy.yml` соби�
 ```bash
 npm ci
 npm run dev       # dev-сервер
-npm run build     # сборка в dist/
+npm run build     # сборка в dist/ + пререндер /en/ и /tg/
 npm run preview   # предпросмотр сборки
+npm run smoke     # smoke-тест собранного сайта (CHROMIUM_PATH=… для своего браузера)
 ```
