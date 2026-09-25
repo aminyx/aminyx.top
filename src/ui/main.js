@@ -125,22 +125,39 @@ $$('.theme-toggle').forEach((b) => b.addEventListener('click', () => toggleTheme
 /* ---------- Тосты ---------- */
 
 const toasts = $('#toasts');
-function toast(msg) {
+function toast(msg, bad) {
   if (!toasts || !msg) return;
   const el = document.createElement('div');
-  el.className = 'toast';
+  el.className = bad ? 'toast is-bad' : 'toast';
   el.textContent = msg;
   toasts.appendChild(el);
   while (toasts.childElementCount > 3) toasts.firstElementChild.remove();
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 320); }, 2400);
 }
 
+/* запасной путь для браузеров без Clipboard API или с отказом в доступе */
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
+}
+/* резолвится в true/false; «Скопировано» показываем только при успехе */
 function copy(text, msg) {
-  const done = () => toast(msg || t('contact.copied'));
+  const report = (ok) => {
+    toast(ok ? (msg || t('contact.copied')) : t('toast.copyFail'), !ok);
+    return ok;
+  };
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    return navigator.clipboard.writeText(text).then(done, () => {});
+    return navigator.clipboard.writeText(text).then(() => report(true), () => report(legacyCopy(text)));
   }
-  return Promise.resolve();
+  return Promise.resolve(report(legacyCopy(text)));
 }
 
 /* ---------- Контакты: ник, шаринг ---------- */
@@ -148,7 +165,8 @@ function copy(text, msg) {
 const nick = $('#nick-copy');
 if (nick) {
   nick.addEventListener('click', () => {
-    copy('@itsaminyx').then(() => {
+    copy('@itsaminyx').then((ok) => {
+      if (!ok) return;
       nick.textContent = t('contact.copied');
       nick.classList.add('copied');
       setTimeout(() => { nick.textContent = '@itsaminyx'; nick.classList.remove('copied'); }, 1400);

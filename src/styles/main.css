@@ -615,7 +615,7 @@ html.js .h1-b .w {
   width: 100%;
   height: 100%;
   cursor: grab;
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
 }
 .hero-stage .stage-gl:active { cursor: grabbing; }
 .hero-stage .stage-gl.probe { cursor: crosshair; }
@@ -1000,7 +1000,7 @@ html.js .h1-b .w {
   height: 100%;
   opacity: 0;
   transition: opacity 700ms var(--ease-out);
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
   cursor: grab;
 }
 .stage-gl:active { cursor: grabbing; }
@@ -1613,7 +1613,10 @@ dialog { color: inherit; }
     radial-gradient(80% 70% at 50% 40%, color-mix(in srgb, var(--surface-2) 70%, transparent), transparent 75%),
     var(--stage-bg);
 }
-.explore-body .stage-gl { opacity: 1; }
+.explore-body .stage-gl { opacity: 1; touch-action: none; }
+/* страница под полноэкранной сценой не прокручивается свайпом */
+html:has(.explore[open]) { overflow: hidden; }
+.explore { overscroll-behavior: contain; }
 .explore-body .stage-hud { top: 16px; left: var(--gutter); }
 
 /* ---------- Тосты ---------- */
@@ -1642,6 +1645,7 @@ dialog { color: inherit; }
   animation: toast-in 300ms var(--ease-out);
 }
 .toast::before { content: "✓ "; color: var(--accent-text); font-weight: 700; }
+.toast.is-bad::before { content: "! "; color: var(--danger); }
 .toast.out { opacity: 0; transform: translateY(6px); transition: all 300ms var(--ease-out); }
 @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
 

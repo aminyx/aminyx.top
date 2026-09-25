@@ -128,7 +128,10 @@ export function create(ctx) {
     camera.position.set(0, 0.35, 1).normalize().multiplyScalar(fitDistance(camera, 1.8, 2.05) * ctl.zoom);
     camera.lookAt(0, 0.12, 0);
 
-    if (st.target != null) {
+    if (st.target != null && reduced) {
+      st.day = st.target;
+      st.target = null;
+    } else if (st.target != null) {
       st.day = damp(st.day, st.target, 3.2, dt || 1);
       if (Math.abs(st.day - st.target) < 0.5) { st.day = st.target; st.target = null; }
     } else if (!reduced) {
