@@ -81,6 +81,15 @@ try {
   if (!resp.ok()) errors.push(`/craft/: HTTP ${resp.status()}`);
   if ((await page.$$('.craft-card canvas')).length !== 4) errors.push('/craft/: ожидалось 4 канваса виньеток');
 
+  // Tilaveo: запись в закрытый тест — сюда ведут ответы бота в TikTok
+  page.on('console', (m) => { if (m.type() === 'error') pageErrors.push('console: ' + m.text()); });
+  resp = await page.goto(base + '/tilaveo/#test', { waitUntil: 'networkidle' });
+  if (!resp.ok()) errors.push(`/tilaveo/: HTTP ${resp.status()}`);
+  for (const href of ['https://groups.google.com/g/tilaveo-testers', 'https://play.google.com/apps/testing/app.tilaveo']) {
+    if (!(await page.$(`#test a.btn[href="${href}"]`))) errors.push(`/tilaveo/: в #test нет кнопки ${href}`);
+  }
+  if (!(await page.$('.hero a.btn[href="#test"]'))) errors.push('/tilaveo/: кнопка Google Play не ведёт к #test');
+
   resp = await page.goto(base + '/404.html', { waitUntil: 'domcontentloaded' });
   if (!(await page.$('.nf-code'))) errors.push('/404.html: нет разметки 404');
 
@@ -95,4 +104,4 @@ if (errors.length) {
   console.error('SMOKE FAILED:\n' + errors.map((e) => '  - ' + e).join('\n'));
   process.exit(1);
 }
-console.log('SMOKE OK: /, /en/, /tg/, /craft/, /privacy/, 404');
+console.log('SMOKE OK: /, /en/, /tg/, /craft/, /privacy/, /tilaveo/, 404');
