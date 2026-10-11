@@ -82,7 +82,8 @@ try {
     await ctx.close();
   }
 
-  const page = await browser.newPage();
+  // язык подстраниц берётся из браузера: без явной локали CI (en-US) видит английский /services/
+  const page = await browser.newPage({ locale: 'ru-RU' });
   const pageErrors = [];
   page.on('pageerror', (e) => pageErrors.push(String(e)));
 
