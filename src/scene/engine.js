@@ -11,8 +11,6 @@ const SCENES = {
   multipath: () => import('./scenes/multipath.js'),
   spiral: () => import('./scenes/spiral.js'),
   bars: () => import('./scenes/bars.js'),
-  helix: () => import('./scenes/helix.js'),
-  funnel: () => import('./scenes/funnel.js'),
 };
 
 export function boot(stages, { onFail } = {}) {

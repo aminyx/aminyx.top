@@ -1,4 +1,4 @@
-// SomonVPN: DPI режет WireGuard, Smart Connect уходит на VLESS Reality и запоминает
+// SomonVPN: при сбое связи на WireGuard Smart Connect уходит на VLESS и запоминает рабочую конфигурацию
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { orbit, hudChip, fresnelMaterial, textSprite, fitDistance, studioLights, damp, setGlowBlend } from '../kit.js';
@@ -117,7 +117,7 @@ export function create(ctx) {
   panel.rotation.y = Math.PI / 2;
   const frameMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.6 });
   const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(0.06, 2.3, 2.0)), frameMat);
-  const dpiLabel = textSprite('DPI', { size: 0.2 });
+  const dpiLabel = textSprite(ctx.t('scene.tunnel.wall'), { size: 0.2 });
   dpiLabel.position.set(0, 1.42, 0);
   wall.add(panel, frame, dpiLabel);
   wall.position.set(0, 0.05, 0.05);
@@ -152,8 +152,8 @@ export function create(ctx) {
   function renderHud() {
     if (!chips) return;
     const switching = st.switchAt > 0;
-    chips.proto.set(st.proto === 'wg' ? 'WireGuard' : 'VLESS Reality', null, switching ? 'bad' : st.proto === 'wg' ? 'ok' : 'hot');
-    chips.dpi.set(st.dpi ? ctx.t('hud.dpiOn') : ctx.t('hud.dpiOff'), null, st.dpi ? 'bad' : 'ok');
+    chips.proto.set(st.proto === 'wg' ? 'WireGuard' : 'VLESS', null, switching ? 'bad' : st.proto === 'wg' ? 'ok' : 'hot');
+    chips.dpi.set(st.dpi ? ctx.t('hud.faultOn') : ctx.t('hud.faultOff'), null, st.dpi ? 'bad' : 'ok');
     chips.lost.show(st.lost > 0);
     chips.lost.set(ctx.t('hud.lost'), st.lost, 'bad');
     chips.mem.show(st.remembered);
@@ -163,7 +163,7 @@ export function create(ctx) {
   function setPhase(p) { st.phase = p; st.t = 0; }
   function blockOn() {
     st.dpi = true;
-    // уже на Reality: блокировка WG ничего не рвёт, сразу фаза reality
+    // уже на VLESS: сбой на WG ничего не рвёт, сразу фаза reality
     setPhase(st.proto === 'reality' ? 'reality' : 'blocked');
   }
   function toggle() {
@@ -187,7 +187,7 @@ export function create(ctx) {
     glassMat.uniforms.uColor.value.copy(t.cool);
     glassMat.uniforms.uIntensity.value = t.light ? 0.5 : 0.8;
     frameMat.color.copy(t.line);
-    dpiLabel.userData.set('DPI', t.text3Css);
+    dpiLabel.userData.set(ctx.t('scene.tunnel.wall'), t.text3Css);
     screenState = '';
     setGlowBlend(glassMat, t.light);
   }
@@ -233,7 +233,7 @@ export function create(ctx) {
         const prevU = pk.u;
         pk.u += pk.speed * dt;
         // режется только пакет, пересекающий стену в этот кадр:
-        // прошедшие DPI до включения фильтра долетают
+        // прошедшие стенку до сбоя долетают
         if (st.dpi && pk.proto === 'wg' && prevU < 0.49 && pk.u >= 0.49) {
           pk.fall = true;
           curve.getPointAt(0.49, pk.p);
@@ -294,5 +294,6 @@ export function create(ctx) {
     for (let i = 0; i < 8; i++) packets.push({ u: 0.06 + i * 0.12, speed: 0, proto: 'reality', fall: false, p: new THREE.Vector3(), v: new THREE.Vector3(), life: 1, spin: i });
   }
   update(0, 0);
-  return { scene, camera, update, setTheme, setLang: renderHud };
+  function setLang() { renderHud(); dpiLabel.userData.set(ctx.t('scene.tunnel.wall'), th.text3Css); }
+  return { scene, camera, update, setTheme, setLang };
 }

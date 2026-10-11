@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         main: r('index.html'),
         craft: r('craft/index.html'),
+        services: r('services/index.html'),
         privacy: r('privacy/index.html'),
         notfound: r('404.html'),
       },

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Аминджон Азизов — резюме</title>
+<!-- исходник PDF-резюме: npm run cv → public/cv/aminjon-azizov-cv-ru.pdf. Текст согласован с владельцем, правки только по его слову -->
+<link rel="stylesheet" href="../../public/assets/fonts/fonts.css">
+<style>
+  @page { size: A4; margin: 14mm 15mm 14mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Onest', system-ui, sans-serif; color: #15171c; font-size: 9.6pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 21pt; font-weight: 750; letter-spacing: -0.02em; margin: 0; }
+  .role { font-size: 12pt; font-weight: 600; color: #2b5fd9; margin-top: 2pt; }
+  .meta { margin-top: 6pt; color: #4a4f5a; }
+  .meta a { color: #4a4f5a; text-decoration: none; }
+  h2 { font-size: 10.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #2b5fd9;
+       margin: 13pt 0 5pt; padding-bottom: 3pt; border-bottom: 1px solid #d9dce3; }
+  h3 { font-size: 10.5pt; font-weight: 700; margin: 9pt 0 1pt; }
+  h3 .when { font-weight: 500; color: #5b616d; }
+  .stack { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: #5b616d; margin-bottom: 3pt; }
+  p { margin: 3pt 0; }
+  ul { margin: 2pt 0 0; padding-left: 13pt; }
+  li { margin: 1.5pt 0; }
+  .skills { display: grid; grid-template-columns: 30mm 1fr; gap: 2pt 8pt; }
+  .skills dt { font-weight: 650; }
+  .skills dd { margin: 0; }
+  .note { color: #5b616d; }
+  section { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Аминджон Азизов <span style="font-weight:500;color:#5b616d">(Aminjon Azizov)</span></h1>
+  <div class="role">AI-assisted Backend / Full-stack Developer — Python, Go</div>
+  <div class="meta">Таджикистан (UTC+5) · удалённо, полная занятость · от $2 000/мес<br>
+    Telegram: @itsaminyx · itsaminyx@gmail.com · aminyx.top · github.com/aminyx</div>
+</header>
+
+<section>
+  <h2>О себе</h2>
+  <p>Создаю и сопровождаю коммерческие продукты вместе с AI-агентами (Claude Code, Codex): ставлю задачи, принимаю архитектурные решения, проверяю результат тестами и на реальных устройствах, отвечаю за production.</p>
+  <p>Главный проект — SomonVPN: Android-приложение, бэкенд на Go, Telegram-боты на Python, приём платежей и автоматизированный мониторинг серверов. Ищу удалённую работу в продуктовой команде.</p>
+</section>
+
+<h2>Проекты и опыт</h2>
+
+<section>
+  <h3>SomonVPN — собственный коммерческий продукт <span class="when">· июнь 2026 — н.в.</span></h3>
+  <div class="stack">Go, Python, Kotlin, Jetpack Compose, PostgreSQL, Next.js, Docker, Linux</div>
+  <ul>
+    <li>Продукт с 1 500+ активными платными подписками.</li>
+    <li>Бэкенд на Go (модульный монолит, PostgreSQL): авторизация, каталог серверов, генерация конфигураций, подписки, платёжные вебхуки, админ-API.</li>
+    <li>Telegram-боты продаж и white-label платформа на Python (aiogram 3, FastAPI, SQLAlchemy async, alembic): партнёры продают сервис под своим брендом с начислением доли и выводом средств.</li>
+    <li>Android-приложение (Kotlin, Compose, Hilt, VpnService) в нескольких изданиях из одной кодовой базы; автоматический выбор протокола (Xray/VLESS, TUIC, WireGuard) и сервера, восстановление соединения.</li>
+    <li>Мониторинг и эксплуатация: автоматическое исключение недоступных узлов по трём признакам, контроль скорости серверов, отчёты и оповещения в Telegram, деплой с точками отката, резервные копии.</li>
+    <li>Ключевая логика покрыта автотестами на Go, Python и Kotlin.</li>
+  </ul>
+</section>
+
+<section>
+  <h3>Aminyx Link — собственный сетевой протокол на Rust <span class="when">· июнь 2026 — н.в.</span></h3>
+  <div class="stack">Rust, Tokio, QUIC, X25519, ML-KEM-768, ChaCha20-Poly1305, AES-256-GCM</div>
+  <ul>
+    <li>Используется в production внутри SomonVPN.</li>
+    <li>Гибридный обмен ключами, AEAD-шифрование, взаимная аутентификация, ротация ключей, возобновление сессий.</li>
+    <li>Автотесты и фаззинг-тесты в репозитории.</li>
+    <li>Независимый аудит безопасности не проводился; часть модулей (multipath, FEC) — в разработке.</li>
+  </ul>
+</section>
+
+<section>
+  <h3>Заказная разработка: VPN-сервис для клиента <span class="when">· сентябрь — октябрь 2026</span></h3>
+  <div class="stack">React, TypeScript, Python, FastAPI, PostgreSQL, Xray</div>
+  <ul>
+    <li>Под ключ примерно за две недели: сайт по макету, личный кабинет, бот продаж с онлайн-оплатой, серверы с автоматической выдачей доступа, бэкапы и мониторинг. Название клиента не раскрывается.</li>
+  </ul>
+</section>
+
+<section>
+  <h3>CashTraffic — собственный проект, в разработке <span class="when">· 2026</span></h3>
+  <div class="stack">Python, aiogram 3, FastAPI, PostgreSQL, Redis, Docker</div>
+  <ul>
+    <li>Telegram-маркетплейс рекламного трафика: бот, API, админ-панель, задания с проверкой выполнения, антифрод.</li>
+    <li>Коммерчески не запускался.</li>
+  </ul>
+</section>
+
+<section>
+  <h3>Открытые проекты</h3>
+  <ul>
+    <li>Cybersec — бесплатный курс кибербезопасности (RU/TJ, 270 дней).</li>
+    <li>Somoni Tracker — Telegram-бот и веб-панель учёта расходов (Next.js, grammY, SQLite).</li>
+    <li>keelstore (Go) и hnsw (Rust) — учебные реализации, созданные вместе с AI-агентами.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Навыки</h2>
+  <dl class="skills">
+    <dt>Backend</dt><dd>Python (aiogram 3, FastAPI, SQLAlchemy, alembic, pytest) · Go · PostgreSQL</dd>
+    <dt>Frontend</dt><dd>TypeScript, React, Next.js</dd>
+    <dt>Android</dt><dd>Kotlin, Jetpack Compose</dd>
+    <dt>Инфраструктура</dt><dd>Linux, Docker, systemd, Caddy, nginx</dd>
+    <dt>Сети</dt><dd>Xray, TUIC, WireGuard, QUIC</dd>
+    <dt>Rust</dt><dd>Tokio</dd>
+    <dt>AI-разработка</dt><dd>Claude Code, Codex, MCP</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Образование и языки</h2>
+  <p><b>Образование:</b> среднее общее (11 классов). Программирование — самостоятельно: документация, онлайн-материалы, собственные проекты.</p>
+  <p><b>Языки:</b> русский и таджикский — свободно; английский — начальный.</p>
+</section>
+
+</body>
+</html>

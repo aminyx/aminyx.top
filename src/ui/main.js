@@ -24,11 +24,14 @@ function applyLang(next) {
   docEl.lang = next;
   store('lang', next);
 
-  document.title = dict['meta.title'];
+  // у подстраниц (/services/) свои title и description: <body data-page="svcpage"> → svcpage.title
+  const page = document.body.dataset.page;
+  const meta = (name) => (page && dict[page + '.' + name]) || dict['meta.' + name];
+  document.title = meta('title');
   const setMeta = (sel, val) => { const m = $(sel); if (m && val) m.setAttribute('content', val); };
-  setMeta('meta[name="description"]', dict['meta.desc']);
-  setMeta('meta[property="og:title"]', dict['meta.title']);
-  setMeta('meta[property="og:description"]', dict['meta.desc']);
+  setMeta('meta[name="description"]', meta('desc'));
+  setMeta('meta[property="og:title"]', meta('title'));
+  setMeta('meta[property="og:description"]', meta('desc'));
   setMeta('meta[property="og:image:alt"]', dict['meta.ogAlt']);
 
   $$('[data-i18n]').forEach((el) => { const v = dict[el.dataset.i18n]; if (v) el.textContent = v; });
@@ -37,8 +40,9 @@ function applyLang(next) {
   $$('[data-i18n-ph]').forEach((el) => { const v = dict[el.dataset.i18nPh]; if (v) el.setAttribute('placeholder', v); });
   $$('.lang-switch button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === next)));
 
+  // на главной письмо — про вакансию, на /services/ — про проект
   const mail = $('.contact-cta a[href^="mailto:"]');
-  if (mail) mail.href = 'mailto:itsaminyx@gmail.com?subject=' + encodeURIComponent(t('brief.subject'));
+  if (mail) mail.href = 'mailto:itsaminyx@gmail.com?subject=' + encodeURIComponent(t(page === 'svcpage' ? 'brief.subject' : 'contact.subject'));
 
   renderBrief();
   window.dispatchEvent(new CustomEvent('langchange', { detail: next }));
@@ -303,8 +307,9 @@ function termPrint(text, cls) {
   termLog.scrollTop = termLog.scrollHeight;
 }
 
-const SECTIONS = { top: '#top', work: '#work', code: '#oss', oss: '#oss', services: '#services', faq: '#faq', contact: '#contact', brief: '#brief' };
-const PROJECTS = { somonvpn: '#p-somonvpn', link: '#p-link', cybersec: '#course', tracker: '#p-tracker', maryam: '#p-maryam', hunter: '#p-hunter' };
+const SECTIONS = { top: '#top', work: '#work', cases: '#work', projects: '#projects', skills: '#skills', ai: '#ai', contact: '#contact' };
+const PROJECTS = { somonvpn: '#p-somonvpn', link: '#p-link', client: '#p-client', cashtraffic: '#p-cashtraffic', cybersec: '#course', tracker: '#p-tracker', keelstore: '#p-oss', hnsw: '#p-oss' };
+const CV_URL = '/cv/aminjon-azizov-cv-ru.pdf';
 
 function go(hash) {
   const el = $(hash);
@@ -324,7 +329,7 @@ function runCommand(raw) {
     case 'help':
       termPrint('network: status, kill [n], heal, storm, chaos on|off, sfx on|off');
       termPrint('site:    goto <section>, open <project>, projects, theme dark|light, lang ru|tg|en');
-      termPrint('misc:    whoami, contact, palette, clear, exit');
+      termPrint('misc:    whoami, contact, cv, palette, clear, exit');
       break;
     case 'status': {
       if (!s) { warm(); break; }
@@ -373,10 +378,13 @@ function runCommand(raw) {
       else termPrint('projects: ' + Object.keys(PROJECTS).join(' '));
       break;
     case 'projects': case 'ls':
-      termPrint('somonvpn  link  cybersec  tracker  maryam  hunter');
+      termPrint(Object.keys(PROJECTS).join('  '));
       break;
     case 'whoami':
-      termPrint('Aminjon Azizov (aminyx), developer. Go, Rust, Kotlin, Python, TypeScript', 'ok');
+      termPrint('Aminjon Azizov (aminyx), backend / full-stack developer. Python, Go, Kotlin, Rust', 'ok');
+      break;
+    case 'cv': case 'resume':
+      location.href = CV_URL; termPrint('→ ' + CV_URL, 'ok');
       break;
     case 'contact':
       termPrint('telegram  https://t.me/itsaminyx');
@@ -455,19 +463,21 @@ let cmdkItems = [], cmdkActive = 0, cmdkPrevFocus = null;
 function commands() {
   const out = [];
   const add = (group, label, run, kw) => out.push({ group, label, run, kw: kw || '' });
-  add('cmdk.gNav', t('nav.work'), () => go('#work'), 'work работы корҳо portfolio');
-  add('cmdk.gNav', t('nav.oss'), () => go('#oss'), 'open source github код рамз');
-  add('cmdk.gNav', t('nav.services'), () => go('#services'), 'services услуги хизмат');
-  add('cmdk.gNav', t('cmdk.faq'), () => go('#faq'), 'faq вопросы саволҳо questions');
+  add('cmdk.gNav', t('nav.work'), () => go('#work'), 'work cases кейсы корҳо portfolio');
+  add('cmdk.gNav', t('nav.projects'), () => go('#projects'), 'projects проекты лоиҳаҳо github');
+  add('cmdk.gNav', t('nav.skills'), () => go('#skills'), 'skills навыки малака stack');
+  add('cmdk.gNav', t('nav.ai'), () => go('#ai'), 'ai агенты claude codex');
   add('cmdk.gNav', t('nav.contact'), () => go('#contact'), 'contact контакты тамос');
   add('cmdk.gNav', t('footer.top'), () => go('#top'), 'top hero наверх');
+  add('cmdk.gNav', t('nav.services'), () => { location.href = '/services/'; }, 'services услуги хизмат заказ order brief бриф');
   add('cmdk.gNav', t('cmdk.craft'), () => { location.href = '/craft/'; }, 'craft схемы схемаҳо diagrams');
-  [['SomonVPN', '#p-somonvpn', 'vpn'], ['Aminyx Link', '#p-link', 'rust multipath'], ['Cybersec', '#course', 'курс course ctf'],
-    ['Somoni Tracker', '#p-tracker', 'tracker трекер telegram'], ['maryam.best', '#p-maryam', 'maryam dna'], ['Username Hunter', '#p-hunter', 'hunter mtproto']]
+  [['SomonVPN', '#p-somonvpn', 'vpn'], ['Aminyx Link', '#p-link', 'rust quic'], [t('work.client.h'), '#p-client', 'client заказ клиент'],
+    ['CashTraffic', '#p-cashtraffic', 'cashtraffic telegram'], ['Cybersec', '#course', 'курс course ctf'],
+    ['Somoni Tracker', '#p-tracker', 'tracker трекер telegram'], ['keelstore · hnsw', '#p-oss', 'keelstore hnsw go rust']]
     .forEach(([name, hash, kw]) => add('cmdk.gProjects', name, () => go(hash), kw));
   add('cmdk.gActions', t('cmdk.tg'), () => window.open('https://t.me/itsaminyx', '_blank', 'noopener'), 'telegram написать');
-  add('cmdk.gActions', t('cmdk.mail'), () => { location.href = 'mailto:itsaminyx@gmail.com?subject=' + encodeURIComponent(t('brief.subject')); }, 'email почта mail');
-  add('cmdk.gActions', t('cmdk.brief'), () => { go('#brief'); setTimeout(() => { const f = $('#brief input'); if (f) f.focus({ preventScroll: true }); }, reduceMotion ? 0 : 600); }, 'brief бриф заказ order');
+  add('cmdk.gActions', t('cta.cv'), () => { location.href = CV_URL; }, 'cv resume резюме pdf');
+  add('cmdk.gActions', t('cmdk.mail'), () => { location.href = 'mailto:itsaminyx@gmail.com?subject=' + encodeURIComponent(t('contact.subject')); }, 'email почта mail');
   add('cmdk.gActions', t('cmdk.copyEmail'), () => copy('itsaminyx@gmail.com', t('toast.email')), 'copy email');
   add('cmdk.gActions', t('a11y.copyNick'), () => copy('@itsaminyx'), 'copy nick telegram');
   add('cmdk.gActions', t('cmdk.copyLink'), () => copy('https://aminyx.top/', t('toast.link')), 'copy link url');
@@ -481,8 +491,6 @@ function commands() {
   add('cmdk.gSystem', t('cmdk.heal'), () => { if (sys()) { sys().heal(); sys().chaos(false); toast(t('toast.healed')); } }, 'heal восстановить');
   add('cmdk.gSystem', t('cmdk.sfx'), toggleSfx, 'sound sfx звук');
   add('cmdk.gLinks', 'GitHub', () => window.open('https://github.com/aminyx', '_blank', 'noopener'), 'github');
-  add('cmdk.gLinks', 'X', () => window.open('https://x.com/itsaminyx', '_blank', 'noopener'), 'twitter x');
-  add('cmdk.gLinks', t('contact.channel'), () => window.open('https://t.me/isaminyx', '_blank', 'noopener'), 'channel канал');
   add('cmdk.gLinks', t('footer.privacy'), () => { location.href = '/privacy/'; }, 'privacy');
   return out;
 }

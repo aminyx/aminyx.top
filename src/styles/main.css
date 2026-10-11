@@ -781,6 +781,27 @@ main, .footer { position: relative; z-index: 1; }
 .svc .svc-refs { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-3); }
 .svc-refs a { color: var(--accent-text); white-space: nowrap; }
 .svc-refs a:hover { text-decoration: underline; }
+/* навыки: заголовок + одна строка технологий, без третьей колонки */
+.svc--2 { grid-template-columns: minmax(11rem, 0.8fr) minmax(0, 2.4fr); }
+
+/* портфолио под найм: статус над именем, факты под кнопками, кейсы без 3D-слота */
+.hero-kicker { margin-bottom: 1.2rem; }
+.hero-role { margin-top: 1.1rem; font-size: clamp(1.05rem, 1.6vw, 1.35rem); font-weight: 600; color: var(--accent-text); letter-spacing: -0.01em; }
+.hero-facts { margin-top: 1.8rem; color: var(--text-2); }
+.section-lead { color: var(--text-2); margin-top: 0.9rem; max-width: 44rem; }
+.section-note { color: var(--text-2); font-size: var(--fs-caption); max-width: 44rem; }
+.case--text .case-top { grid-template-columns: minmax(0, 46rem); }
+.oss { margin-top: clamp(2.5rem, 5vw, 4rem); padding-top: clamp(2rem, 4vw, 3rem); border-top: 1px solid var(--line-2); }
+.oss .oss-grid { margin-top: 1.4rem; }
+.h3-sub { font-size: 1.25rem; font-weight: 650; letter-spacing: -0.01em; }
+.contact-langs { margin-top: 1.6rem; color: var(--text-3); font-size: var(--fs-caption); }
+.svc-teaser .teaser-p { color: var(--text-2); margin-top: 1rem; font-size: var(--fs-caption); line-height: 1.6; }
+.nav-links > a.nav-aside { color: var(--text-3); }
+
+/* /services/ */
+.svc-hero { padding-top: calc(var(--nav-h) + clamp(2rem, 6vw, 4rem)); }
+.svc-back { margin-bottom: 1.4rem; }
+.svc-faq { margin-top: clamp(2rem, 4vw, 3rem); }
 
 /* FAQ */
 

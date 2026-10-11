@@ -30,7 +30,7 @@ for (const lang of ['en', 'tg']) {
     const v = dict[$(el).attr('data-i18n-ph')];
     if (v) $(el).attr('placeholder', v);
   });
-  $('.contact-cta a[href^="mailto:"]').attr('href', 'mailto:itsaminyx@gmail.com?subject=' + encodeURIComponent(dict['brief.subject']));
+  $('.contact-cta a[href^="mailto:"]').attr('href', 'mailto:itsaminyx@gmail.com?subject=' + encodeURIComponent(dict['contact.subject']));
 
   const url = `https://aminyx.top/${lang}/`;
   $('link[rel="canonical"]').attr('href', url);

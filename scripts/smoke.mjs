@@ -3,10 +3,25 @@ import { chromium } from 'playwright';
 
 // locale = язык браузера: на / ждём ru, на /tg/ путь важнее en-US
 const EXPECT = {
-  '/': { lang: 'ru', locale: 'ru-RU', title: 'Аминджон Азизов (Aminyx): бэкенд, Android, веб, безопасность', h1: 'Аминджон Азизов' },
-  '/en/': { lang: 'en', locale: 'en-US', title: 'Aminjon Azizov (Aminyx): backend, Android, web, security', h1: 'Aminjon Azizov' },
-  '/tg/': { lang: 'tg', locale: 'en-US', title: 'Аминҷон Азизов (Aminyx): бэкенд, Android, веб, амният', h1: 'Аминҷон Азизов' },
+  '/': { lang: 'ru', locale: 'ru-RU', title: 'Аминджон Азизов — Backend / Full-stack разработчик (Python, Go)', h1: 'Аминджон Азизов' },
+  '/en/': { lang: 'en', locale: 'en-US', title: 'Aminjon Azizov — Backend / Full-stack Developer (Python, Go)', h1: 'Aminjon Azizov' },
+  '/tg/': { lang: 'tg', locale: 'en-US', title: 'Аминҷон Азизов — барноманависи Backend / Full-stack (Python, Go)', h1: 'Аминҷон Азизов' },
 };
+
+// главная — под найм: без брифа заказчика, без снятых формулировок и ссылок на скрытые репозитории
+// тексты ищем в видимом тексте (в сыром HTML «sable» живёт внутри «disabled», цифры — в хешах файлов)
+const FORBIDDEN_TEXT = [/DPI/, /блокир/i, /CodeCup/i, /731\s*(автотест|automated|автотест)/i, /Google Play/, /maryam/i,
+  /Написано с нуля/, /Аз сифр навишта/, /Written from scratch/, /hand-written/i];
+const FORBIDDEN_HREF = /github\.com\/aminyx\/(driftpad|sable|keelsql|lockstep|taintline|raftwood|vaultic|teamboard|pulsewire|evalgate|keyless-ci|triagent|actions-lock|keyforge|crowdpoll|mcp-devdb|ledgerline|repo-signal|citeseek|threshold|github-portfolio-factory)\b|x\.com\/itsaminyx|maryam\.best/;
+const CV = '/cv/aminjon-azizov-cv-ru.pdf';
+
+async function forbidden(page, where, errors) {
+  const text = await page.evaluate(() => document.body.innerText + ' ' + document.title + ' ' +
+    (document.querySelector('meta[name="description"]') || {}).content);
+  for (const re of FORBIDDEN_TEXT) if (re.test(text)) errors.push(`${where}: в тексте осталось ${re}`);
+  const hrefs = await page.$$eval('a[href]', (els) => els.map((a) => a.getAttribute('href')));
+  for (const h of hrefs) if (FORBIDDEN_HREF.test(h)) errors.push(`${where}: ссылка на скрытое ${h}`);
+}
 
 const server = await preview({ preview: { port: 4599, strictPort: true } });
 const base = 'http://localhost:4599';
@@ -30,6 +45,10 @@ try {
     const h1 = (await page.textContent('#hero-h1')) || '';
     if (!h1.includes(exp.h1)) errors.push(`${path}: h1 "${h1.trim()}" не содержит "${exp.h1}"`);
     if (!(await page.$('a.btn-primary[href^="https://t.me/"]'))) errors.push(`${path}: нет CTA-ссылки на Telegram`);
+    if (!(await page.$(`.hero-cta a[href="${CV}"]`))) errors.push(`${path}: в hero нет кнопки резюме ${CV}`);
+    if (await page.$('#brief')) errors.push(`${path}: бриф заказчика должен жить на /services/, а не на главной`);
+    if (!(await page.$('a[href="/services/"]'))) errors.push(`${path}: нет ссылки на /services/`);
+    await forbidden(page, path, errors);
 
     try {
       await page.waitForSelector('#hero-stage.gl-on', { timeout: 20000 });
@@ -57,11 +76,6 @@ try {
       const items = await page.$$eval('#cmdk-list [role="option"]', (els) => els.map((e) => e.textContent));
       if (!items.some((t) => t.includes('SomonVPN'))) errors.push('/: палитра не нашла SomonVPN');
       await page.keyboard.press('Escape');
-      // бриф собирает сообщение из отмеченного
-      await page.locator('#brief').scrollIntoViewIfNeeded();
-      await page.check('#brief input[value="bot"]');
-      const preview = await page.textContent('#brief-preview');
-      if (!preview.includes('Telegram-боты')) errors.push('/: бриф не отразил выбранную услугу');
     }
 
     if (pageErrors.length) errors.push(`${path}: ${pageErrors.join('; ')}`);
@@ -76,6 +90,23 @@ try {
   if (!resp.ok()) errors.push(`/privacy/: HTTP ${resp.status()}`);
   const ph1 = await page.textContent('h1');
   if (!ph1 || !ph1.includes('Конфиденциальность')) errors.push('/privacy/: нет заголовка');
+
+  // услуги для заказчиков — отдельная страница с брифом
+  resp = await page.goto(base + '/services/', { waitUntil: 'networkidle' });
+  if (!resp.ok()) errors.push(`/services/: HTTP ${resp.status()}`);
+  const sh1 = (await page.textContent('h1')) || '';
+  if (!sh1.includes('Разработка под заказ')) errors.push(`/services/: h1 "${sh1.trim()}"`);
+  const stitle = await page.title();
+  if (!stitle.startsWith('Разработка под заказ')) errors.push(`/services/: title "${stitle}"`);
+  await page.check('#brief input[value="bot"]');
+  const preview = await page.textContent('#brief-preview');
+  if (!preview.includes('Telegram-боты')) errors.push('/services/: бриф не отразил выбранную услугу');
+  if (!(await page.$('a[href="/"]'))) errors.push('/services/: нет ссылки назад на портфолио');
+  await forbidden(page, '/services/', errors);
+
+  // goto на PDF в Chromium превращается в скачивание без ответа, поэтому обычный запрос
+  const cv = await page.request.get(base + CV);
+  if (!cv.ok() || !String(cv.headers()['content-type']).includes('pdf')) errors.push(`${CV}: HTTP ${cv.status()}, ${cv.headers()['content-type']}`);
 
   resp = await page.goto(base + '/craft/', { waitUntil: 'networkidle' });
   if (!resp.ok()) errors.push(`/craft/: HTTP ${resp.status()}`);
@@ -104,4 +135,4 @@ if (errors.length) {
   console.error('SMOKE FAILED:\n' + errors.map((e) => '  - ' + e).join('\n'));
   process.exit(1);
 }
-console.log('SMOKE OK: /, /en/, /tg/, /craft/, /privacy/, /tilaveo/, 404');
+console.log('SMOKE OK: /, /en/, /tg/, /services/, cv, /craft/, /privacy/, /tilaveo/, 404');

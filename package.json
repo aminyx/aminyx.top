@@ -9,7 +9,8 @@
     "build": "vite build && node scripts/prerender-i18n.mjs",
     "preview": "vite preview",
     "smoke": "node scripts/smoke.mjs",
-    "og": "node scripts/og.mjs"
+    "og": "node scripts/og.mjs",
+    "cv": "node scripts/cv-pdf.mjs"
   },
   "repository": {
     "type": "git",
